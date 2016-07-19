@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "8F563AA792D5954E5F7D85B5C78CAC5DB0018595",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "0DD16764DF6808857C80CF36037F1A52D41C7614" : 0,
+    "8F563AA792D5954E5F7D85B5C78CAC5DB0018595" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "01BA4882-4C1A-4422-8D25-A29E5073F518",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "0DD16764DF6808857C80CF36037F1A52D41C7614" : "pointSingleThatIsTo",
+    "8F563AA792D5954E5F7D85B5C78CAC5DB0018595" : "pointSingleThatIsTo%20%E4%B8%8A%E5%8D%8811.44.12\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "pointSingleThatIsTo",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "pointSingleThatIsTo.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/nmore-ios\/pointSingleThatIsTo.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0DD16764DF6808857C80CF36037F1A52D41C7614"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/xxpenghao1-ios\/pointSingleThatIsTo.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8F563AA792D5954E5F7D85B5C78CAC5DB0018595"
+    }
+  ]
+}
