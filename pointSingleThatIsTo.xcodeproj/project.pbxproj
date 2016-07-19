@@ -142,6 +142,7 @@
 		EF455FDD1D33847500E9539F /* StockOrderManageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F4A1D33847500E9539F /* StockOrderManageTableViewCell.swift */; };
 		EF455FDE1D33847500E9539F /* StockOrderManageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF455F4B1D33847500E9539F /* StockOrderManageTableViewCell.xib */; };
 		EF455FDF1D33847500E9539F /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F4D1D33847500E9539F /* TabBarViewController.swift */; };
+		EFA34D6A1D3DBCF1007284C8 /* IntegralRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */; };
 		EFD7D0031C7BFC6800DA8C1B /* (null) in Sources */ = {isa = PBXBuildFile; };
 		EFE0B53E1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE0B53C1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift */; };
 		EFE0B53F1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFE0B53D1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib */; };
@@ -331,6 +332,7 @@
 		EF455F4A1D33847500E9539F /* StockOrderManageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StockOrderManageTableViewCell.swift; sourceTree = "<group>"; };
 		EF455F4B1D33847500E9539F /* StockOrderManageTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StockOrderManageTableViewCell.xib; sourceTree = "<group>"; };
 		EF455F4D1D33847500E9539F /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
+		EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegralRecordViewController.swift; sourceTree = "<group>"; };
 		EFDA1C5B1CE31453002BFC04 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		EFE0B53C1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentExpTableViewCell.swift; sourceTree = "<group>"; };
 		EFE0B53D1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PresentExpTableViewCell.xib; sourceTree = "<group>"; };
@@ -555,6 +557,7 @@
 				EF455E981D33847500E9539F /* StockOrder */,
 				EF455E9F1D33847500E9539F /* SweepOutViewController.swift */,
 				EFEFA5F11D363CD50028A518 /* PresentExpViewController.swift */,
+				EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */,
 			);
 			path = PersonalCenter;
 			sourceTree = "<group>";
@@ -1417,6 +1420,7 @@
 				EF455FAF1D33847500E9539F /* SKScNavViewController.swift in Sources */,
 				EF455F7D1D33847500E9539F /* OrderGoodViewController.swift in Sources */,
 				EF455F7E1D33847500E9539F /* OrdersViewController.swift in Sources */,
+				EFA34D6A1D3DBCF1007284C8 /* IntegralRecordViewController.swift in Sources */,
 				EF455FC01D33847500E9539F /* UIAlertController.swift in Sources */,
 				EF455F541D33847500E9539F /* GrabASingleViewController.swift in Sources */,
 				EF455FD91D33847500E9539F /* ShippingAddressTableViewCell.swift in Sources */,
