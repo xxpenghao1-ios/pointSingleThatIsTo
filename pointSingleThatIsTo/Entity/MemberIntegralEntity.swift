@@ -12,7 +12,7 @@ import ObjectMapper
 class MemberIntegralEntity:Mappable{
     ///会员ID
     var memberId:Int?;
-    ///状态1，发货扣除。2，充值。3，购物获得
+    ///状态1 兑换商品扣除。2，充值。3，购物获得
     var integralType:Int?;
     ///积分扣除或者充值记录 ； 存储如-5或+5
     var integral:String?;

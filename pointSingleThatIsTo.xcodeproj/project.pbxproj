@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		839E7006F244D38DD7008C26 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0078D5301BCFA8CCCA882FA1 /* Pods.framework */; };
+		EF2A300F1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2A300D1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift */; };
+		EF2A30101D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF2A300E1D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib */; };
 		EF455F4E1D33847500E9539F /* BrandViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455E6F1D33847500E9539F /* BrandViewController.swift */; };
 		EF455F4F1D33847500E9539F /* CategoryListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455E701D33847500E9539F /* CategoryListController.swift */; };
 		EF455F501D33847500E9539F /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455E711D33847500E9539F /* CategoryViewController.swift */; };
@@ -191,6 +193,8 @@
 		0078D5301BCFA8CCCA882FA1 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		199D5B3D19EF60EF032941F2 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		349D2E6DA53741C5114EA6DA /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		EF2A300D1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegralRecordTableViewCell.swift; sourceTree = "<group>"; };
+		EF2A300E1D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IntegralRecordTableViewCell.xib; sourceTree = "<group>"; };
 		EF455E6F1D33847500E9539F /* BrandViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrandViewController.swift; sourceTree = "<group>"; };
 		EF455E701D33847500E9539F /* CategoryListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryListController.swift; sourceTree = "<group>"; };
 		EF455E711D33847500E9539F /* CategoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
@@ -1026,6 +1030,8 @@
 				EF455F4B1D33847500E9539F /* StockOrderManageTableViewCell.xib */,
 				EFE0B53C1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift */,
 				EFE0B53D1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib */,
+				EF2A300D1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift */,
+				EF2A300E1D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -1252,6 +1258,7 @@
 				EF455FB01D33847500E9539F /* arrow@3x.png in Resources */,
 				EFE459491C477EE900B8B24C /* LaunchScreen.storyboard in Resources */,
 				EF455FD21D33847500E9539F /* GoodSpecialPriceTableCell.xib in Resources */,
+				EF2A30101D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib in Resources */,
 				EF455FC51D33847500E9539F /* checked.png in Resources */,
 				EF455FCB1D33847500E9539F /* unchecked@3x.png in Resources */,
 				EFE459461C477EE900B8B24C /* Assets.xcassets in Resources */,
@@ -1389,6 +1396,7 @@
 				EF455F821D33847500E9539F /* AdvertisingEntity.swift in Sources */,
 				EF455FA41D33847500E9539F /* HYScratchCardView.m in Sources */,
 				EF455FBB1D33847500E9539F /* categoryListCell.swift in Sources */,
+				EF2A300F1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift in Sources */,
 				EF455F5A1D33847500E9539F /* PriceViewController.swift in Sources */,
 				EF455F671D33847500E9539F /* IRecommendViewController.swift in Sources */,
 				EFEFA5F21D363CD50028A518 /* PresentExpViewController.swift in Sources */,

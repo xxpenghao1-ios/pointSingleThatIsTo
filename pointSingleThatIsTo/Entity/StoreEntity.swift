@@ -30,6 +30,8 @@ class StoreEntity:Mappable {
     var substationId:String?
     /// 店铺电话号码
     var subStationPhoneNumber:String?
+    /// 积分余额
+    var balance:String?
     
     init(){}
     required init?(_ map: Map) {
@@ -46,5 +48,6 @@ class StoreEntity:Mappable {
         storeFlagCode <- map["storeFlagCode"]
         substationId <- map["substationId"]
         subStationPhoneNumber <- map["subStationPhoneNumber"]
+        balance <- map["balance"]
     }
 }

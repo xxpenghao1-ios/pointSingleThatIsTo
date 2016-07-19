@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
@@ -113,6 +113,7 @@
                             <constraint firstItem="hmh-rc-D5b" firstAttribute="top" secondItem="6Oc-9o-xNv" secondAttribute="bottom" constant="18" id="wAu-2x-hv8"/>
                         </constraints>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="btnLogin" destination="6Oc-9o-xNv" id="vHv-Sb-KZ9"/>
                         <outlet property="lblForgotPassword" destination="mZw-9o-Q2Q" id="gwn-1b-vEZ"/>
@@ -123,7 +124,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-914" y="-80"/>
+            <point key="canvasLocation" x="-1713.75" y="-84.507042253521121"/>
         </scene>
         <!--Salesman Login View Controller-->
         <scene sceneID="dhh-kG-daf">
@@ -203,6 +204,7 @@
                             <constraint firstItem="eKB-jy-f3P" firstAttribute="top" secondItem="Z9K-BU-Oxq" secondAttribute="bottom" constant="25" id="rY0-Un-o4g"/>
                         </constraints>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="btnLogin" destination="y0C-aM-dyt" id="XQY-sQ-wan"/>
                         <outlet property="txtName" destination="voe-P0-Bvf" id="8a4-tJ-Utc"/>
@@ -211,7 +213,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GWl-ag-fTL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1615" y="-196"/>
+            <point key="canvasLocation" x="-3307" y="-171"/>
         </scene>
         <!--Sweepers View Controller-->
         <scene sceneID="Vjy-sg-56f">
@@ -394,6 +396,7 @@
                             <constraint firstItem="M31-v7-HBl" firstAttribute="trailing" secondItem="e2q-hp-2S5" secondAttribute="trailingMargin" id="zHr-tT-t26"/>
                         </constraints>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="btnSubmit" destination="KTs-N4-ucX" id="xro-ne-a7T"/>
                         <outlet property="imgAdd" destination="ouw-mv-lmp" id="Dve-nH-x64"/>
@@ -407,7 +410,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5oY-PE-fow" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1530" y="-196"/>
+            <point key="canvasLocation" x="-2993" y="-301"/>
         </scene>
     </scenes>
     <resources>

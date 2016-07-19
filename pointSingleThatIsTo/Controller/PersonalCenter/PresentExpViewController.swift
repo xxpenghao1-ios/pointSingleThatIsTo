@@ -33,6 +33,8 @@ class PresentExpViewController:BaseViewController{
         //设置cell下边线全屏
         table?.layoutMargins=UIEdgeInsetsZero
         table?.separatorInset=UIEdgeInsetsZero
+        //移除空单元格
+        table!.tableFooterView = UIView(frame:CGRectZero)
     }
 }
 // MARK: - 实现table协议

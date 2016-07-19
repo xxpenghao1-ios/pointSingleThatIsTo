@@ -247,7 +247,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
                 self.tabBarController!.selectedIndex=3;
             }else if indexPath.row==3{
                 //积分记录
-                let vc=BlacklistViewController();
+                let vc=IntegralRecordViewController();
                 vc.hidesBottomBarWhenPushed=true
                 self.navigationController?.pushViewController(vc, animated:true);
             }

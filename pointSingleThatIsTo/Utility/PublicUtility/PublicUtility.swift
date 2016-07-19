@@ -51,10 +51,10 @@ import SDWebImage
 //app公用常量(类似于oc宏定义)
 
 ///图片请求路径
-let URLIMG="http://124.232.163.140";
+let URLIMG="http://192.168.2.103";
 
 ///数据请求路径  http://192.168.199.121/  http://www.zltxgw.com 124.232.163.140
-let URL="http://124.232.163.140/front/";
+let URL="http://192.168.2.103/front/";
 
 /// 屏幕宽
 let boundsWidth=UIScreen.mainScreen().bounds.width

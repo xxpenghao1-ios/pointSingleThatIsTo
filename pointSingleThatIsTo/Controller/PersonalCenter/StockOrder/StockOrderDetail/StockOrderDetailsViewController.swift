@@ -333,7 +333,6 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
                     }else{
                         SVProgressHUD.showWithStatus("取消订单失败")
                     }
-                    SVProgressHUD.dismiss()
                     
                 }
             }

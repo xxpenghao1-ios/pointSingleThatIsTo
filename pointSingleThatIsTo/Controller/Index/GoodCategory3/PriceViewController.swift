@@ -294,7 +294,7 @@ extension PriceViewController{
     func httpNewGoodList(currentPage:Int,isRefresh:Bool){
         /// 定义一个int类型的值 用于判断是否还有数据加载
         var count=0
-        Alamofire.request(.GET,URL+"queryGoodsForAndroidIndexForStoreNew.xhtml",parameters:["countyId":countyId!,"storeId":storeId!,"isDisplayFlag":2,"currentPage":1,"pageSize":10,"order":"price"]).responseJSON{ response in
+        Alamofire.request(.GET,URL+"queryGoodsForAndroidIndexForStoreNew.xhtml",parameters:["countyId":countyId!,"storeId":storeId!,"isDisplayFlag":2,"currentPage":currentPage,"pageSize":10,"order":"price"]).responseJSON{ response in
             if response.result.error != nil{
                 //关闭刷新状态
                 self.goodTable?.headerEndRefreshing()

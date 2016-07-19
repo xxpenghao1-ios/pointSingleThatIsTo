@@ -174,6 +174,8 @@ class LoginViewController:BaseViewController{
                                 userDefaults.setObject(entity!.storeName, forKey:"storeName")
                                 //保存店铺号码
                                 userDefaults.setObject(entity!.subStationPhoneNumber, forKey:"subStationPhoneNumber")
+                                //店铺积分余额
+                                userDefaults.setObject(entity!.balance, forKey:"balance")
                                 
                                 NSLog("店铺唯一标识码--\(entity!.storeFlagCode)")
                                 NSLog("店铺ID--\(entity!.storeId)")
