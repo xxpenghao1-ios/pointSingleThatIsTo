@@ -169,6 +169,7 @@
 		EFE4597D1C47A89300B8B24C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE4597C1C47A89300B8B24C /* CoreGraphics.framework */; };
 		EFE4597F1C47A8A300B8B24C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE4597E1C47A8A300B8B24C /* Security.framework */; };
 		EFE459811C47A8B000B8B24C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE459801C47A8B000B8B24C /* libz.tbd */; };
+		EFEBFE921D3F7BE500E113E3 /* SubstationEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */; };
 		EFEFA5F21D363CD50028A518 /* PresentExpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEFA5F11D363CD50028A518 /* PresentExpViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -367,6 +368,7 @@
 		EFE4597C1C47A89300B8B24C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		EFE4597E1C47A8A300B8B24C /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		EFE459801C47A8B000B8B24C /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubstationEntity.swift; sourceTree = "<group>"; };
 		EFEFA5F11D363CD50028A518 /* PresentExpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentExpViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -667,6 +669,7 @@
 				EF455EC01D33847500E9539F /* StoreEntity.swift */,
 				EFE0B5401D3CBA0B00E3C5AA /* MemberIntegralEntity.swift */,
 				EFE0B5421D3CBCA200E3C5AA /* IntegralExchangeEntity.swift */,
+				EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -1409,6 +1412,7 @@
 				EF455F621D33847500E9539F /* IndexViewController.swift in Sources */,
 				EF455F8B1D33847500E9539F /* PreferentialAndGoodsEntity.swift in Sources */,
 				EF455FBF1D33847500E9539F /* ACircleView.swift in Sources */,
+				EFEBFE921D3F7BE500E113E3 /* SubstationEntity.swift in Sources */,
 				EF455FDB1D33847500E9539F /* ShoppingCarTableViewCell.swift in Sources */,
 				EF455FDC1D33847500E9539F /* StockOrderDetailsCell.swift in Sources */,
 				EF455FA51D33847500E9539F /* UINavigationBar+Awesome.m in Sources */,

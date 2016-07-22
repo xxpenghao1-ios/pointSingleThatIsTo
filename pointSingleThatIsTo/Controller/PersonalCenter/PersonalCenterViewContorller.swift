@@ -40,11 +40,13 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
     private var headerView:UIView?
     /// 消息提示view
     private var messageBadgeView:UIView?
+    /// 分站信息entity
+    private var substationEntity:SubstationEntity?
     //每次进页面都会加载
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         if myRecommended != nil{
-            queryMyRecommended()
+            querySubstationInfo()
         }
     }
     //加载视图
@@ -65,8 +67,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
         //获取手机号码
         tel=(userDefaults.objectForKey("subStationPhoneNumber") as? String) ?? "0731-82562729"
         UILayer()
-        queryQrcode()
-        queryMyRecommended()
+        querySubstationInfo()
     }
     //ui控件及布局
     func UILayer(){
@@ -94,6 +95,10 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
         //二维码图片
         codePic=UIImageView(frame: CGRectMake(0, 0, 80, 80))
         codePic!.center=Img.center
+        qrcode=userDefaults.objectForKey("qrcode") as? String
+        if qrcode != nil{
+            codePic!.sd_setImageWithURL(NSURL(string:URLIMG+qrcode!), placeholderImage:UIImage(named:"def_nil"))
+        }
         headerView!.addSubview(codePic!)
         //店铺名称
         let lblstoreName=UILabel()
@@ -246,19 +251,25 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
                 //跳转到购物车
                 self.tabBarController!.selectedIndex=3;
             }else if indexPath.row==3{
-                //积分记录
-                let vc=IntegralRecordViewController();
-                vc.hidesBottomBarWhenPushed=true
-                self.navigationController?.pushViewController(vc, animated:true);
+                if self.substationEntity?.subStationBalanceStatu == 1{
+                    //积分记录
+                    let vc=IntegralRecordViewController();
+                    vc.hidesBottomBarWhenPushed=true
+                    self.navigationController?.pushViewController(vc, animated:true);
+                }else{
+                    SVProgressHUD.showInfoWithStatus("暂未开放,请联系业务员申请开通")
+                }
             }
         }else if indexPath.section==1{
             if indexPath.row==0{
-                SVProgressHUD.showInfoWithStatus("暂未开放")
-                /// 跳转到积分商城
-                let vc=PresentExpViewController()
-                vc.hidesBottomBarWhenPushed=true
-                self.navigationController?.pushViewController(vc, animated:true)
-                
+                if self.substationEntity?.subStationBalanceStatu == 1{
+                    /// 跳转到积分商城
+                    let vc=PresentExpViewController()
+                    vc.hidesBottomBarWhenPushed=true
+                    self.navigationController?.pushViewController(vc, animated:true)
+                }else{
+                    SVProgressHUD.showInfoWithStatus("暂未开放,请联系业务员申请开通")
+                }
             }else if indexPath.row==1{
                 //清除缓存   点击事件
                 //添加提示框
@@ -345,55 +356,24 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
 // MARK: - 网络请求
 extension PersonalCenterViewContorller{
     /**
-     请求二维码图片
+     请求分站信息和推荐人
      */
-    func queryQrcode(){
-        let http=URL+"queryQrcode.xhtml"
+    func querySubstationInfo(){
+        let http=URL+"queryStoreMember.xhtml"
         let storeId=userDefaults.objectForKey("storeId") as! String
-        Alamofire.request(.GET, http, parameters: ["storeId":storeId], encoding: ParameterEncoding.URL).responseJSON{ response in
+        Alamofire.request(.GET, http, parameters: ["storeId":storeId,"memberId":IS_NIL_MEMBERID()!]).responseJSON{ response in
             if response.result.error != nil{
                 SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
             }
             if response.result.value != nil{
                 //解析json
                 let json=JSON(response.result.value!)
-                if json["success"].stringValue=="faild"{
-                    SVProgressHUD.showErrorWithStatus("服务器异常")
-                }else{
-                    self.qrcode=json["qrcode"].stringValue
-                    self.codePic!.sd_setImageWithURL(NSURL(string: URLIMG+self.qrcode!), placeholderImage: UIImage(named: "def_nil"))
-                }
+                self.substationEntity=Mapper<SubstationEntity>().map(json["substationEntity"].object)
+                self.myRecommended=json["referralName"].stringValue
             }
         }
     }
 
-    /**
-     请求我推荐的人
-     
-     - parameter storeId: self.memberId!
-     接口名称：  queryMyRecommended.xhtml
-     
-     - returns: queryMyRecommended()
-     */
-    func queryMyRecommended(){
-        let http=URL+"queryMyRecommended.xhtml"
-        let storeId=userDefaults.objectForKey("storeId") as! String
-        Alamofire.request(.GET, http, parameters: ["storeId":storeId], encoding: ParameterEncoding.URL).responseJSON{ res in
-            if res.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
-            }
-            if res.result.value != nil{
-                //解析json
-                let jsResult=JSON(res.result.value!)
-                if jsResult["success"].stringValue=="faild"{
-                    SVProgressHUD.showErrorWithStatus("服务器异常")
-                }else{
-                    self.myRecommended=jsResult["success"].stringValue
-                }
-            }
-        }
-        
-    }
 }
 // MARK: - 页面逻辑
 extension PersonalCenterViewContorller{
@@ -421,7 +401,6 @@ extension PersonalCenterViewContorller{
             Void in
             //设置极光推送 别名为空
             JPUSHService.setAlias("",callbackSelector:nil, object:nil)
-            JPUSHService.setTags([NSSet()], callbackSelector:nil, object:nil)
             request(.GET,URL+"outLoginForStore.xhtml,", parameters:["memebrId":IS_NIL_MEMBERID()!])
             //清除缓存中会员id
             NSUserDefaults.standardUserDefaults().removeObjectForKey("memberId")

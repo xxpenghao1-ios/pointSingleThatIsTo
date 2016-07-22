@@ -102,6 +102,9 @@ class StockOrderManageTableViewCell: UITableViewCell {
         }else{
             lblSumPrice.text=""
         }
+        goodImg1.hidden=true
+        goodImg2.hidden=true
+        goodImg3.hidden=true
         //判断商品集合是否为空
         if entity.list != nil{
             for(var i=0;i<entity.list!.count;i++){

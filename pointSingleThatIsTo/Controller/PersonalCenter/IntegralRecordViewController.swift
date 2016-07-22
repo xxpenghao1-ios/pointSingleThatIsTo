@@ -21,6 +21,8 @@ class IntegralRecordViewController:BaseViewController{
     private var arr=NSMutableArray()
     /// 空视图提示
     private var lblNilTitle:UILabel?
+    /// 积分余额
+    private var lblIntegral:UILabel?
     /// 加载页数
     private var currentPage=0
     override func viewDidLoad() {
@@ -41,12 +43,12 @@ class IntegralRecordViewController:BaseViewController{
         lblSurplusIntegral.textAlignment = .Center
         tableHeaderView!.addSubview(lblSurplusIntegral)
         
-        let lblIntegral=UILabel(frame:CGRectMake(boundsWidth/2,50,boundsWidth/2,20))
-        lblIntegral.text=userDefaults.objectForKey("balance") as? String
-        lblIntegral.textColor=UIColor.whiteColor()
-        lblIntegral.font=UIFont.boldSystemFontOfSize(18)
-        lblIntegral.textAlignment = .Center
-        tableHeaderView!.addSubview(lblIntegral)
+        lblIntegral=UILabel(frame:CGRectMake(boundsWidth/2,50,boundsWidth/2,20))
+        lblIntegral!.text=userDefaults.objectForKey("balance") as? String
+        lblIntegral!.textColor=UIColor.whiteColor()
+        lblIntegral!.font=UIFont.boldSystemFontOfSize(18)
+        lblIntegral!.textAlignment = .Center
+        tableHeaderView!.addSubview(lblIntegral!)
         
         table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(tableHeaderView!.frame),boundsWidth,boundsHeight-64-120), style: UITableViewStyle.Plain)
         table!.dataSource=self
