@@ -145,6 +145,7 @@
 		EF455FDE1D33847500E9539F /* StockOrderManageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF455F4B1D33847500E9539F /* StockOrderManageTableViewCell.xib */; };
 		EF455FDF1D33847500E9539F /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F4D1D33847500E9539F /* TabBarViewController.swift */; };
 		EFA34D6A1D3DBCF1007284C8 /* IntegralRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */; };
+		EFADF3AB1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */; };
 		EFD7D0031C7BFC6800DA8C1B /* (null) in Sources */ = {isa = PBXBuildFile; };
 		EFE0B53E1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE0B53C1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift */; };
 		EFE0B53F1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFE0B53D1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib */; };
@@ -338,6 +339,7 @@
 		EF455F4B1D33847500E9539F /* StockOrderManageTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StockOrderManageTableViewCell.xib; sourceTree = "<group>"; };
 		EF455F4D1D33847500E9539F /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegralRecordViewController.swift; sourceTree = "<group>"; };
+		EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegralGoodExchangeEntity.swift; sourceTree = "<group>"; };
 		EFDA1C5B1CE31453002BFC04 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		EFE0B53C1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentExpTableViewCell.swift; sourceTree = "<group>"; };
 		EFE0B53D1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PresentExpTableViewCell.xib; sourceTree = "<group>"; };
@@ -670,6 +672,7 @@
 				EFE0B5401D3CBA0B00E3C5AA /* MemberIntegralEntity.swift */,
 				EFE0B5421D3CBCA200E3C5AA /* IntegralExchangeEntity.swift */,
 				EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */,
+				EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -1361,6 +1364,7 @@
 				EF455F5C1D33847500E9539F /* GoodDetailPromotionsDetailView.swift in Sources */,
 				EF455FB31D33847500E9539F /* SKLaunchMenuItem.swift in Sources */,
 				EF455FD41D33847500E9539F /* GrabASingleDetailsViewCell.swift in Sources */,
+				EFADF3AB1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift in Sources */,
 				EF455F8D1D33847500E9539F /* Color.swift in Sources */,
 				EF455F611D33847500E9539F /* GoodSpecialPriceViewController.swift in Sources */,
 				EF455F941D33847500E9539F /* PublicUtility.swift in Sources */,

@@ -50,8 +50,6 @@ class PHJPushHelper:NSObject{
         if (completion != nil){//如果不等于空调用闭包方法
             completion!(UIBackgroundFetchResult.NewData)
         }
-        
-        
     }
     /**
      显示本地通知在最前面

@@ -15,15 +15,12 @@ class PresentExpTableViewCell: UITableViewCell {
     @IBOutlet weak private var ImgGood: UIImageView!
     /// 商品名称
     @IBOutlet weak private var lblGoodName: UILabel!
-    /// 商品单位
-    @IBOutlet weak private var lblUnit: UILabel!
     /// 剩余兑换数
     @IBOutlet weak private var lblRemainingExchangeNumber: UILabel!
     /// 消耗积分
     @IBOutlet weak private var lblConsumptionIntegral: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
-        lblUnit.textColor=UIColor.textColor()
         lblRemainingExchangeNumber.textColor=UIColor.textColor()
         lblConsumptionIntegral.textColor=UIColor.textColor()
         btnExchange.backgroundColor=UIColor.applicationMainColor()
@@ -36,10 +33,23 @@ class PresentExpTableViewCell: UITableViewCell {
     /**
      更新cell
      
-     - parameter entity:消费记录entity
+     - parameter entity:IntegralGoodExchangeEntity
      */
-    func updateCell(){
-        ImgGood.sd_setImageWithURL(NSURL(string:URLIMG+""), placeholderImage:UIImage(named: "def_nil"))
+    func updateCell(entity:IntegralGoodExchangeEntity){
+        
+        ImgGood.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodsPic!), placeholderImage:UIImage(named: "def_nil"))
+        if entity.goodsSurplusCount != nil{
+            lblRemainingExchangeNumber.text="剩余兑换:\(entity.goodsSurplusCount!)"
+        }else{
+            entity.goodsSurplusCount=0
+            lblRemainingExchangeNumber.text="剩余兑换:\(entity.goodsSurplusCount!)"
+        }
+        lblGoodName.text=entity.goodsName
+        if entity.exchangeIntegral != nil{
+            lblConsumptionIntegral.text="消耗积分:\(entity.exchangeIntegral!)"
+        }else{
+            lblConsumptionIntegral.text="消耗积分:0"
+        }
         
     }
     override func setSelected(selected: Bool, animated: Bool) {
