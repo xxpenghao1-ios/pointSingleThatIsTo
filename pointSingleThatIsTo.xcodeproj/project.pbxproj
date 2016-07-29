@@ -10,6 +10,10 @@
 		839E7006F244D38DD7008C26 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0078D5301BCFA8CCCA882FA1 /* Pods.framework */; };
 		EF2A300F1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2A300D1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift */; };
 		EF2A30101D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF2A300E1D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib */; };
+		EF2CCA1C1D4B248D00F2D69B /* RecordOfConversionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CCA1B1D4B248D00F2D69B /* RecordOfConversionViewController.swift */; };
+		EF2CCA1E1D4B2AB600F2D69B /* ExchangeRecordEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CCA1D1D4B2AB600F2D69B /* ExchangeRecordEntity.swift */; };
+		EF2CCA211D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CCA1F1D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.swift */; };
+		EF2CCA221D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF2CCA201D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.xib */; };
 		EF455F4E1D33847500E9539F /* BrandViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455E6F1D33847500E9539F /* BrandViewController.swift */; };
 		EF455F4F1D33847500E9539F /* CategoryListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455E701D33847500E9539F /* CategoryListController.swift */; };
 		EF455F501D33847500E9539F /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455E711D33847500E9539F /* CategoryViewController.swift */; };
@@ -197,6 +201,10 @@
 		349D2E6DA53741C5114EA6DA /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		EF2A300D1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegralRecordTableViewCell.swift; sourceTree = "<group>"; };
 		EF2A300E1D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IntegralRecordTableViewCell.xib; sourceTree = "<group>"; };
+		EF2CCA1B1D4B248D00F2D69B /* RecordOfConversionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordOfConversionViewController.swift; sourceTree = "<group>"; };
+		EF2CCA1D1D4B2AB600F2D69B /* ExchangeRecordEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExchangeRecordEntity.swift; sourceTree = "<group>"; };
+		EF2CCA1F1D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExchangeRecordTableViewCell.swift; sourceTree = "<group>"; };
+		EF2CCA201D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ExchangeRecordTableViewCell.xib; sourceTree = "<group>"; };
 		EF455E6F1D33847500E9539F /* BrandViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrandViewController.swift; sourceTree = "<group>"; };
 		EF455E701D33847500E9539F /* CategoryListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryListController.swift; sourceTree = "<group>"; };
 		EF455E711D33847500E9539F /* CategoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
@@ -566,6 +574,7 @@
 				EF455E9F1D33847500E9539F /* SweepOutViewController.swift */,
 				EFEFA5F11D363CD50028A518 /* PresentExpViewController.swift */,
 				EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */,
+				EF2CCA1B1D4B248D00F2D69B /* RecordOfConversionViewController.swift */,
 			);
 			path = PersonalCenter;
 			sourceTree = "<group>";
@@ -673,6 +682,7 @@
 				EFE0B5421D3CBCA200E3C5AA /* IntegralExchangeEntity.swift */,
 				EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */,
 				EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */,
+				EF2CCA1D1D4B2AB600F2D69B /* ExchangeRecordEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -1038,6 +1048,8 @@
 				EFE0B53D1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib */,
 				EF2A300D1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift */,
 				EF2A300E1D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib */,
+				EF2CCA1F1D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.swift */,
+				EF2CCA201D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.xib */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -1264,6 +1276,7 @@
 				EF455FB01D33847500E9539F /* arrow@3x.png in Resources */,
 				EFE459491C477EE900B8B24C /* LaunchScreen.storyboard in Resources */,
 				EF455FD21D33847500E9539F /* GoodSpecialPriceTableCell.xib in Resources */,
+				EF2CCA221D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.xib in Resources */,
 				EF2A30101D3DD82B006DCE92 /* IntegralRecordTableViewCell.xib in Resources */,
 				EF455FC51D33847500E9539F /* checked.png in Resources */,
 				EF455FCB1D33847500E9539F /* unchecked@3x.png in Resources */,
@@ -1362,6 +1375,7 @@
 				EF455FAD1D33847500E9539F /* RefreshHeaderView.swift in Sources */,
 				EF455FBE1D33847500E9539F /* SalePriceCollectionViewCell.swift in Sources */,
 				EF455F5C1D33847500E9539F /* GoodDetailPromotionsDetailView.swift in Sources */,
+				EF2CCA1E1D4B2AB600F2D69B /* ExchangeRecordEntity.swift in Sources */,
 				EF455FB31D33847500E9539F /* SKLaunchMenuItem.swift in Sources */,
 				EF455FD41D33847500E9539F /* GrabASingleDetailsViewCell.swift in Sources */,
 				EFADF3AB1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift in Sources */,
@@ -1424,6 +1438,7 @@
 				EF455FC11D33847500E9539F /* LoadingView.swift in Sources */,
 				EF455F4E1D33847500E9539F /* BrandViewController.swift in Sources */,
 				EF455FCD1D33847500E9539F /* DrawingRecordTableCell.swift in Sources */,
+				EF2CCA1C1D4B248D00F2D69B /* RecordOfConversionViewController.swift in Sources */,
 				EF455FB21D33847500E9539F /* SKLaunchMenu.swift in Sources */,
 				EF455F981D33847500E9539F /* V2LoadingView.swift in Sources */,
 				EF455F631D33847500E9539F /* LoginViewController.swift in Sources */,
@@ -1471,6 +1486,7 @@
 				EF455FD11D33847500E9539F /* GoodSpecialPriceTableCell.swift in Sources */,
 				EF455F531D33847500E9539F /* GrabASingleDetailsViewController.swift in Sources */,
 				EF455F4F1D33847500E9539F /* CategoryListController.swift in Sources */,
+				EF2CCA211D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.swift in Sources */,
 				EF455FD71D33847500E9539F /* OrderGoodTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

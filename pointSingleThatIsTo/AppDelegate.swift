@@ -109,7 +109,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         
         // Required
         siren.appID="1078070211" // For this example, we're using the iTunes Connect App (https://itunes.apple.com/us/app/itunes-connect/id1078070211?mt=8)
-        
         // Optional
         siren.delegate = self
         
