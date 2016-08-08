@@ -134,77 +134,76 @@ class LoginViewController:BaseViewController{
                 }else{
                     SVProgressHUD.showWithStatus("正在登陆",maskType: SVProgressHUDMaskType.Gradient)
                     NSLog("开始验证发送网络请求验证用户信息")
-                    Alamofire.request(.GET,URL+"storeLoginInterface.xhtml", parameters:["memberName":name!,"password":password!,"deviceToken":str!,"deviceName":UIDevice().name,"flag":1], encoding: ParameterEncoding.URL).responseJSON{ response in
-                        if response.result.error != nil{
-                            SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+                    PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.login(memberName:name!, password:password!, deviceToken:str!, deviceName:UIDevice().name,flag:1), successClosure: { (result) -> Void in
+                        let json=JSON(result)
+                        print(json)
+                        let success=json["success"].stringValue
+                        if success == "failds"{
+                            SVProgressHUD.showErrorWithStatus("店铺信息不存在")
+                        }else if success == "loginNull"{
+                            SVProgressHUD.showErrorWithStatus("该账号不是店铺")
+                        }else if success == "isexist"{
+                            SVProgressHUD.showErrorWithStatus("账号或密码错误")
+                        }else if success == "success"{//返回成功 保存登录信息
+                            SVProgressHUD.showSuccessWithStatus("登陆成功")
+                            let entity=Mapper<StoreEntity>().map(json.object)
+                            //保存店铺id
+                            userDefaults.setObject(entity!.storeId, forKey:"storeId")
+                            //保存会员id
+                            userDefaults.setObject(entity!.memberId, forKey:"memberId")
+                            //保存县区id
+                            userDefaults.setObject(entity!.countyId, forKey:"countyId")
+                            //保存省市区
+                            userDefaults.setObject(entity!.province!+entity!.city!+entity!.county!, forKey:"address")
+                            //保存省
+                            userDefaults.setObject(entity!.province!, forKey:"province")
+                            //保存市
+                            userDefaults.setObject(entity!.city!, forKey:"city")
+                            //保存区
+                            userDefaults.setObject(entity!.county!, forKey:"county")
+                            //保存分站id
+                            userDefaults.setObject(entity!.substationId, forKey:"subStationId")
+                            //保存用户名
+                            userDefaults.setObject(name, forKey:"memberName")
+                            //保存店铺唯一标识码
+                            userDefaults.setObject(entity!.storeFlagCode, forKey:"storeFlagCode")
+                            //保存店铺名称
+                            userDefaults.setObject(entity!.storeName, forKey:"storeName")
+                            //保存店铺号码
+                            userDefaults.setObject(entity!.subStationPhoneNumber, forKey:"subStationPhoneNumber")
+                            //保存店铺二维码
+                            userDefaults.setObject(entity!.qrcode, forKey:"qrcode")
+                            NSLog("店铺唯一标识码--\(entity!.storeFlagCode)")
+                            NSLog("店铺ID--\(entity!.storeId)")
+                            //写入磁盘
+                            userDefaults.synchronize()
+                            //登录成功设置应用程序别名
+                            JPUSHService.setAlias(entity!.storeFlagCode!, callbackSelector: nil, object:nil)
+                            //                                JPUSHService.setTags([entity!.substationId!], callbackSelector:nil, object:nil)
+                            //登录成功跳转到首页
+                            let app=UIApplication.sharedApplication().delegate as! AppDelegate
+                            
+                            app.tab=TabBarViewController()
+                            
+                            self.txtPassword!.text=""
+                            app.window?.rootViewController=app.tab                               //登录成功自动收起键盘
+                            self.view.endEditing(true)
+                            
+                        }else{
+                            SVProgressHUD.showErrorWithStatus("登陆失败")
                         }
-                        if response.result.value != nil{
-                            let json=JSON(response.result.value!)
-                            print(json)
-                            let success=json["success"].stringValue
-                            if success == "failds"{
-                                SVProgressHUD.showErrorWithStatus("店铺信息不存在")
-                            }else if success == "loginNull"{
-                                SVProgressHUD.showErrorWithStatus("该账号不是店铺")
-                            }else if success == "isexist"{
-                                SVProgressHUD.showErrorWithStatus("账号或密码错误")
-                            }else if success == "success"{//返回成功 保存登录信息
-                                SVProgressHUD.showSuccessWithStatus("登陆成功")
-                                let entity=Mapper<StoreEntity>().map(json.object)
-                                //保存店铺id
-                                userDefaults.setObject(entity!.storeId, forKey:"storeId")
-                                //保存会员id
-                                userDefaults.setObject(entity!.memberId, forKey:"memberId")
-                                //保存县区id
-                                userDefaults.setObject(entity!.countyId, forKey:"countyId")
-                                //保存省市区
-                                userDefaults.setObject(entity!.province!+entity!.city!+entity!.county!, forKey:"address")
-                                //保存省
-                                userDefaults.setObject(entity!.province!, forKey:"province")
-                                //保存市
-                                userDefaults.setObject(entity!.city!, forKey:"city")
-                                //保存区
-                                userDefaults.setObject(entity!.county!, forKey:"county")
-                                //保存分站id
-                                userDefaults.setObject(entity!.substationId, forKey:"subStationId")
-                                //保存用户名
-                                userDefaults.setObject(name, forKey:"memberName")
-                                //保存店铺唯一标识码
-                                userDefaults.setObject(entity!.storeFlagCode, forKey:"storeFlagCode")
-                                //保存店铺名称
-                                userDefaults.setObject(entity!.storeName, forKey:"storeName")
-                                //保存店铺号码
-                                userDefaults.setObject(entity!.subStationPhoneNumber, forKey:"subStationPhoneNumber")
-                                //保存店铺二维码
-                                userDefaults.setObject(entity!.qrcode, forKey:"qrcode")
-                                NSLog("店铺唯一标识码--\(entity!.storeFlagCode)")
-                                NSLog("店铺ID--\(entity!.storeId)")
-                                //写入磁盘
-                                userDefaults.synchronize()
-                                //登录成功设置应用程序别名
-                                JPUSHService.setAlias(entity!.storeFlagCode!, callbackSelector: nil, object:nil)
-//                                JPUSHService.setTags([entity!.substationId!], callbackSelector:nil, object:nil)
-                                //登录成功跳转到首页
-                                let app=UIApplication.sharedApplication().delegate as! AppDelegate
-                                
-                                app.tab=TabBarViewController()
-                                
-                                self.txtPassword!.text=""
-                                app.window?.rootViewController=app.tab                               //登录成功自动收起键盘
-                                self.view.endEditing(true)
-                                
-                            }else{
-                                SVProgressHUD.showErrorWithStatus("登陆失败")
-                            }
-                        }
-                    }
+                        
+                        }, failClosure: { (errorMsg) -> Void in
+                            SVProgressHUD.showErrorWithStatus(errorMsg)
+                    })
+                    
                 }
                 
             }else{
                 SVProgressHUD.showInfoWithStatus("无网络连接")
             }
         }
-
+        
     }
     //点击view区域收起键盘
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {

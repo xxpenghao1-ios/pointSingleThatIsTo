@@ -37,7 +37,6 @@ extension UIColor{
     class func orderBottom() -> UIColor{
         return UIColor(red:32/255, green:32/255, blue:32/255, alpha: 1.0);
     }
-      
 }
 extension UIColor{
     class func RGBFromHexColor(hexColorString : String)->UIColor{

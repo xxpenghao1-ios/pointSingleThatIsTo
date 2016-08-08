@@ -174,6 +174,7 @@
 		EFE4597D1C47A89300B8B24C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE4597C1C47A89300B8B24C /* CoreGraphics.framework */; };
 		EFE4597F1C47A8A300B8B24C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE4597E1C47A8A300B8B24C /* Security.framework */; };
 		EFE459811C47A8B000B8B24C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE459801C47A8B000B8B24C /* libz.tbd */; };
+		EFE9BF091D582FEB0003039B /* PHNetWork.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE9BF081D582FEB0003039B /* PHNetWork.swift */; };
 		EFEBFE921D3F7BE500E113E3 /* SubstationEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */; };
 		EFEFA5F21D363CD50028A518 /* PresentExpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEFA5F11D363CD50028A518 /* PresentExpViewController.swift */; };
 /* End PBXBuildFile section */
@@ -378,6 +379,7 @@
 		EFE4597C1C47A89300B8B24C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		EFE4597E1C47A8A300B8B24C /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		EFE459801C47A8B000B8B24C /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		EFE9BF081D582FEB0003039B /* PHNetWork.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PHNetWork.swift; sourceTree = "<group>"; };
 		EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubstationEntity.swift; sourceTree = "<group>"; };
 		EFEFA5F11D363CD50028A518 /* PresentExpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentExpViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -690,6 +692,7 @@
 		EF455EC11D33847500E9539F /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				EFE9BF071D582F620003039B /* NetWork */,
 				EF455EC21D33847500E9539F /* Color */,
 				EF455EC41D33847500E9539F /* DB */,
 				EF455EC71D33847500E9539F /* EntityTurnJSON */,
@@ -1147,6 +1150,14 @@
 			path = pointSingleThatIsToUITests;
 			sourceTree = "<group>";
 		};
+		EFE9BF071D582F620003039B /* NetWork */ = {
+			isa = PBXGroup;
+			children = (
+				EFE9BF081D582FEB0003039B /* PHNetWork.swift */,
+			);
+			path = NetWork;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1459,6 +1470,7 @@
 				EF455F561D33847500E9539F /* SellerRemark.swift in Sources */,
 				EF455F911D33847500E9539F /* EZAlertController.swift in Sources */,
 				EF455F841D33847500E9539F /* DrawingRecordEntity.swift in Sources */,
+				EFE9BF091D582FEB0003039B /* PHNetWork.swift in Sources */,
 				EF455F701D33847500E9539F /* StockOrderDetailsViewController.swift in Sources */,
 				EF455F7C1D33847500E9539F /* BuyerRemark.swift in Sources */,
 				EF455FAC1D33847500E9539F /* RefreshFooterView.swift in Sources */,

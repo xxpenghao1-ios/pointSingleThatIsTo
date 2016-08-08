@@ -454,6 +454,15 @@ extension IndexViewController{
         alert.addAction(ok)
         self.presentViewController(alert, animated: true, completion:nil)
     }
+    /**
+     点击幻灯片图片回调事件
+     
+     - parameter cycleScrollView:SDCycleScrollView!
+     - parameter index:          Int
+     */
+    func cycleScrollView(cycleScrollView: SDCycleScrollView!, didSelectItemAtIndex index: Int) {
+         
+    }
 
 }
 // MARK: - 网络请求

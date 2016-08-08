@@ -5,8 +5,14 @@ PODS:
     - EARestrictedScrollView (~> 0.2.0)
   - EARestrictedScrollView (0.2.0)
   - IQKeyboardManagerSwift (4.0.0)
+  - Moya (6.3.1):
+    - Moya/Core (= 6.3.1)
+  - Moya/Core (6.3.1):
+    - Alamofire (~> 3.0)
+    - Result (~> 1.0)
   - ObjectMapper (1.1.5)
   - RealReachability (1.1.2)
+  - Result (1.0.2)
   - SDCycleScrollView (1.62):
     - SDWebImage (~> 3.7)
   - SDWebImage (3.7.5):
@@ -22,6 +28,7 @@ DEPENDENCIES:
   - BaiduMapKit
   - EAIntroView (= 2.8.1)
   - IQKeyboardManagerSwift (= 4.0.0)
+  - Moya (= 6.3.1)
   - ObjectMapper (= 1.1.5)
   - RealReachability (= 1.1.2)
   - SDCycleScrollView (= 1.62)
@@ -37,8 +44,10 @@ SPEC CHECKSUMS:
   EAIntroView: 73abfa89caa311f450af876421d950b96679e845
   EARestrictedScrollView: f86d61e16c61d3e93c84f8e96e83122a2a3b7631
   IQKeyboardManagerSwift: ede2a27b4e1ce053d03073b9c7fa439322f5e405
+  Moya: 852e26948a3771355ddf0f0109ac779b6fc30f28
   ObjectMapper: 528b1a6677a6acac7747edd508576983e76a9148
   RealReachability: ad8975d056156cb80ef1ab7f62b3ef2c39fbfc08
+  Result: dd3dd71af3fa2e262f1a999e14fba2c25ec14f16
   SDCycleScrollView: ae016cb4cc4036523917f146ede6f7b11d408f6a
   SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
   Siren: b302660e1bf19537705a15aa3460fb328a3e8eb9

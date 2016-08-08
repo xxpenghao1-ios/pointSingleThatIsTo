@@ -14,3 +14,5 @@ pod 'SVProgressHUD', '1.1.3'    #菊花动画
 pod 'XCGLogger', '3.2' #日志管理类库
 pod 'RealReachability', '1.1.2' #实时监测网络
 pod 'BaiduMapKit' #百度地图SDK
+pod 'Moya','6.3.1' #对Alamofire的封装
+
