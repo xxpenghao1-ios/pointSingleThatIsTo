@@ -15,7 +15,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 /// 消息中心
@@ -122,49 +121,46 @@ extension MessageCenterViewController{
     func httpQueryMessageToStore(currentPage:Int,isRefresh:Bool){
         var count=0
         let substationId=userDefaults.objectForKey("substationId") as! String
-        request(.GET,URL+"queryMessageToStore.xhtml", parameters:["substationId":substationId,"pageSize":10,"currentPage":currentPage]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryMessageToStore(substationId: substationId, pageSize: 10, currentPage: currentPage), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            if isRefresh{
+                self.arr.removeAllObjects()
+            }
+            for(_,value) in json{
+                count++
+                let entity=Mapper<AdMessgInfoEntity>().map(value.object)
+                let cell=MessageCenterTableViewCell()
+                self.cellArr.addObject(cell)
+                self.arr.addObject(entity!)
+            }
+            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                self.table?.setFooterHidden(true)
+            }else{//否则显示
+                self.table?.setFooterHidden(false)
+            }
+            if self.arr.count < 1{//表示没有数据加载空
+                self.nilView?.removeFromSuperview()
+                self.nilView=nilPromptView("木有消息记录...")
+                self.nilView!.center=self.table!.center
+                self.view.addSubview(self.nilView!)
+                
+            }else{//如果有数据清除
+                self.nilView?.removeFromSuperview()
+            }
+            //关闭刷新状态
+            self.table?.headerEndRefreshing()
+            //关闭加载状态
+            self.table?.footerEndRefreshing()
+            //关闭加载等待视图
+            SVProgressHUD.dismiss()
+            //刷新table
+            self.table?.reloadData()
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
                 //关闭刷新状态
                 self.table?.headerEndRefreshing()
                 //关闭加载状态
                 self.table?.footerEndRefreshing()
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                if isRefresh{
-                    self.arr.removeAllObjects()
-                }
-                for(_,value) in json{
-                    count++
-                    let entity=Mapper<AdMessgInfoEntity>().map(value.object)
-                    let cell=MessageCenterTableViewCell()
-                    self.cellArr.addObject(cell)
-                    self.arr.addObject(entity!)
-                }
-                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.table?.setFooterHidden(true)
-                }else{//否则显示
-                    self.table?.setFooterHidden(false)
-                }
-                if self.arr.count < 1{//表示没有数据加载空
-                    self.nilView?.removeFromSuperview()
-                    self.nilView=nilPromptView("木有消息记录...")
-                    self.nilView!.center=self.table!.center
-                    self.view.addSubview(self.nilView!)
-                    
-                }else{//如果有数据清除
-                    self.nilView?.removeFromSuperview()
-                }
-                //关闭刷新状态
-                self.table?.headerEndRefreshing()
-                //关闭加载状态
-                self.table?.footerEndRefreshing()
-                //关闭加载等待视图
-                SVProgressHUD.dismiss()
-                //刷新table
-                self.table?.reloadData()
-            }
         }
     }
 }

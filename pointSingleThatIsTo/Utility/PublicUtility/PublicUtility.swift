@@ -48,7 +48,7 @@
 import Foundation
 import SDWebImage
 
-//app公用常量(类似于oc宏定义)
+//app公用常量
 
 ///图片请求路径
 let URLIMG="http://www.hnddjd.com";

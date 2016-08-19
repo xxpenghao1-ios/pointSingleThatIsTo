@@ -16,7 +16,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 /**黑名单列表*/
 class BlacklistViewController:UIViewController {
     var nilView:UIView?

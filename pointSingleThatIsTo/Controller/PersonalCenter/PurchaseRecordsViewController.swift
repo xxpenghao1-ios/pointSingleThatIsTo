@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 ///购买记录

@@ -176,6 +176,7 @@
 		EFE459811C47A8B000B8B24C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE459801C47A8B000B8B24C /* libz.tbd */; };
 		EFE9BF091D582FEB0003039B /* PHNetWork.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE9BF081D582FEB0003039B /* PHNetWork.swift */; };
 		EFEBFE921D3F7BE500E113E3 /* SubstationEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */; };
+		EFED436B1D5967740041B0BE /* ShoppingCarVo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFED436A1D5967740041B0BE /* ShoppingCarVo.swift */; };
 		EFEFA5F21D363CD50028A518 /* PresentExpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEFA5F11D363CD50028A518 /* PresentExpViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -381,6 +382,7 @@
 		EFE459801C47A8B000B8B24C /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		EFE9BF081D582FEB0003039B /* PHNetWork.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PHNetWork.swift; sourceTree = "<group>"; };
 		EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubstationEntity.swift; sourceTree = "<group>"; };
+		EFED436A1D5967740041B0BE /* ShoppingCarVo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShoppingCarVo.swift; sourceTree = "<group>"; };
 		EFEFA5F11D363CD50028A518 /* PresentExpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentExpViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -685,6 +687,7 @@
 				EFEBFE911D3F7BE500E113E3 /* SubstationEntity.swift */,
 				EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */,
 				EF2CCA1D1D4B2AB600F2D69B /* ExchangeRecordEntity.swift */,
+				EFED436A1D5967740041B0BE /* ShoppingCarVo.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -1488,6 +1491,7 @@
 				EF455F971D33847500E9539F /* BaseViewController.swift in Sources */,
 				EF455F811D33847500E9539F /* AdMessgInfoEntity.swift in Sources */,
 				EF455FD31D33847500E9539F /* GrabASingleDetailsCell.swift in Sources */,
+				EFED436B1D5967740041B0BE /* ShoppingCarVo.swift in Sources */,
 				EF455FAA1D33847500E9539F /* RefreshBaseView.swift in Sources */,
 				EF455F891D33847500E9539F /* MessageCenterEntity.swift in Sources */,
 				EF455F5B1D33847500E9539F /* SalesViewController.swift in Sources */,
@@ -1571,8 +1575,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Hao Peng (7BUP6STKZL)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Hao Peng (7BUP6STKZL)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1595,7 +1599,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0aefd720-c197-4e23-b181-9ea84bb5a3f8";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1618,8 +1622,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Hao Peng (7BUP6STKZL)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Hao Peng (7BUP6STKZL)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1635,7 +1639,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0aefd720-c197-4e23-b181-9ea84bb5a3f8";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1648,8 +1652,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Hunan Zonglan Tianxia network technology Co., Ltd. (5A79UN6C3M)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Hunan Zonglan Tianxia network technology Co., Ltd. (5A79UN6C3M)";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
@@ -1664,7 +1669,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nmore.phddjdStore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "9fb4d272-a0de-452d-80c5-779773f590fb";
 				SWIFT_OBJC_BRIDGING_HEADER = "pointSingleThatIsTo/pointSingleThatIsTo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/** $(PROJECT_DIR)/pointSingleThatIsTo/Vendors/PHFramework/Jpush";
@@ -1678,8 +1683,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Hunan Zonglan Tianxia network technology Co., Ltd. (5A79UN6C3M)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Hunan Zonglan Tianxia network technology Co., Ltd. (5A79UN6C3M)";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
@@ -1694,7 +1700,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nmore.phddjdStore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "9fb4d272-a0de-452d-80c5-779773f590fb";
 				SWIFT_OBJC_BRIDGING_HEADER = "pointSingleThatIsTo/pointSingleThatIsTo-Bridging-Header.h";
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/** $(PROJECT_DIR)/pointSingleThatIsTo/Vendors/PHFramework/Jpush";
 			};

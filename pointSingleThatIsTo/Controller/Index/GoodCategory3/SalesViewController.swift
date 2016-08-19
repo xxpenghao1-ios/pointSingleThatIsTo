@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 /// 销量
@@ -192,27 +191,23 @@ extension SalesViewController{
         let memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as! String
         //拿到对应的entity
         let entity=goodArr[indexPath.row] as! GoodDetailEntity
-        request(.GET,URL+"insertShoppingCar.xhtml", parameters:["memberId":memberId,"goodId":entity.goodsbasicinfoId!,"supplierId":entity.supplierId!,"subSupplierId":entity.subSupplier!,"goodsCount":count,"flag":2,"goodsStock":entity.goodsStock!]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId: memberId, goodId: entity.goodsbasicinfoId!, supplierId: entity.supplierId!, subSupplierId: entity.subSupplier!, goodsCount: count, flag: 2, goodsStock: entity.goodsStock!), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            let success=json["success"].stringValue
+            if success == "success"{
+                //执行加入购车动画效果
+                self.shoppingCharAnimation(indexPath,imgView:imgView, count:count)
+            }else if success == "tjxgbz"{
+                SVProgressHUD.showInfoWithStatus("已超过该商品限购数")
+            }else if success == "tjbz"{
+                SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+            }else if success == "zcbz"{
+                SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+            }else{
+                SVProgressHUD.showErrorWithStatus("加入失败")
             }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                let success=json["success"].stringValue
-                if success == "success"{
-                    //执行加入购车动画效果
-                    self.shoppingCharAnimation(indexPath,imgView:imgView, count:count)
-                }else if success == "tjxgbz"{
-                    SVProgressHUD.showInfoWithStatus("已超过该商品限购数")
-                }else if success == "tjbz"{
-                    SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
-                }else if success == "zcbz"{
-                    SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
-                }else{
-                    SVProgressHUD.showErrorWithStatus("加入失败")
-                }
-                
-            }
+            }) { (errorMsg) -> Void in
+                 SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     //执行购物车动画效果
@@ -295,67 +290,63 @@ extension SalesViewController{
      */
     func httpSelectGoodCategoryList(currentPage:Int,isRefresh:Bool){
         var count=0
-        Alamofire.request(.GET,URL+"queryGoodsInfoByCategoryForAndroidForStore.xhtml",parameters:["goodsCategoryId":goodsCategoryId!,"countyId":countyId!,"IPhonePenghao":520,"isDisplayFlag":2,"pageSize":10,"currentPage":currentPage,"storeId":storeId!,"order":"count"]).responseJSON{ response in
-            if response.result.error != nil{
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsInfoByCategoryForAndroidForStore(goodsCategoryId: goodsCategoryId!, countyId: countyId!, IPhonePenghao: 520, isDisplayFlag: 2, pageSize: 10, currentPage: currentPage, storeId: storeId!, order: "count"), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            if isRefresh{//如果是刷新先删除数据
+                self.goodArr.removeAllObjects()
+            }
+            for(_,value) in json{
+                // 每次循环加1
+                count++
+                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                //如果库存为空
+                if entity!.goodsStock == nil{
+                    entity!.goodsStock = -1
+                }
+                //如果最低起送量为空
+                if entity!.miniCount == nil{
+                    entity!.miniCount=1
+                }
+                //如果商品加减数量为空
+                if entity!.goodsBaseCount == nil{
+                    entity!.goodsBaseCount=1
+                }
+                self.goodArr.addObject(entity!)
+            }
+            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                self.goodTable?.setFooterHidden(true)
+            }else{//否则显示
+                self.goodTable?.setFooterHidden(false)
+            }
+            if self.goodArr.count < 1{//表示没有数据加载空
+                self.nilView?.removeFromSuperview()
+                self.nilView=nilPromptView("商品正在上传中...")
+                self.nilView!.center=self.goodTable!.center
+                self.view.addSubview(self.nilView!)
+                //隐藏跳转购物车按钮
+                self.selectShoppingCar!.hidden=true
+                
+            }else{//如果有数据清除
+                self.nilView?.removeFromSuperview()
+                //显示跳转购物车按钮
+                self.selectShoppingCar!.hidden=false
+                
+            }
+            //关闭刷新状态
+            self.goodTable?.headerEndRefreshing()
+            //关闭加载状态
+            self.goodTable?.footerEndRefreshing()
+            //关闭加载等待视图
+            SVProgressHUD.dismiss()
+            //刷新table
+            self.goodTable?.reloadData()
+            }) { (errorMsg) -> Void in
                 //关闭刷新状态
                 self.goodTable?.headerEndRefreshing()
                 //关闭加载状态
                 self.goodTable?.footerEndRefreshing()
-        
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                if isRefresh{//如果是刷新先删除数据
-                    self.goodArr.removeAllObjects()
-                }
-                for(_,value) in json{
-                    // 每次循环加1
-                    count++
-                    let entity=Mapper<GoodDetailEntity>().map(value.object)
-                    //如果库存为空
-                    if entity!.goodsStock == nil{
-                        entity!.goodsStock = -1
-                    }
-                    //如果最低起送量为空
-                    if entity!.miniCount == nil{
-                        entity!.miniCount=1
-                    }
-                    //如果商品加减数量为空
-                    if entity!.goodsBaseCount == nil{
-                        entity!.goodsBaseCount=1
-                    }
-                    self.goodArr.addObject(entity!)
-                }
-                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.goodTable?.setFooterHidden(true)
-                }else{//否则显示
-                    self.goodTable?.setFooterHidden(false)
-                }
-                if self.goodArr.count < 1{//表示没有数据加载空
-                    self.nilView?.removeFromSuperview()
-                    self.nilView=nilPromptView("商品正在上传中...")
-                    self.nilView!.center=self.goodTable!.center
-                    self.view.addSubview(self.nilView!)
-                    //隐藏跳转购物车按钮
-                    self.selectShoppingCar!.hidden=true
-                    
-                }else{//如果有数据清除
-                    self.nilView?.removeFromSuperview()
-                    //显示跳转购物车按钮
-                    self.selectShoppingCar!.hidden=false
-                    
-                }
-                //关闭刷新状态
-                self.goodTable?.headerEndRefreshing()
-                //关闭加载状态
-                self.goodTable?.footerEndRefreshing()
-                //关闭加载等待视图
-                SVProgressHUD.dismiss()
-                //刷新table
-                self.goodTable?.reloadData()
-            }
-            
+                
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     /**
@@ -367,66 +358,63 @@ extension SalesViewController{
     func httpSearchGoodList(currentPage:Int,isRefresh:Bool){
         /// 定义一个int类型的值 用于判断是否还有数据加载
         var count=0
-        Alamofire.request(.GET,URL+"searchGoodsInterfaceForStore.xhtml", parameters:["searchCondition":searchName!,"countyId":countyId!,"IPhonePenghao":520,"isDisplayFlag":2,"pageSize":10,"currentPage":currentPage,"storeId":storeId!,"order":"count"]).responseJSON{ response in
-            if response.result.error != nil{
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.searchGoodsInterfaceForStore(searchCondition: searchName!, countyId:countyId!, IPhonePenghao: 520, isDisplayFlag: 2, pageSize: 10, currentPage: currentPage, storeId: storeId!, order: "count"), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            if isRefresh{//如果是刷新先删除数据
+                self.goodArr.removeAllObjects()
+            }
+            for(_,value) in json{
+                // 每次循环加1
+                count++
+                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                //如果库存为空
+                if entity!.goodsStock == nil{
+                    entity!.goodsStock = -1
+                }
+                //如果最低起送量为空
+                if entity!.miniCount == nil{
+                    entity!.miniCount=1
+                }
+                //如果商品加减数量为空
+                if entity!.goodsBaseCount == nil{
+                    entity!.goodsBaseCount=1
+                }
+                self.goodArr.addObject(entity!)
+            }
+            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                self.goodTable?.setFooterHidden(true)
+            }else{//否则显示
+                self.goodTable?.setFooterHidden(false)
+            }
+            if self.goodArr.count < 1{//表示没有数据加载空
+                self.nilView?.removeFromSuperview()
+                self.nilView=nilPromptView("商品正在上传中...")
+                self.nilView!.center=self.goodTable!.center
+                self.view.addSubview(self.nilView!)
+                //隐藏跳转购物车按钮
+                self.selectShoppingCar!.hidden=true
+                
+            }else{//如果有数据清除
+                self.nilView?.removeFromSuperview()
+                //显示跳转购物车按钮
+                self.selectShoppingCar!.hidden=false
+                
+            }
+            //关闭刷新状态
+            self.goodTable?.headerEndRefreshing()
+            //关闭加载状态
+            self.goodTable?.footerEndRefreshing()
+            //关闭加载等待视图
+            SVProgressHUD.dismiss()
+            //刷新table
+            self.goodTable?.reloadData()
+            }) { (errorMsg) -> Void in
                 //关闭刷新状态
                 self.goodTable?.headerEndRefreshing()
                 //关闭加载状态
                 self.goodTable?.footerEndRefreshing()
                 //关闭加载等待视图
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                if isRefresh{//如果是刷新先删除数据
-                    self.goodArr.removeAllObjects()
-                }
-                for(_,value) in json{
-                    // 每次循环加1
-                    count++
-                    let entity=Mapper<GoodDetailEntity>().map(value.object)
-                    //如果库存为空
-                    if entity!.goodsStock == nil{
-                        entity!.goodsStock = -1
-                    }
-                    //如果最低起送量为空
-                    if entity!.miniCount == nil{
-                        entity!.miniCount=1
-                    }
-                    //如果商品加减数量为空
-                    if entity!.goodsBaseCount == nil{
-                        entity!.goodsBaseCount=1
-                    }
-                    self.goodArr.addObject(entity!)
-                }
-                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.goodTable?.setFooterHidden(true)
-                }else{//否则显示
-                    self.goodTable?.setFooterHidden(false)
-                }
-                if self.goodArr.count < 1{//表示没有数据加载空
-                    self.nilView?.removeFromSuperview()
-                    self.nilView=nilPromptView("商品正在上传中...")
-                    self.nilView!.center=self.goodTable!.center
-                    self.view.addSubview(self.nilView!)
-                    //隐藏跳转购物车按钮
-                    self.selectShoppingCar!.hidden=true
-                    
-                }else{//如果有数据清除
-                    self.nilView?.removeFromSuperview()
-                    //显示跳转购物车按钮
-                    self.selectShoppingCar!.hidden=false
-                    
-                }
-                //关闭刷新状态
-                self.goodTable?.headerEndRefreshing()
-                //关闭加载状态
-                self.goodTable?.footerEndRefreshing()
-                //关闭加载等待视图
-                SVProgressHUD.dismiss()
-                //刷新table
-                self.goodTable?.reloadData()
-            }
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     /**
@@ -438,69 +426,65 @@ extension SalesViewController{
     func httpNewGoodList(currentPage:Int,isRefresh:Bool){
         /// 定义一个int类型的值 用于判断是否还有数据加载
         var count=0
-        Alamofire.request(.GET,URL+"queryGoodsForAndroidIndexForStoreNew.xhtml",parameters:["countyId":countyId!,"storeId":storeId!,"isDisplayFlag":2,"currentPage":currentPage,"pageSize":10,"order":"count"]).responseJSON{ response in
-            if response.result.error != nil{
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsForAndroidIndexForStoreNew(countyId: countyId!, storeId: storeId!, isDisplayFlag: 2, currentPage: currentPage, pageSize: 10, order: "count"), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            if isRefresh{//如果是刷新先删除数据
+                self.goodArr.removeAllObjects()
+            }
+            for(_,value) in json{
+                // 每次循环加1
+                count++
+                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                //如果库存为空
+                if entity!.goodsStock == nil{
+                    entity!.goodsStock = -1
+                }
+                //如果最低起送量为空
+                if entity!.miniCount == nil{
+                    entity!.miniCount=1
+                }
+                //如果商品加减数量为空
+                if entity!.goodsBaseCount == nil{
+                    entity!.goodsBaseCount=1
+                }
+                
+                self.goodArr.addObject(entity!)
+            }
+            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                self.goodTable?.setFooterHidden(true)
+            }else{//否则显示
+                self.goodTable?.setFooterHidden(false)
+            }
+            if self.goodArr.count < 1{//表示没有数据加载空
+                self.nilView?.removeFromSuperview()
+                self.nilView=nilPromptView("还没有新品哦...")
+                self.nilView!.center=self.goodTable!.center
+                self.view.addSubview(self.nilView!)
+                //隐藏跳转购物车按钮
+                self.selectShoppingCar!.hidden=true
+                
+            }else{//如果有数据清除
+                self.nilView?.removeFromSuperview()
+                //显示跳转购物车按钮
+                self.selectShoppingCar!.hidden=false
+                
+            }
+            //关闭刷新状态
+            self.goodTable?.headerEndRefreshing()
+            //关闭加载状态
+            self.goodTable?.footerEndRefreshing()
+            //关闭加载等待视图
+            SVProgressHUD.dismiss()
+            //刷新table
+            self.goodTable?.reloadData()
+            }) { (errorMsg) -> Void in
                 //关闭刷新状态
                 self.goodTable?.headerEndRefreshing()
                 //关闭加载状态
                 self.goodTable?.footerEndRefreshing()
                 //关闭加载等待视图
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                if isRefresh{//如果是刷新先删除数据
-                    self.goodArr.removeAllObjects()
-                }
-                for(_,value) in json{
-                    // 每次循环加1
-                    count++
-                    let entity=Mapper<GoodDetailEntity>().map(value.object)
-                    //如果库存为空
-                    if entity!.goodsStock == nil{
-                        entity!.goodsStock = -1
-                    }
-                    //如果最低起送量为空
-                    if entity!.miniCount == nil{
-                        entity!.miniCount=1
-                    }
-                    //如果商品加减数量为空
-                    if entity!.goodsBaseCount == nil{
-                        entity!.goodsBaseCount=1
-                    }
-                    
-                    self.goodArr.addObject(entity!)
-                }
-                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.goodTable?.setFooterHidden(true)
-                }else{//否则显示
-                    self.goodTable?.setFooterHidden(false)
-                }
-                if self.goodArr.count < 1{//表示没有数据加载空
-                    self.nilView?.removeFromSuperview()
-                    self.nilView=nilPromptView("还没有新品哦...")
-                    self.nilView!.center=self.goodTable!.center
-                    self.view.addSubview(self.nilView!)
-                    //隐藏跳转购物车按钮
-                    self.selectShoppingCar!.hidden=true
-                    
-                }else{//如果有数据清除
-                    self.nilView?.removeFromSuperview()
-                    //显示跳转购物车按钮
-                    self.selectShoppingCar!.hidden=false
-                    
-                }
-                //关闭刷新状态
-                self.goodTable?.headerEndRefreshing()
-                //关闭加载状态
-                self.goodTable?.footerEndRefreshing()
-                //关闭加载等待视图
-                SVProgressHUD.dismiss()
-                //刷新table
-                self.goodTable?.reloadData()
-            }
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
-        
     }
     /**
      查询促销商品
@@ -511,67 +495,64 @@ extension SalesViewController{
     func httpQueryStorePromotionGoodsList(currentPage:Int,isRefresh:Bool){
         /// 定义一个int类型的值 用于判断是否还有数据加载
         var count=0
-        request(.GET,URL+"queryStorePromotionGoodsList.xhtml", parameters:["storeId":storeId!,"order":"count","pageSize":10,"currentPage":currentPage]).responseJSON{ response in
-            if response.result.error != nil{
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStorePromotionGoodsList(storeId: storeId!, order: "count", pageSize: 10, currentPage: currentPage), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            if isRefresh{//如果是刷新先删除数据
+                self.goodArr.removeAllObjects()
+            }
+            for(_,value) in json{
+                // 每次循环加1
+                count++
+                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                //如果库存为空
+                if entity!.goodsStock == nil{
+                    entity!.goodsStock = -1
+                }
+                //如果最低起送量为空
+                if entity!.miniCount == nil{
+                    entity!.miniCount=1
+                }
+                //如果商品加减数量为空
+                if entity!.goodsBaseCount == nil{
+                    entity!.goodsBaseCount=1
+                }
+                
+                self.goodArr.addObject(entity!)
+            }
+            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                self.goodTable?.setFooterHidden(true)
+            }else{//否则显示
+                self.goodTable?.setFooterHidden(false)
+            }
+            if self.goodArr.count < 1{//表示没有数据加载空
+                self.nilView?.removeFromSuperview()
+                self.nilView=nilPromptView("还没有促销商品哦...")
+                self.nilView!.center=self.goodTable!.center
+                self.view.addSubview(self.nilView!)
+                //隐藏跳转购物车按钮
+                self.selectShoppingCar!.hidden=true
+                
+            }else{//如果有数据清除
+                self.nilView?.removeFromSuperview()
+                //显示跳转购物车按钮
+                self.selectShoppingCar!.hidden=false
+                
+            }
+            //关闭刷新状态
+            self.goodTable?.headerEndRefreshing()
+            //关闭加载状态
+            self.goodTable?.footerEndRefreshing()
+            //关闭加载等待视图
+            SVProgressHUD.dismiss()
+            //刷新table
+            self.goodTable?.reloadData()
+            }) { (errorMsg) -> Void in
                 //关闭刷新状态
                 self.goodTable?.headerEndRefreshing()
                 //关闭加载状态
                 self.goodTable?.footerEndRefreshing()
                 //关闭加载等待视图
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                if isRefresh{//如果是刷新先删除数据
-                    self.goodArr.removeAllObjects()
-                }
-                for(_,value) in json{
-                    // 每次循环加1
-                    count++
-                    let entity=Mapper<GoodDetailEntity>().map(value.object)
-                    //如果库存为空
-                    if entity!.goodsStock == nil{
-                        entity!.goodsStock = -1
-                    }
-                    //如果最低起送量为空
-                    if entity!.miniCount == nil{
-                        entity!.miniCount=1
-                    }
-                    //如果商品加减数量为空
-                    if entity!.goodsBaseCount == nil{
-                        entity!.goodsBaseCount=1
-                    }
-                    
-                    self.goodArr.addObject(entity!)
-                }
-                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.goodTable?.setFooterHidden(true)
-                }else{//否则显示
-                    self.goodTable?.setFooterHidden(false)
-                }
-                if self.goodArr.count < 1{//表示没有数据加载空
-                    self.nilView?.removeFromSuperview()
-                    self.nilView=nilPromptView("还没有促销商品哦...")
-                    self.nilView!.center=self.goodTable!.center
-                    self.view.addSubview(self.nilView!)
-                    //隐藏跳转购物车按钮
-                    self.selectShoppingCar!.hidden=true
-                    
-                }else{//如果有数据清除
-                    self.nilView?.removeFromSuperview()
-                    //显示跳转购物车按钮
-                    self.selectShoppingCar!.hidden=false
-                    
-                }
-                //关闭刷新状态
-                self.goodTable?.headerEndRefreshing()
-                //关闭加载状态
-                self.goodTable?.footerEndRefreshing()
-                //关闭加载等待视图
-                SVProgressHUD.dismiss()
-                //刷新table
-                self.goodTable?.reloadData()
-            }
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
 }

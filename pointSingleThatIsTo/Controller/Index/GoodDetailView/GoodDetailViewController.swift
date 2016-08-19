@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 
@@ -242,7 +241,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
      */
     func buildTable(){
         //table
-        table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,400), style: UITableViewStyle.Plain)
+        table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,350), style: UITableViewStyle.Plain)
         table!.dataSource=self
         table!.delegate=self
         table!.scrollEnabled=false
@@ -349,15 +348,6 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
             cell!.contentView.addSubview(nameValue)
             break
         case 4:
-            name.text="服务说明 :"
-            if self.goodDeatilEntity?.goodService != nil{
-                nameValue.text=self.goodDeatilEntity!.goodService
-            }else{
-                nameValue.text="无"
-            }
-            cell!.contentView.addSubview(nameValue)
-            break
-        case 5:
             name.text="配送商 :"
             //根据供应商名称长度设置按钮宽度
             let lblSupplierName=UILabel()
@@ -373,7 +363,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
             cell!.contentView.addSubview(btnPushSupplier)
             
             break
-        case 6:
+        case 5:
             name.text="条码 :"
             if self.goodDeatilEntity?.goodInfoCode != nil{
                 nameValue.text=self.goodDeatilEntity!.goodInfoCode
@@ -382,7 +372,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
             }
             cell!.contentView.addSubview(nameValue)
             break
-        case 7:
+        case 6:
             name.text="保质期 :"
             if self.goodDeatilEntity?.goodLife != nil{
                 nameValue.text=self.goodDeatilEntity!.goodLife
@@ -399,7 +389,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
     }
     //返回tabview的行数
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        return 8
+        return 7
     }
     //返回tabview的高度
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
@@ -526,28 +516,24 @@ extension GoodDetailViewController{
     func addShoppingCar(sender:UIButton){
         //拿到会员id
         let memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as! String
-        request(.GET,URL+"insertShoppingCar.xhtml", parameters:["memberId":memberId,"goodId":self.goodDeatilEntity!.goodsbasicinfoId!,"supplierId":self.goodDeatilEntity!.supplierId!,"subSupplierId":self.goodDeatilEntity!.subSupplier!,"goodsCount":count,"flag":2,"goodsStock":self.goodDeatilEntity!.goodsStock!]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId: memberId, goodId: self.goodDeatilEntity!.goodsbasicinfoId!, supplierId: self.goodDeatilEntity!.supplierId!, subSupplierId: self.goodDeatilEntity!.subSupplier!, goodsCount: count, flag: 2, goodsStock: self.goodDeatilEntity!.goodsStock!), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            let success=json["success"].stringValue
+            if success == "success"{
+                //执行加入购车动画效果
+                self.shoppingCharAnimation()
+            }else if success == "tjxgbz"{
+                SVProgressHUD.showInfoWithStatus("已超过该商品限购数")
+            }else if success == "tjbz"{
+                SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+            }else if success == "zcbz"{
+                SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+            }else{
+                SVProgressHUD.showErrorWithStatus("加入失败")
             }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                let success=json["success"].stringValue
-                if success == "success"{
-                    //执行加入购车动画效果
-                    self.shoppingCharAnimation()
-                }else if success == "tjxgbz"{
-                    SVProgressHUD.showInfoWithStatus("已超过该商品限购数")
-                }else if success == "tjbz"{
-                    SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
-                }else if success == "zcbz"{
-                    SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
-                }else{
-                    SVProgressHUD.showErrorWithStatus("加入失败")
-                }
-            }
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
-        
     }
     /**
      加入购物车动画效果
@@ -574,67 +560,62 @@ extension GoodDetailViewController{
      */
     func httpGoodDetail(){
         SVProgressHUD.showWithStatus("数据加载中")
-        Alamofire.request(.GET,URL+"queryGoodsDetailsForAndroid.xhtml",parameters:["goodsbasicinfoId":goodEntity!.goodsbasicinfoId!,"supplierId":goodEntity!.supplierId!,"flag":2,"storeId":storeId!,"aaaa":11,"subSupplier":goodEntity!.subSupplier!]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!, flag: 2, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!), successClosure: { (result) -> Void in
+            SVProgressHUD.dismiss()
+            let json=JSON(result)
+            self.goodDeatilEntity=Mapper<GoodDetailEntity>().map(json.object)
+            self.goodDeatilEntity!.flag=2
+            // 如果库存为空 默认给-1 表示库存充足
+            if self.goodDeatilEntity!.goodsStock == nil{
+                self.goodDeatilEntity!.goodsStock = -1
             }
-            if response.result.value != nil{
-                SVProgressHUD.dismiss()
-                let json=JSON(response.result.value!)
-                self.goodDeatilEntity=Mapper<GoodDetailEntity>().map(json.object)
-                self.goodDeatilEntity!.flag=2
-                // 如果库存为空 默认给-1 表示库存充足
-                if self.goodDeatilEntity!.goodsStock == nil{
-                    self.goodDeatilEntity!.goodsStock = -1
-                }
-                //最低配送量
-                if self.goodDeatilEntity!.miniCount == nil{
-                    self.goodDeatilEntity!.miniCount = 1
-                }
-                //商品加减数量
-                if self.goodDeatilEntity!.goodsBaseCount == nil{
-                    self.goodDeatilEntity!.goodsBaseCount=1
-                }
-                //解析到数据更新各个lbl的值
-                
-                self.count=self.goodDeatilEntity!.miniCount!
-                //设置最低配送数量
-                self.lblCountLeb!.text="\(self.count)"
-                //商品名称
-                self.lblGoodName!.text=self.goodDeatilEntity!.goodInfoName
-                
-                //商品现价
-                if self.goodDeatilEntity!.uprice != nil{
-                    self.lblUprice!.text="进价 : ￥\(self.goodDeatilEntity!.uprice!)"
-                }
-                
-                //商品零售价
-                if self.goodDeatilEntity!.uitemPrice != nil{
-                    self.lblUitemPrice!.text="零售价 : \(self.goodDeatilEntity!.uitemPrice!)"
-                }else{
-                    self.lblUitemPrice!.text="零售价 : 无"
-                }
-                if self.goodDeatilEntity!.goodUnit != nil{
-                    //商品单位
-                    self.lblUnit!.text="单位 : \(self.goodDeatilEntity!.goodUnit!)"
-                }else{
-                    //商品单位
-                    self.lblUnit!.text="单位 : 无"
-                }
-                
-                //商品规格
-                if self.goodDeatilEntity!.ucode != nil{
-                    self.lblUcode!.text="规格 : \(self.goodDeatilEntity!.ucode!)"
-                }else{
-                    self.lblUcode!.text="规格 : 无"
-                }
-                //如果有数据构建table
-                self.buildTable()
-                self.btnSelectShoppingCar!.hidden=false
-                self.insertShoppingCarView!.hidden=false
-                
-                
+            //最低配送量
+            if self.goodDeatilEntity!.miniCount == nil{
+                self.goodDeatilEntity!.miniCount = 1
             }
+            //商品加减数量
+            if self.goodDeatilEntity!.goodsBaseCount == nil{
+                self.goodDeatilEntity!.goodsBaseCount=1
+            }
+            //解析到数据更新各个lbl的值
+            
+            self.count=self.goodDeatilEntity!.miniCount!
+            //设置最低配送数量
+            self.lblCountLeb!.text="\(self.count)"
+            //商品名称
+            self.lblGoodName!.text=self.goodDeatilEntity!.goodInfoName
+            
+            //商品现价
+            if self.goodDeatilEntity!.uprice != nil{
+                self.lblUprice!.text="批价 : ￥\(self.goodDeatilEntity!.uprice!)"
+            }
+            
+            //商品零售价
+            if self.goodDeatilEntity!.uitemPrice != nil{
+                self.lblUitemPrice!.text="零售价 : \(self.goodDeatilEntity!.uitemPrice!)"
+            }else{
+                self.lblUitemPrice!.text="零售价 : 无"
+            }
+            if self.goodDeatilEntity!.goodUnit != nil{
+                //商品单位
+                self.lblUnit!.text="单位 : \(self.goodDeatilEntity!.goodUnit!)"
+            }else{
+                //商品单位
+                self.lblUnit!.text="单位 : 无"
+            }
+            
+            //商品规格
+            if self.goodDeatilEntity!.ucode != nil{
+                self.lblUcode!.text="规格 : \(self.goodDeatilEntity!.ucode!)"
+            }else{
+                self.lblUcode!.text="规格 : 无"
+            }
+            //如果有数据构建table
+            self.buildTable()
+            self.btnSelectShoppingCar!.hidden=false
+            self.insertShoppingCarView!.hidden=false
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
 }

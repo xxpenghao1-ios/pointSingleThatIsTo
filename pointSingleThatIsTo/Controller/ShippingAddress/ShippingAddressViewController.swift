@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 
@@ -74,29 +73,25 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
     func httpAddress(){
         SVProgressHUD.showWithStatus("数据加载中")
         let storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as! String
-        Alamofire.request(.GET,URL+"queryStoreShippAddressforAndroid.xhtml",parameters:["storeId":storeId]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStoreShippAddressforAndroid(storeId: storeId), successClosure: { (result) -> Void in
+            SVProgressHUD.dismiss()
+            let json=JSON(result)
+            for(_,value) in json{
+                let entity=Mapper<AddressEntity>().map(value.object)
+                self.arr.addObject(entity!)
             }
-            if response.result.value != nil{
-                SVProgressHUD.dismiss()
-                let json=JSON(response.result.value!)
-                for(_,value) in json{
-                    let entity=Mapper<AddressEntity>().map(value.object)
-                    self.arr.addObject(entity!)
-                }
-                if self.arr.count > 0{
-                    self.lblNilNewProduct?.removeFromSuperview()
-                    self.table?.reloadData()
-                }else{
-                    //不管加没有加载直接先删除视图
-                    self.lblNilNewProduct?.removeFromSuperview()
-                    self.lblNilNewProduct=nilTitle("您的收货地址为空")
-                    self.lblNilNewProduct!.center=self.view.center
-                    self.view.addSubview(self.lblNilNewProduct!)
-                }
-                
+            if self.arr.count > 0{
+                self.lblNilNewProduct?.removeFromSuperview()
+                self.table?.reloadData()
+            }else{
+                //不管加没有加载直接先删除视图
+                self.lblNilNewProduct?.removeFromSuperview()
+                self.lblNilNewProduct=nilTitle("您的收货地址为空")
+                self.lblNilNewProduct!.center=self.view.center
+                self.view.addSubview(self.lblNilNewProduct!)
             }
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
 
@@ -127,28 +122,26 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
     //删除操作
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath){
         let entity=arr[indexPath.row] as! AddressEntity
-        Alamofire.request(.GET,URL+"deleteStoreShippAddressforAndroid.xhtml",parameters:["shippAddressId":entity.shippAddressId!]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                let success=json["success"].stringValue
-                if success == "success"{
-                    self.arr.removeObjectAtIndex(indexPath.row);
-                    //删除对应的cell
-                    self.table?.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Top)
-                    if self.arr.count < 1{
-                        //不管加没有加载直接先删除视图
-                        self.lblNilNewProduct?.removeFromSuperview()
-                        self.lblNilNewProduct=nilTitle("您的收货地址为空")
-                        self.lblNilNewProduct!.center=self.view.center
-                        self.view.addSubview(self.lblNilNewProduct!)
-                    }
-                }else{
-                    SVProgressHUD.showErrorWithStatus("删除失败")
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.deleteStoreShippAddressforAndroid(shippAddressId:entity.shippAddressId!), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            let success=json["success"].stringValue
+            if success == "success"{
+                self.arr.removeObjectAtIndex(indexPath.row);
+                //删除对应的cell
+                self.table?.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Top)
+                if self.arr.count < 1{
+                    //不管加没有加载直接先删除视图
+                    self.lblNilNewProduct?.removeFromSuperview()
+                    self.lblNilNewProduct=nilTitle("您的收货地址为空")
+                    self.lblNilNewProduct!.center=self.view.center
+                    self.view.addSubview(self.lblNilNewProduct!)
                 }
+            }else{
+                SVProgressHUD.showErrorWithStatus("删除失败")
             }
+
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     //返回tabview的行数

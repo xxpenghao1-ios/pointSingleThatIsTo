@@ -8,11 +8,10 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 
 
-
+/// 可兑奖的商品
 class CanBeTicketViewController:UIViewController,UITableViewDataSource,UITableViewDelegate {
     /// 会员ID
     var storeId:String?
@@ -116,44 +115,39 @@ class CanBeTicketViewController:UIViewController,UITableViewDataSource,UITableVi
     //发送请求
     func http(currentPage:Int){
         self.tablefootCount=0;
-        let httpurl=URL+"storeQueryMyNews.xhtml"
-        Alamofire.request(.GET, httpurl, parameters: ["storeId":self.storeId!,"pageSize":10,"currentPage":currentPage,"flag":2]).responseJSON{res in
-            if res.result.error != nil{
-                
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeQueryMyNews(storeId: self.storeId!, pageSize: 10, currentPage: currentPage, flag: 2), successClosure: { (result) -> Void in
+            //解析json
+            let resJSON=JSON(result)
+            
+            for (_,value) in resJSON{
+                self.tablefootCount=self.tablefootCount!+1
+                let entity=Mapper<CanBeTicketViewControllerEntity>().map(value.object)
+                self.arr.addObject(entity!)
                 
             }
-            if res.result.value != nil{
-                //解析json
-                let resJSON=JSON(res.result.value!)
-                
-                for (_,value) in resJSON{
-                    self.tablefootCount=self.tablefootCount!+1
-                    print(value)
-                    let entity=Mapper<CanBeTicketViewControllerEntity>().map(value.object)
-                    self.arr.addObject(entity!)
-                    
-                }
-                if self.tablefootCount==0{
-                    self.arrNilAddView()
-                }
-                if self.tablefootCount! < 10{
-                    
-                    self.tableView!.setFooterHidden(true);
-                    
-                }else{
-                    
-                    self.tableView!.setFooterHidden(false);
-                    
-                }
-                if self.tablefootCount! < 1{
-                    
-                    self.tableView!.setHeaderHidden(true)
-                    
-                }
-                self.tableView?.reloadData()
+            if self.tablefootCount==0{
+                self.arrNilAddView()
             }
+            if self.tablefootCount! < 10{
+                
+                self.tableView!.setFooterHidden(true);
+                
+            }else{
+                
+                self.tableView!.setFooterHidden(false);
+                
+            }
+            if self.tablefootCount! < 1{
+                
+                self.tableView!.setHeaderHidden(true)
+                
+            }
+            self.tableView?.reloadData()
             self.tableView?.headerEndRefreshing()
             self.tableView?.footerEndRefreshing()
+
+            }) { (errorMsg) -> Void in
+    
         }
     }
     //上拉加载/下拉刷新

@@ -9,7 +9,6 @@
 import Foundation
 import UIKit
 import SVProgressHUD
-import Alamofire
 /// 业务员登录
 class SalesmanLoginViewController:BaseViewController{
     /// 用户名
@@ -41,23 +40,20 @@ class SalesmanLoginViewController:BaseViewController{
         }else if isStringNil(password) == false{
             SVProgressHUD.showInfoWithStatus("密码为空")
         }else{
-            request(.POST,URL+"nmoreGlobalPosiUploadStoreLogin.xhtml", parameters:["userAccount":name!,"userPassword":password!]).responseJSON{ response in
-                if response.result.error != nil{
-                    SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.nmoreGlobalPosiUploadStoreLogin(userAccount: name!, userPassword: password!), successClosure: { (result) -> Void in
+                SVProgressHUD.dismiss()
+                let json=JSON(result)
+                let success=json["success"].stringValue
+                if success == "success"{
+                    let vc=storyboardPushView("SweepersId") as! SweepersViewController
+                    vc.userId=json["userId"].stringValue
+                    self.navigationController!.pushViewController(vc, animated:true)
+                }else{
+                    SVProgressHUD.showErrorWithStatus("登录失败")
                 }
-                if response.result.value != nil{
-                    SVProgressHUD.dismiss()
-                    let json=JSON(response.result.value!)
-                    let success=json["success"].stringValue
-                    if success == "success"{
-                       let vc=storyboardPushView("SweepersId") as! SweepersViewController
-                       vc.userId=json["userId"].stringValue
-                       self.navigationController!.pushViewController(vc, animated:true)
-                    }else{
-                       SVProgressHUD.showErrorWithStatus("登录失败")
-                    }
-                }
-            }
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }
         
     }

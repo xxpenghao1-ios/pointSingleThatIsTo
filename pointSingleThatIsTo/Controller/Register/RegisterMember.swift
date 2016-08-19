@@ -8,11 +8,10 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import SVProgressHUD
 
 //注册用户页面
-class RegisterMember : UIViewController{
+class RegisterMember:UIViewController{
     //接收手机号码
     var phone:String?;
     ///接收登录页面传过来的值（1为注册，2为修改密码）
@@ -203,7 +202,6 @@ class RegisterMember : UIViewController{
     }
     /// 扫一扫按钮 触发事件
     func clickSweep(sender:UIButton){
-        print("122121")
     }
     /// 注册按钮
     func clickRegist(sender:UIButton){
@@ -233,52 +231,38 @@ class RegisterMember : UIViewController{
     
     //修改密码请求
     func httpPsW(){
-        let http=URL+"updatePassWord.xhtml"
         let phone=self.phone
         let password=self.feildPsW?.text
-        Alamofire.request(.GET, http, parameters: ["memberName":phone!,"newPassWord":password!]).responseJSON{res in
-            if res.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
-            }
-            if res.result.value != nil{
-                //解析json
-                let jsonres=JSON(res.result.value!)
-                if jsonres["success"].stringValue=="success"{
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.updatePassWord(memberName:phone!, newPassWord:password!), successClosure: { (result) -> Void in
+                let json=JSON(result)
+                if json["success"].stringValue=="success"{
                     SVProgressHUD.showSuccessWithStatus("修改成功")
                     self.navigationController?.popToRootViewControllerAnimated(true)
                 }else{
                     SVProgressHUD.showErrorWithStatus("系统繁忙，请稍后重试")
                 }
-            }
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
-
     }
     
     //发送注册的请求
     func httpRegist(){
         let phone=self.phone
         let password=self.feildPsW?.text
-        let http=URL+"doRegest.xhtml"
         let referralName=self.lblIR?.text
-        Alamofire.request(.GET, http, parameters: ["memberName":phone!,"password":password!,"IPhonePenghao":520,"phone_mob":phone!,"referralName":referralName!]).responseJSON{res in
-            if res.result.error != nil{
-               SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
-            }
-            if res.result.value != nil{
-                //解析json
-                let jsonres=JSON(res.result.value!)
-                if jsonres["success"].stringValue=="success"{
-                    self.memberId=jsonres["memberId"].stringValue
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.doRegest(memberName:phone!, password: password!, phone_mob: phone!, referralName: referralName!), successClosure: { (result) -> Void in
+                let json=JSON(result)
+                if json["success"].stringValue=="success"{
+                    self.memberId=json["memberId"].stringValue
                     self.navigationController?.popToRootViewControllerAnimated(true)
-                    
+                
                 }else {
                     SVProgressHUD.showErrorWithStatus("网络异常，请重新注册")
-                    
-                }
                 
-            }
-        
-        
+                }
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
         
     }

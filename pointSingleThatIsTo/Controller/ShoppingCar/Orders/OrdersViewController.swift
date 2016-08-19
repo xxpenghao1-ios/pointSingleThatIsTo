@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 
@@ -121,52 +120,50 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 /// 把字典中的entity转换成json格式的字符串
                 let goodsList=toJSONString(arr)
                 SVProgressHUD.showWithStatus("数据加载中", maskType: .Clear)
-                Alamofire.request(.POST,URL+"storeOrderForAndroid.xhtml",parameters:["goodsList":goodsList,"detailAddress":detailAddress,"phoneNumber":addressEntity!.phoneNumber!,"shippName":addressEntity!.shippName!,"storeId":storeId,"pay_message":self.buyerRemark!,"tag":2]).responseJSON{ response in
-                    if response.result.error != nil{
-                        SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-                    }
-                    if response.result.value != nil{
-                        let json=JSON(response.result.value!)
-                        let success=json["success"].stringValue
-                        if success == "success"{
-                            var badgeCount=0
-                            for(var i=0;i<self.arr.count;i++){
-                                
-                                let entity=self.arr[i] as! GoodDetailEntity
-                                badgeCount+=entity.carNumber!
-                            }
-                            //发送通知更新角标
-                            NSNotificationCenter.defaultCenter().postNotificationName("postBadgeValue",object:3, userInfo:["carCount":badgeCount])
+                PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeOrderForAndroid(goodsList: goodsList, detailAddress: detailAddress, phoneNumber: addressEntity!.phoneNumber!, shippName: addressEntity!.shippName!, storeId: storeId, pay_message: self.buyerRemark!, tag: 2), successClosure: { (result) -> Void in
+                    let json=JSON(result)
+                    let success=json["success"].stringValue
+                    if success == "success"{
+                        var badgeCount=0
+                        for(var i=0;i<self.arr.count;i++){
                             
-                            let alert=UIAlertController(title:"点单即到", message:"下单成功,查看订单状态吗?", preferredStyle: UIAlertControllerStyle.Alert)
-                            let ok=UIAlertAction(title:"确定", style: UIAlertActionStyle.Default, handler:{ Void in
-                                //弹出订单页面
-                                let vc=StockOrderManage()
-                                vc.flag=2
-                                let nav=UINavigationController(rootViewController:vc)
-                                self.presentViewController(nav, animated:true, completion:nil)
-                                self.navigationController!.popToRootViewControllerAnimated(true);
-                            })
-                            let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.Cancel, handler:{ Void in
-                                self.navigationController!.popToRootViewControllerAnimated(true);
-                            })
-                            alert.addAction(cancel)
-                            alert.addAction(ok)
-                            self.presentViewController(alert, animated:true, completion:nil)
-                        }else if success == "info"{
-                            let info=json["info"].stringValue
-                            UIAlertController.showAlertYes(self, title:"点单即到", message:info, okButtonTitle:"确定", okHandler: { (UIAlertAction) -> Void in
-                                self.navigationController!.popToRootViewControllerAnimated(true);
-                            })
-                        }else{
-                            SVProgressHUD.showErrorWithStatus("提交订单失败")
-                            if self.buyerRemark == "无附言"{
-                                self.buyerRemark=nil
-                            }
+                            let entity=self.arr[i] as! GoodDetailEntity
+                            badgeCount+=entity.carNumber!
                         }
-                        SVProgressHUD.dismiss()
+                        //发送通知更新角标
+                        NSNotificationCenter.defaultCenter().postNotificationName("postBadgeValue",object:3, userInfo:["carCount":badgeCount])
+                        
+                        let alert=UIAlertController(title:"点单即到", message:"下单成功,查看订单状态吗?", preferredStyle: UIAlertControllerStyle.Alert)
+                        let ok=UIAlertAction(title:"确定", style: UIAlertActionStyle.Default, handler:{ Void in
+                            //弹出订单页面
+                            let vc=StockOrderManage()
+                            vc.flag=2
+                            let nav=UINavigationController(rootViewController:vc)
+                            self.presentViewController(nav, animated:true, completion:nil)
+                            self.navigationController!.popToRootViewControllerAnimated(true);
+                        })
+                        let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.Cancel, handler:{ Void in
+                            self.navigationController!.popToRootViewControllerAnimated(true);
+                        })
+                        alert.addAction(cancel)
+                        alert.addAction(ok)
+                        self.presentViewController(alert, animated:true, completion:nil)
+                    }else if success == "info"{
+                        let info=json["info"].stringValue
+                        UIAlertController.showAlertYes(self, title:"点单即到", message:info, okButtonTitle:"确定", okHandler: { (UIAlertAction) -> Void in
+                            self.navigationController!.popToRootViewControllerAnimated(true);
+                        })
+                    }else{
+                        SVProgressHUD.showErrorWithStatus("提交订单失败")
+                        if self.buyerRemark == "无附言"{
+                            self.buyerRemark=nil
+                        }
                     }
-                }
+                    SVProgressHUD.dismiss()
+
+                    }, failClosure: { (errorMsg) -> Void in
+                        SVProgressHUD.showErrorWithStatus(errorMsg)
+                })
             }else{
                 SVProgressHUD.showInfoWithStatus("请先添加收货地址")
             }
@@ -178,18 +175,15 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
      请求地址信息
      */
     func httpAddress(){
-        Alamofire.request(.GET,URL+"queryStoreShippAddressforAndroid.xhtml",parameters:["storeId":storeId]).responseJSON{ response in
-            if response.result.error != nil{
-               SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStoreShippAddressforAndroid(storeId: storeId), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            for(_,value) in json{
+                let entity=Mapper<AddressEntity>().map(value.object)
+                self.addressArr.addObject(entity!)
             }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                for(_,value) in json{
-                    let entity=Mapper<AddressEntity>().map(value.object)
-                    self.addressArr.addObject(entity!)
-                }
-                self.table?.reloadData()
-            }
+            self.table?.reloadData()
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     //给每个组的尾部添加视图

@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 /// 特价商品 价格
@@ -205,72 +204,69 @@ extension GoodSpecialPriceUpriceViewController{
      */
     func httpSpecialPrice(categoryId:Int,countyId:String,storeId:String,currentPage:Int,isRefresh:Bool){
         var count=0
-        Alamofire.request(.GET,URL+"queryPreferentialAndGoods4Store.xhtml", parameters:["countyId":countyId,"categoryId":categoryId,"storeId":storeId,"pageSize":10,"currentPage":currentPage,"order":"price"]).responseJSON{ response in
-            if response.result.error != nil{
-                //关闭刷新状态
-                self.table?.headerEndRefreshing()
-                //关闭加载状态
-                self.table?.footerEndRefreshing()
-                //关闭加载等待视图
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryPreferentialAndGoods4Store(countyId: countyId, categoryId: categoryId, storeId: storeId, pageSize: 10, currentPage: currentPage, order: "price"), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            if isRefresh{//如果是重新请求数据 先删除原来数据
+                self.arr.removeAllObjects()
             }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                if isRefresh{//如果是重新请求数据 先删除原来数据
-                    self.arr.removeAllObjects()
+            for(_,value) in json{
+                count++
+                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                //如果库存为空
+                if entity!.goodsStock == nil{
+                    entity!.goodsStock = -1
                 }
-                for(_,value) in json{
-                    count++
-                    let entity=Mapper<GoodDetailEntity>().map(value.object)
-                    //如果库存为空
-                    if entity!.goodsStock == nil{
-                        entity!.goodsStock = -1
-                    }
-                    if entity!.endTime == nil{
-                        entity!.endTime="0"
-                    }else{
-                        entity!.endTime=entity!.endTime!.componentsSeparatedByString(".")[0]
-                    }
-                    //如果最低起送量为空
-                    if entity!.miniCount == nil{
-                        entity!.miniCount=1
-                    }
-                    //如果商品加减数量为空
-                    if entity!.goodsBaseCount == nil{
-                        entity!.goodsBaseCount=1
-                    }
-                    if entity!.salesCount == nil{
-                        entity!.salesCount=0
-                    }
-                    entity!.flag=1
-                    entity!.goodsbasicinfoId=value["goodsId"].intValue
-                    self.arr.addObject(entity!)
+                if entity!.endTime == nil{
+                    entity!.endTime="0"
+                }else{
+                    entity!.endTime=entity!.endTime!.componentsSeparatedByString(".")[0]
                 }
-                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.table?.setFooterHidden(true)
-                }else{//否则显示
-                    self.table?.setFooterHidden(false)
+                //如果最低起送量为空
+                if entity!.miniCount == nil{
+                    entity!.miniCount=1
                 }
-                if self.arr.count < 1{//表示没有数据加载空
-                    self.nilView?.removeFromSuperview()
-                    self.nilView=nilPromptView("目前还没有特价商品...")
-                    self.nilView!.center=self.table!.center
-                    self.view.addSubview(self.nilView!)
-                    
-                }else{//如果有数据清除
-                    self.nilView?.removeFromSuperview()
-                    self.createTimer()
+                //如果商品加减数量为空
+                if entity!.goodsBaseCount == nil{
+                    entity!.goodsBaseCount=1
                 }
-                //关闭刷新状态
-                self.table?.headerEndRefreshing()
-                //关闭加载状态
-                self.table?.footerEndRefreshing()
-                //关闭加载等待视图
-                SVProgressHUD.dismiss()
-                //刷新table
-                self.table?.reloadData()
+                if entity!.salesCount == nil{
+                    entity!.salesCount=0
+                }
+                entity!.flag=1
+                entity!.goodsbasicinfoId=value["goodsId"].intValue
+                self.arr.addObject(entity!)
+            }
+            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                self.table?.setFooterHidden(true)
+            }else{//否则显示
+                self.table?.setFooterHidden(false)
+            }
+            if self.arr.count < 1{//表示没有数据加载空
+                self.nilView?.removeFromSuperview()
+                self.nilView=nilPromptView("目前还没有特价商品...")
+                self.nilView!.center=self.table!.center
+                self.view.addSubview(self.nilView!)
                 
+            }else{//如果有数据清除
+                self.nilView?.removeFromSuperview()
+                self.createTimer()
             }
+            //关闭刷新状态
+            self.table?.headerEndRefreshing()
+            //关闭加载状态
+            self.table?.footerEndRefreshing()
+            //关闭加载等待视图
+            SVProgressHUD.dismiss()
+            //刷新table
+            self.table?.reloadData()
+
+            }) { (errorMsg) -> Void in
+                //关闭刷新状态
+                self.table?.headerEndRefreshing()
+                //关闭加载状态
+                self.table?.footerEndRefreshing()
+                //关闭加载等待视图
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
 }

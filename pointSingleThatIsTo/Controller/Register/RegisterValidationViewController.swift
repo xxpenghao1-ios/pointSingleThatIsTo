@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 
@@ -117,30 +116,24 @@ class RegisterValidationViewController:UIViewController{
     }
     //发送请求(获取验证码)
     func httpGetCode(){
-        let http=URL+"returnRandCode.xhtml"
-        let phone=self.phone
         if flag==1{
             self.httpflag="test"
         }else if flag==2{
             self.httpflag="updatePassword"
         }
         let flaghttp=self.httpflag
-        Alamofire.request(.GET, http, parameters: ["memberName":phone!,"flag":flaghttp!]).responseJSON{res in
-            if res.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
-            }
-            if res.result.value != nil{
-                //解析json
-                let JSres=JSON(res.result.value!)
-                let success=JSres["success"].stringValue
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.returnRandCode(memberName:self.phone!,flag:flaghttp!), successClosure: { (result) -> Void in
+                let json=JSON(result)
+                let success=json["success"].stringValue
                 if success=="failds"{
                     SVProgressHUD.showErrorWithStatus("发送失败")
                 }else if success=="error"{
                     SVProgressHUD.showErrorWithStatus("服务器异常")
                 }else if success=="success"{
-                    self.ranCode=JSres["randCode"].stringValue
+                    self.ranCode=json["randCode"].stringValue
                 }
-            }
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     //点击 （获取验证码按钮）触发

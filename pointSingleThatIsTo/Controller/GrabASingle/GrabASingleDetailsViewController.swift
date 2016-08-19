@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 
@@ -115,7 +114,6 @@ class GrabASingleDetailsViewController:BaseViewController,UITableViewDataSource,
     */
     func queryRobFor1OrderForList(){
         let storeFlagCode=userDefaults.objectForKey("storeFlagCode") as! String
-        let queryRobFor1OrderForListURL=URL+"queryRobFor1OrderForList.xhtml";
         //判断有无网络
         if(IJReachability.isConnectedToNetwork()){
             //清空数据源
@@ -123,48 +121,39 @@ class GrabASingleDetailsViewController:BaseViewController,UITableViewDataSource,
             //LoadingWaitView()
             //加载等待视图
             SVProgressHUD.showWithStatus("数据加载中", maskType: .Clear)
-            request(.GET, queryRobFor1OrderForListURL, parameters: ["storeFlagCode":"\(storeFlagCode)"])
-                .responseJSON{rep in
-                    if(rep.result.error != nil){
-                        SVProgressHUD.showErrorWithStatus(rep.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryRobFor1OrderForList(storeFlagCode:storeFlagCode), successClosure: { (result) -> Void in
+                let jsonResult=JSON(result)
+                for(_,OrderListValue)in jsonResult{//取出订单entity
+                    //储存json一键转entity的值
+                    let OrderEntity=Mapper<OrderListEntity>().map(OrderListValue.object)
+                    //获取"list"的value
+                    let list=OrderListValue["list"]
+                    //临时储存商品数组
+                    let GoodsArray=NSMutableArray()
+                    for(_,GoodsDetailsValue)in list{//取出商品entity
+                        let GoodsDetailsEntity=Mapper<GoodDetailEntity>().map(GoodsDetailsValue.object)
+                        GoodsArray.addObject(GoodsDetailsEntity!)
                     }
-                    if let jsonResult = rep.result.value{
-                        let jsonResult=JSON(jsonResult)
-                        for(_,OrderListValue)in jsonResult{//取出订单entity
-                            NSLog("快速抢单entity--\(OrderListValue)")
-                            //储存json一键转entity的值
-                            let OrderEntity=Mapper<OrderListEntity>().map(OrderListValue.object)
-                             //获取"list"的value
-                            let list=OrderListValue["list"]
-                             //临时储存商品数组
-                            let GoodsArray=NSMutableArray()
-                            for(_,GoodsDetailsValue)in list{//取出商品entity
-                                let GoodsDetailsEntity=Mapper<GoodDetailEntity>().map(GoodsDetailsValue.object)
-                                GoodsArray.addObject(GoodsDetailsEntity!)
-                            }
-                            //将临时的商品数组赋值给订单实体类中的"list"
-                            OrderEntity?.list=GoodsArray
-                            //添加到订单entity数组中
-                            self.GrabASingleEntityArray.append(OrderEntity!)
-                        }
-                        if(self.GrabASingleEntityArray.count < 1){//如果数据为空，显示默认视图
-                            self.nilView?.removeFromSuperview()
-                            self.nilView=nilPromptView("还木有订单可抢^ - ^")
-                            self.nilView!.center=self.GrabASingleTable!.center
-                            self.view.addSubview(self.nilView!)
-                        }else{//如果有数据清除
-                            self.nilView?.removeFromSuperview()
-                        }
-                        //关闭加载等待视图
-                        SVProgressHUD.dismiss()
-                        //重新加载Table
-                        self.GrabASingleTable?.reloadData()
-                    }else{
-                        //关闭加载等待视图
-                        SVProgressHUD.dismiss()
-                    }
-            }
-            
+                    //将临时的商品数组赋值给订单实体类中的"list"
+                    OrderEntity?.list=GoodsArray
+                    //添加到订单entity数组中
+                    self.GrabASingleEntityArray.append(OrderEntity!)
+                }
+                if(self.GrabASingleEntityArray.count < 1){//如果数据为空，显示默认视图
+                    self.nilView?.removeFromSuperview()
+                    self.nilView=nilPromptView("还木有订单可抢^ - ^")
+                    self.nilView!.center=self.GrabASingleTable!.center
+                    self.view.addSubview(self.nilView!)
+                }else{//如果有数据清除
+                    self.nilView?.removeFromSuperview()
+                }
+                //关闭加载等待视图
+                SVProgressHUD.dismiss()
+                //重新加载Table
+                self.GrabASingleTable?.reloadData()
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }

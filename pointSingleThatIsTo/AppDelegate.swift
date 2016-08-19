@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         if ret == true {
             log.info("连接百度地图成功")
         }
-        JPUSHService.setDebugMode()
+//        JPUSHService.setDebugMode()
         //监听极光推送自定义消息(只有在前端运行的时候才能收到自定义消息的推送。)
         NSNotificationCenter.defaultCenter().addObserver(self, selector:"networkDidReceiveMessage:", name:kJPFNetworkDidReceiveMessageNotification, object:nil)
         //开启网络状况的监听
@@ -282,6 +282,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
                             let ok=UIAlertAction(title:"确定", style: UIAlertActionStyle.Default, handler:{ Void
                                 in//点击确定 清除推送别名
                                 JPUSHService.setAlias("",callbackSelector:nil, object:nil)
+                                JPUSHService.setTags([], callbackSelector:nil, object:nil)
                                 
                             })
                             alert.addAction(ok)

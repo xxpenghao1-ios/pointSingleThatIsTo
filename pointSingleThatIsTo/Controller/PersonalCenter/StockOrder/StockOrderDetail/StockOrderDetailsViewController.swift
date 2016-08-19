@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 
@@ -236,38 +235,32 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
     查询进货订单商品详情
     */
     func queryOrderInfo4AndroidByorderId(){
-        //请求地址
-        let httpURL=URL+"queryOrderInfo4AndroidByorderId.xhtml"
         //检查网络
         if(IJReachability.isConnectedToNetwork()){
-            request(.GET, httpURL, parameters: ["orderinfoId":orderList!.orderinfoId!]).responseJSON{
-                rep in
-                if(rep.result.error != nil){
-                    SVProgressHUD.showErrorWithStatus(rep.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryOrderInfo4AndroidByorderId(orderinfoId:orderList!.orderinfoId!), successClosure: { (result) -> Void in
+                let jsonResult=JSON(result)
+                //保存商品entity
+                let list=jsonResult["listAndroid"]
+                for(_,GoodsDetailsValue)in list{//取出商品entity
+                    //实例化商品类
+                    let goodEntity=GoodDetailEntity()
+                    //商品标题
+                    goodEntity.goodInfoName=GoodsDetailsValue["goodInfoName"].stringValue
+                    //商品价格
+                    goodEntity.goodsUprice=GoodsDetailsValue["goodsUprice"].stringValue
+                    //商品图片
+                    goodEntity.goodPic=GoodsDetailsValue["goodPic"].stringValue
+                    //商品数量
+                    goodEntity.goodsSumCount=GoodsDetailsValue["goodsSumCount"].stringValue
+                    self.goodArr.addObject(goodEntity)
                 }
-                if(rep.result.value != nil){
-                    let jsonResult=JSON(rep.result.value!)
-                    //保存商品entity
-                    let list=jsonResult["listAndroid"]
-                    for(_,GoodsDetailsValue)in list{//取出商品entity
-                        //实例化商品类
-                        let goodEntity=GoodDetailEntity()
-                        //商品标题
-                        goodEntity.goodInfoName=GoodsDetailsValue["goodInfoName"].stringValue
-                        //商品价格
-                        goodEntity.goodsUprice=GoodsDetailsValue["goodsUprice"].stringValue
-                        //商品图片
-                        goodEntity.goodPic=GoodsDetailsValue["goodPic"].stringValue
-                        //商品数量
-                        goodEntity.goodsSumCount=GoodsDetailsValue["goodsSumCount"].stringValue
-                        self.goodArr.addObject(goodEntity)
-                    }
-                    //将临时的商品数组赋值给订单实体类中的"list"
-                    self.orderList?.list=self.goodArr
-                    //刷新Table
-                    self.goodsListTable?.reloadData()
-                }
-            }
+                //将临时的商品数组赋值给订单实体类中的"list"
+                self.orderList?.list=self.goodArr
+                //刷新Table
+                self.goodsListTable?.reloadData()
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }
@@ -318,24 +311,20 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
     func cancelOrderAction(sender:UIButton){
         UIAlertController.showAlertYesNo(self, title:"点单即到", message:"您要取消订单吗?", cancelButtonTitle:"取消", okButtonTitle:"确定") { (UIAlertAction) -> Void in
             SVProgressHUD.showWithStatus("正在加载",maskType:.Clear)
-            request(.GET,URL+"storeCancelOrder.xhtml", parameters:["orderId":self.orderList!.orderinfoId!]).responseJSON{ response in
-                if response.result.error != nil{
-                    SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeCancelOrder(orderId: self.orderList!.orderinfoId!), successClosure: { (result) -> Void in
+                let json=JSON(result)
+                let success=json["success"].stringValue
+                if success == "success"{
+                    //收货成功返回上一页面 通知页面刷新数据
+                    SVProgressHUD.showSuccessWithStatus("取消订单成功")
+                    NSNotificationCenter.defaultCenter().postNotificationName("postUpdateOrderList", object:self, userInfo:nil)
+                    self.navigationController!.popViewControllerAnimated(true)
+                }else{
+                    SVProgressHUD.showWithStatus("取消订单失败")
                 }
-                if response.result.value != nil{
-                    let json=JSON(response.result.value!)
-                    let success=json["success"].stringValue
-                    if success == "success"{
-                        //收货成功返回上一页面 通知页面刷新数据
-                        SVProgressHUD.showSuccessWithStatus("取消订单成功")
-                        NSNotificationCenter.defaultCenter().postNotificationName("postUpdateOrderList", object:self, userInfo:nil)
-                        self.navigationController!.popViewControllerAnimated(true)
-                    }else{
-                        SVProgressHUD.showWithStatus("取消订单失败")
-                    }
-                    
-                }
-            }
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }
     }
     /**
@@ -346,23 +335,20 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
     func receivingAction(sender:UIButton){
         UIAlertController.showAlertYesNo(self, title:"点单即到", message:"确认收货?", cancelButtonTitle:"取消", okButtonTitle:"确定") { (UIAlertAction) -> Void in
             SVProgressHUD.showWithStatus("正在加载",maskType:.Clear)
-            Alamofire.request(.GET,URL+"updataOrderStatus4Store.xhtml", parameters:["orderinfoId":self.orderList!.orderinfoId!]).responseJSON{ response in
-                if response.result.error != nil{
-                    SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.updataOrderStatus4Store(orderinfoId: self.orderList!.orderinfoId!), successClosure: { (result) -> Void in
+                let json=JSON(result)
+                let success=json["success"].stringValue
+                if success == "success"{
+                    //收货成功返回上一页面 通知页面刷新数据
+                    SVProgressHUD.showSuccessWithStatus("收货成功")
+                    NSNotificationCenter.defaultCenter().postNotificationName("postUpdateOrderList", object:self, userInfo:nil)
+                    self.navigationController!.popViewControllerAnimated(true)
+                }else{
+                    SVProgressHUD.showErrorWithStatus("收货失败")
                 }
-                if response.result.value != nil{
-                    let json=JSON(response.result.value!)
-                    let success=json["success"].stringValue
-                    if success == "success"{
-                        //收货成功返回上一页面 通知页面刷新数据
-                        SVProgressHUD.showSuccessWithStatus("收货成功")
-                        NSNotificationCenter.defaultCenter().postNotificationName("postUpdateOrderList", object:self, userInfo:nil)
-                        self.navigationController!.popViewControllerAnimated(true)
-                    }else{
-                        SVProgressHUD.showErrorWithStatus("收货失败")
-                    }
-                }
-            }
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
             
         }
     }

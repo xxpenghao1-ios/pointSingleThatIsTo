@@ -9,7 +9,6 @@
 import Foundation
 import UIKit
 import AVFoundation
-import Alamofire
 import SVProgressHUD
 //定义一个协议
 protocol StoreFlagCodeControllerDelegate : NSObjectProtocol {
@@ -227,33 +226,23 @@ class SweepOutViewController:UIViewController,AVCaptureMetadataOutputObjectsDele
     }
     //请求绑定二维码
     func httpbinding(){
-        let httpUrl=URL+"bindingRecommended4Store.xhtml";
-        Alamofire.request(.GET,httpUrl, parameters:["recommended":stringValue!,"beRecommendedId":self.memberId!])
-            .responseJSON { res in
-                if res.result.error != nil{
-                    //错误提示
-                    SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
-                    
-                }
-                if res.result.value != nil{
-                    
-                    //转换成josn
-                    let jsonObject=JSON(res.result.value!);
-                    let flag=jsonObject["success"].stringValue;
-                    if flag == "success"{
-                        SVProgressHUD.showErrorWithStatus("绑定推荐人成功!")
-                    }else if flag == "error"{
-                        SVProgressHUD.showErrorWithStatus("您已经有推荐人了!")
-                    }else if flag == "isexist"{
-                        SVProgressHUD.showErrorWithStatus("自己不能推荐自己!")
-                    }else{
-                        SVProgressHUD.showErrorWithStatus("绑定推荐人失败!")
-                    }
-                    self.popToView();
-                    
-                }
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.bindingRecommended4Store(recommended: stringValue!, beRecommendedId: self.memberId!), successClosure: { (result) -> Void in
+            //转换成josn
+            let jsonObject=JSON(result);
+            let flag=jsonObject["success"].stringValue;
+            if flag == "success"{
+                SVProgressHUD.showErrorWithStatus("绑定推荐人成功!")
+            }else if flag == "error"{
+                SVProgressHUD.showErrorWithStatus("您已经有推荐人了!")
+            }else if flag == "isexist"{
+                SVProgressHUD.showErrorWithStatus("自己不能推荐自己!")
+            }else{
+                SVProgressHUD.showErrorWithStatus("绑定推荐人失败!")
+            }
+            self.popToView();
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
-        
         
     }
     //返回个人中心

@@ -8,7 +8,6 @@
 //品牌
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 
@@ -200,31 +199,26 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
         if(IJReachability.isConnectedToNetwork()){
             let currPid=pid ?? 1
             SVProgressHUD.showWithStatus("数据加载中")
-            let queryChildCategoryURL=URL+"queryCategory4AndroidAll.xhtml";
-            request(.GET, queryChildCategoryURL, parameters: ["goodsCategoryId":"\(currPid)"])
-                .responseJSON{res in
-                    if(res.result.error != nil){
-                       SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryCategory4AndroidAll(goodsCategoryId:currPid), successClosure: { (result) -> Void in
+                    let json=JSON(result)
+                    //每次发请求之前先清除数据源，否则数据会叠加
+                    self.childCategory.removeAll()
+                    for(_,value) in json{
+                        let entity=Mapper<GoodsCategoryEntity>().map(value.object)
+                        self.childCategory.append(entity!);
                     }
-                    if(res.result.value != nil){
-                        let json=JSON(res.result.value!)
-                        //每次发请求之前先清除数据源，否则数据会叠加
-                        self.childCategory.removeAll()
-                        for(_,value) in json{
-                            let entity=Mapper<GoodsCategoryEntity>().map(value.object)
-                            self.childCategory.append(entity!);
-                        }
-                        SVProgressHUD.dismiss()
-                        //NSLog("二级分类结果：\(json)")
-                        self.leftTable?.reloadData()
-                        let first=NSIndexPath(forRow: 0, inSection: 0)
-                        self.leftTable?.selectRowAtIndexPath(first, animated: true, scrollPosition: UITableViewScrollPosition.None)
-                        if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
-                            self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
-                        }
-                        self.isNetWork=true
+                    SVProgressHUD.dismiss()
+                    //NSLog("二级分类结果：\(json)")
+                    self.leftTable?.reloadData()
+                    let first=NSIndexPath(forRow: 0, inSection: 0)
+                    self.leftTable?.selectRowAtIndexPath(first, animated: true, scrollPosition: UITableViewScrollPosition.None)
+                    if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
+                        self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
                     }
-            }
+                    self.isNetWork=true
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }
@@ -239,31 +233,26 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
         if(IJReachability.isConnectedToNetwork()){
             SVProgressHUD.showWithStatus("数据加载中")
             let currPid=pid ?? 1
-            let queryChildCategoryURL=URL+"queryCategory4Android.xhtml";
-            request(.GET, queryChildCategoryURL, parameters: ["goodsCategoryId":"\(currPid)"])
-                .responseJSON{res in
-                    if(res.result.error != nil){
-                        SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
-                    }
-                    if(res.result.value != nil){
-                        let json=JSON(res.result.value!)
-                        //每次发请求之前先清除数据源，否则数据会叠加
-                        self.childCategory.removeAll()
-                        for(_,value) in json{
-                            let entity=Mapper<GoodsCategoryEntity>().map(value.object)
-                            self.childCategory.append(entity!)
-                        }
-                        //NSLog("二级分类结果：\(json)")
-                        SVProgressHUD.dismiss()
-                        self.leftTable?.reloadData()
-                        let first=NSIndexPath(forRow: 0, inSection: 0)
-                        self.leftTable?.selectRowAtIndexPath(first, animated: true, scrollPosition: UITableViewScrollPosition.None)
-                        if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
-                            self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
-                        }
-                        self.isNetWork=true
-                    }
-            }
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryCategory4Android(goodsCategoryId:currPid), successClosure: { (result) -> Void in
+                let json=JSON(result)
+                //每次发请求之前先清除数据源，否则数据会叠加
+                self.childCategory.removeAll()
+                for(_,value) in json{
+                    let entity=Mapper<GoodsCategoryEntity>().map(value.object)
+                    self.childCategory.append(entity!)
+                }
+                //NSLog("二级分类结果：\(json)")
+                SVProgressHUD.dismiss()
+                self.leftTable?.reloadData()
+                let first=NSIndexPath(forRow: 0, inSection: 0)
+                self.leftTable?.selectRowAtIndexPath(first, animated: true, scrollPosition: UITableViewScrollPosition.None)
+                if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
+                    self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
+                }
+                self.isNetWork=true
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }
@@ -277,32 +266,27 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
          //获取分站ID
         let substationId=userDefaults.objectForKey("substationId") as! String
         if IJReachability.isConnectedToNetwork(){
-            let httpGoodCategoryThreeURL=URL+"queryBrandList4Android.xhtml";
-            request(.GET, httpGoodCategoryThreeURL, parameters: ["goodscategoryId":"\(goodsCategoryId)","substationId":substationId])
-                .responseJSON{res in
-                    if(res.result.error != nil){
-                       SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryBrandList4Android(goodscategoryId:goodsCategoryId, substationId: substationId), successClosure: { (result) -> Void in
+                let json=JSON(result)
+                self.threeCategory.removeAll()
+                if(json.count > 0){
+                    for(_,value) in json{
+                        let entity=Mapper<GoodsCategoryEntity>().map(value.object)
+                        self.threeCategory.append(entity!);
                     }
-                    if(res.result.value != nil){
-                        let json=JSON(res.result.value!)
-                        self.threeCategory.removeAll()
-                        if(json.count > 0){
-                            for(_,value) in json{
-                                let entity=Mapper<GoodsCategoryEntity>().map(value.object)
-                                self.threeCategory.append(entity!);
-                            }
-                            NSLog("三级分类结果：\(json)")
-                            self.nilView?.removeFromSuperview()
-                            self.rightCollection?.reloadData()
-                        }else{
-                            self.rightCollection?.reloadData()
-                            self.nilView?.removeFromSuperview()
-                            self.nilView=nilPromptView("赶快上传商品吧")
-                            self.nilView!.center=self.rightCollection!.center
-                            self.view.addSubview(self.nilView!)
-                        }
-                    }
-            }
+                    NSLog("三级分类结果：\(json)")
+                    self.nilView?.removeFromSuperview()
+                    self.rightCollection?.reloadData()
+                }else{
+                    self.rightCollection?.reloadData()
+                    self.nilView?.removeFromSuperview()
+                    self.nilView=nilPromptView("赶快上传商品吧")
+                    self.nilView!.center=self.rightCollection!.center
+                    self.view.addSubview(self.nilView!)
+                }
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }

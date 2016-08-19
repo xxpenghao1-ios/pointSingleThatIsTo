@@ -31,7 +31,7 @@ class CategoryListController:BaseViewController{
         
         ItemsVC.pushState=pushState
         BrandVC.pushState=pushState
-        let SKNac=SKScNavViewController(subViewControllers:[ItemsVC,BrandVC])
+        let SKNac=SKScNavViewController(subViewControllers:[BrandVC,ItemsVC])
         SKNac.showArrowButton=false
         SKNac.addParentController(self)
     }

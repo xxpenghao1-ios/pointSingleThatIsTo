@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 //快速抢单详情
@@ -263,56 +262,51 @@ class GrabASingleDetailsView:BaseViewController,UITableViewDataSource,UITableVie
     查询订单是否被抢
     */
     func queryOrderInfo4AndroidByorderId(){
-        //请求地址
-        let queryOrderInfo4AndroidByorderIdURL=URL+"queryOrderInfo4AndroidByorderId.xhtml"
         //检查网络
         if(IJReachability.isConnectedToNetwork()){
-            request(.GET, queryOrderInfo4AndroidByorderIdURL, parameters:["orderinfoId":"\(orderList!.orderinfoId!)"])
-                .responseJSON{rep in
-                    if(rep.result.error != nil){
-                        SVProgressHUD.showErrorWithStatus(rep.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryOrderInfo4AndroidByorderId(orderinfoId:orderList!.orderinfoId!), successClosure: { (result) -> Void in
+                let jsonResult=JSON(result)
+                //保存商品entity
+                let list=jsonResult["listAndroid"]
+//                NSLog("list----\(list)")
+                //判断订单是否被抢
+                if(jsonResult["robflag"] == "10"){//10表示订单被抢
+                    //订单被抢，则发送快速抢单页面刷新的通知
+                    NSNotificationCenter.defaultCenter().postNotificationName("grabASingleNotification", object: "1")
+                    
+                    let alertController = UIAlertController(title: "点单即到",
+                        message: "订单已经被抢，下次下手快点哦", preferredStyle: UIAlertControllerStyle.Alert)
+                    let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+                        handler: {
+                            action in
+                            self.navigationController?.popViewControllerAnimated(true)
+                    })
+                    alertController.addAction(okAction)
+                    self.presentViewController(alertController, animated: true, completion: nil)
+                }else{//订单还没被抢
+                    for(_,GoodsDetailsValue)in list{//取出商品entity
+                        //实例化商品类
+                        let goodEntity=GoodDetailEntity()
+                        //商品标题
+                        goodEntity.goodInfoName=GoodsDetailsValue["goodInfoName"].stringValue
+                        //商品价格
+                        goodEntity.goodsUprice=GoodsDetailsValue["goodsUprice"].stringValue
+                        //商品图片
+                        goodEntity.goodPic=GoodsDetailsValue["goodPic"].stringValue
+                        //商品数量
+                        goodEntity.goodsSumCount=GoodsDetailsValue["goodsSumCount"].stringValue
+                        self.goodArr.addObject(goodEntity)
                     }
-                    if(rep.result.value != nil){
-                        let jsonResult=JSON(rep.result.value!)
-                        //保存商品entity
-                        let list=jsonResult["listAndroid"]
-                        NSLog("list----\(list)")
-                        //判断订单是否被抢
-                        if(jsonResult["robflag"] == "10"){//10表示订单被抢
-                            //订单被抢，则发送快速抢单页面刷新的通知
-                            NSNotificationCenter.defaultCenter().postNotificationName("grabASingleNotification", object: "1")
-                            
-                            let alertController = UIAlertController(title: "点单即到",
-                                message: "订单已经被抢，下次下手快点哦", preferredStyle: UIAlertControllerStyle.Alert)
-                            let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
-                                handler: {
-                                    action in
-                                    self.navigationController?.popViewControllerAnimated(true)
-                            })
-                            alertController.addAction(okAction)
-                            self.presentViewController(alertController, animated: true, completion: nil)
-                        }else{//订单还没被抢
-                            for(_,GoodsDetailsValue)in list{//取出商品entity
-                                //实例化商品类
-                                let goodEntity=GoodDetailEntity()
-                                //商品标题
-                                goodEntity.goodInfoName=GoodsDetailsValue["goodInfoName"].stringValue
-                                //商品价格
-                                goodEntity.goodsUprice=GoodsDetailsValue["goodsUprice"].stringValue
-                                //商品图片
-                                goodEntity.goodPic=GoodsDetailsValue["goodPic"].stringValue
-                                //商品数量
-                                goodEntity.goodsSumCount=GoodsDetailsValue["goodsSumCount"].stringValue
-                                self.goodArr.addObject(goodEntity)
-                            }
-                            //将临时的商品数组赋值给订单实体类中的"list"
-                            self.orderList?.list=self.goodArr
-                            //刷新Table
-                            self.goodsListTable?.reloadData()
-                            self.bottomWarp.hidden=false
-                        }
-                    }
-            }
+                    //将临时的商品数组赋值给订单实体类中的"list"
+                    self.orderList?.list=self.goodArr
+                    //刷新Table
+                    self.goodsListTable?.reloadData()
+                    self.bottomWarp.hidden=false
+                }
+
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }
@@ -372,48 +366,44 @@ class GrabASingleDetailsView:BaseViewController,UITableViewDataSource,UITableVie
     - parameter btn:
     */
     func actionGrabASingle(btn:UIButton){
-        //请求地址
-        let httpUrl=URL+"robOrderByStore4Android.xhtml";
         //店铺号
         let storeId=userDefaults.objectForKey("storeId") as! String
         //检测网络
         if(IJReachability.isConnectedToNetwork()){
             //加载菊花图
             SVProgressHUD.showWithStatus("正在加载中",maskType: SVProgressHUDMaskType.Gradient)
-            request(.GET, httpUrl, parameters: ["orderId":"\(orderList!.orderinfoId!)","storeId":storeId]).responseJSON{rep in
-                if(rep.result.error != nil){
-                    SVProgressHUD.showErrorWithStatus(rep.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.robOrderByStore4Android(orderId:orderList!.orderinfoId!, storeId:storeId), successClosure: { (result) -> Void in
+                SVProgressHUD.dismiss()
+                let jsonResult=JSON(result)
+                if(jsonResult["success"].stringValue == "success"){//抢单成功后，发送快速抢单页面、和已抢订单页面刷新的通知
+                    //订单被抢，则发送快速抢单页面刷新的通知 1-表示订单被抢
+                    NSNotificationCenter.defaultCenter().postNotificationName("grabASingleNotification", object: "1")
+                    let alertController = UIAlertController(title: "点单即到",
+                        message: "抢单成功!", preferredStyle: UIAlertControllerStyle.Alert)
+                    let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+                        handler: {
+                            action in
+                            self.navigationController?.popViewControllerAnimated(true)
+                    })
+                    alertController.addAction(okAction)
+                    self.presentViewController(alertController, animated: true, completion: nil)
+                }else if(jsonResult["success"].stringValue == "isrob"){
+                    let alertController = UIAlertController(title: "点单即到",
+                        message: "该笔订单已经被抢,下次记得手要快哦!", preferredStyle: UIAlertControllerStyle.Alert)
+                    let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+                        handler: {
+                            action in
+                            self.navigationController?.popViewControllerAnimated(true)
+                    })
+                    alertController.addAction(okAction)
+                    self.presentViewController(alertController, animated: true, completion: nil)
+                }else{
+                    SVProgressHUD.showErrorWithStatus("抢单失败，请重新抢单")
                 }
-                if(rep.result.value != nil){
-                    SVProgressHUD.dismiss()
-                    let jsonResult=JSON(rep.result.value!)
-                    if(jsonResult["success"].stringValue == "success"){//抢单成功后，发送快速抢单页面、和已抢订单页面刷新的通知
-                        //订单被抢，则发送快速抢单页面刷新的通知 1-表示订单被抢
-                        NSNotificationCenter.defaultCenter().postNotificationName("grabASingleNotification", object: "1")
-                        let alertController = UIAlertController(title: "点单即到",
-                            message: "抢单成功!", preferredStyle: UIAlertControllerStyle.Alert)
-                        let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
-                            handler: {
-                                action in
-                                self.navigationController?.popViewControllerAnimated(true)
-                        })
-                        alertController.addAction(okAction)
-                        self.presentViewController(alertController, animated: true, completion: nil)
-                    }else if(jsonResult["success"].stringValue == "isrob"){
-                        let alertController = UIAlertController(title: "点单即到",
-                            message: "该笔订单已经被抢,下次记得手要快哦!", preferredStyle: UIAlertControllerStyle.Alert)
-                        let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
-                            handler: {
-                                action in
-                                self.navigationController?.popViewControllerAnimated(true)
-                        })
-                        alertController.addAction(okAction)
-                        self.presentViewController(alertController, animated: true, completion: nil)
-                    }else{
-                        SVProgressHUD.showErrorWithStatus("抢单失败，请重新抢单")
-                    }
-                }
-            }
+
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }
@@ -424,8 +414,6 @@ class GrabASingleDetailsView:BaseViewController,UITableViewDataSource,UITableVie
     - parameter btn:
     */
     func actionDeliverGoods(btn:UIButton){
-        //请求地址
-        let httpUrl=URL+"storeConfirmDelivergoods.xhtml";
         //网络判断
         if(IJReachability.isConnectedToNetwork()){
             //弹窗
@@ -440,32 +428,28 @@ class GrabASingleDetailsView:BaseViewController,UITableViewDataSource,UITableVie
                     }
                     //加载菊花图
                     SVProgressHUD.showWithStatus("正在加载中")
-                    //发送送货请求
-                    request(.GET, httpUrl, parameters: ["orderinfoId":self.orderList!.orderinfoId!,"postscript":self.sellerRemark,"IPhonePenghao":520]).responseJSON{rep in
-                        if(rep.result.error != nil){
-                           SVProgressHUD.showErrorWithStatus(rep.result.error!.localizedDescription)
+                    PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeConfirmDelivergoods(orderinfoId:self.orderList!.orderinfoId!, postscript:self.sellerRemark), successClosure: { (result) -> Void in
+                        SVProgressHUD.dismiss()
+                        let jsonResult=JSON(result)
+                        if(jsonResult["success"].stringValue == "success"){//发货成功后，已抢订单、已发货页面需要刷新，2-表示已发货
+                            NSNotificationCenter.defaultCenter().postNotificationName("grabASingleNotification", object: "2")
+                            let alertController = UIAlertController(title: "点单即到",
+                                message: "发货成功,请等待买家收货!", preferredStyle: UIAlertControllerStyle.Alert)
+                            let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+                                handler: {
+                                    action in
+                                    //返回上一页面
+                                    self.navigationController?.popViewControllerAnimated(true)
+                            })
+                            alertController.addAction(okAction)
+                            self.presentViewController(alertController, animated: true, completion: nil)
+                        }else{
+                            SVProgressHUD.showErrorWithStatus("发货失败，请重新发货")
                         }
-                        if(rep.result.value != nil){
-                            SVProgressHUD.dismiss()
-                            let jsonResult=JSON(rep.result.value!)
-                            if(jsonResult["success"].stringValue == "success"){//发货成功后，已抢订单、已发货页面需要刷新，2-表示已发货
-                                NSNotificationCenter.defaultCenter().postNotificationName("grabASingleNotification", object: "2")
-                                let alertController = UIAlertController(title: "点单即到",
-                                    message: "发货成功,请等待买家收货!", preferredStyle: UIAlertControllerStyle.Alert)
-                                let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
-                                    handler: {
-                                        action in
-                                        //返回上一页面
-                                        self.navigationController?.popViewControllerAnimated(true)
-                                })
-                                alertController.addAction(okAction)
-                                self.presentViewController(alertController, animated: true, completion: nil)
-                            }else{
-                                SVProgressHUD.showErrorWithStatus("发货失败，请重新发货")
-                            }
-                        }
-                    }
-                    
+
+                        }, failClosure: { (errorMsg) -> Void in
+                            SVProgressHUD.showErrorWithStatus(errorMsg)
+                    })
             })
             let cancelAction=UIAlertAction(title: "取消", style: UIAlertActionStyle.Default, handler: nil)
             alertController.addAction(okAction)

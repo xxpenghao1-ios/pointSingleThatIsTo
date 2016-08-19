@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 import SDCycleScrollView
@@ -517,15 +516,12 @@ extension IndexViewController{
      发送促销图片请求
      */
     func httpPromotionImg(){
-        Alamofire.request(.GET,URL+"mobileAdvertisingPromotion.xhtml",parameters:nil).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                let advertisingURL=json["advertisingURL"].stringValue
-                self.promotionImageView!.sd_setImageWithURL(NSURL(string:URLIMG+advertisingURL), placeholderImage:UIImage(named: "def_promotion"))
-            }
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.mobileAdvertisingPromotion(), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            let advertisingURL=json["advertisingURL"].stringValue
+            self.promotionImageView!.sd_setImageWithURL(NSURL(string:URLIMG+advertisingURL), placeholderImage:UIImage(named: "def_promotion"))
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     /**
@@ -534,16 +530,13 @@ extension IndexViewController{
      - parameter substationId: 分站id
      */
     func httpAdMessgInfo(substationId:String){
-        Alamofire.request(.GET,URL+"queryAdMessgInfo.xhtml",parameters:["substationId":substationId]).responseJSON{ response in
-            if response.result.error != nil{
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryAdMessgInfo(substationId:substationId), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            self.adMessgInfoEntity=Mapper<AdMessgInfoEntity>().map(json.object)
+            //弹出公告栏提示
+            self.showActivityAlert()
+            }) { (errorMsg) -> Void in
                 
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                self.adMessgInfoEntity=Mapper<AdMessgInfoEntity>().map(json.object)
-                //弹出公告栏提示
-                self.showActivityAlert()
-            }
         }
         
     }
@@ -554,42 +547,37 @@ extension IndexViewController{
      - parameter storeId:  这里storeId=memberId
      */
     func httpHotGood(countyId:String,storeId:String){
-        Alamofire.request(.GET,URL+"queryGoodsForAndroidIndexForStore.xhtml",parameters:["countyId":countyId,"isDisplayFlag":2,"storeId":storeId]).responseJSON{
-            response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                for(_,value) in json{
-                    let entity=Mapper<GoodDetailEntity>().map(value.object)
-                    self.hotGoodArr.addObject(entity!)
-                    
-                }
-                //数据请求完 更新
-                self.hotGoodCollectionView?.reloadData()
-                //重新计算高度
-                var hotGoodCollectionViewY:CGFloat=0
-                //计算高度
-                if self.hotGoodArr.count > 0{
-                    if  self.hotGoodArr.count <= 2 {
-                        hotGoodCollectionViewY=225
-                    }else{
-                        if self.hotGoodArr.count % 2 == 0{
-                            hotGoodCollectionViewY=CGFloat(225*(self.hotGoodArr.count/2))
-                        }else{
-                            hotGoodCollectionViewY=CGFloat(225*((self.hotGoodArr.count+1)/2))
-                        }
-                    }
-                }
-                //更新hotGoodCollectionView的高度
-                self.hotGoodCollectionView!.frame=CGRectMake(10,CGRectGetMaxY(self.newProductBorderView!.frame)+40,boundsWidth-20,hotGoodCollectionViewY)
-                //重新计算可滑动容器的可滑动size
-                self.scrollView!.contentSize=CGSizeMake(boundsWidth,CGRectGetMaxY(self.hotGoodCollectionView!.frame))
-                //在热门商品加载完成后结束刷新
-                self.scrollView!.headerEndRefreshing()
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsForAndroidIndexForStore(countyId: countyId, isDisplayFlag: 2, storeId: storeId), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            for(_,value) in json{
+                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                self.hotGoodArr.addObject(entity!)
                 
             }
+            //数据请求完 更新
+            self.hotGoodCollectionView?.reloadData()
+            //重新计算高度
+            var hotGoodCollectionViewY:CGFloat=0
+            //计算高度
+            if self.hotGoodArr.count > 0{
+                if  self.hotGoodArr.count <= 2 {
+                    hotGoodCollectionViewY=225
+                }else{
+                    if self.hotGoodArr.count % 2 == 0{
+                        hotGoodCollectionViewY=CGFloat(225*(self.hotGoodArr.count/2))
+                    }else{
+                        hotGoodCollectionViewY=CGFloat(225*((self.hotGoodArr.count+1)/2))
+                    }
+                }
+            }
+            //更新hotGoodCollectionView的高度
+            self.hotGoodCollectionView!.frame=CGRectMake(10,CGRectGetMaxY(self.newProductBorderView!.frame)+40,boundsWidth-20,hotGoodCollectionViewY)
+            //重新计算可滑动容器的可滑动size
+            self.scrollView!.contentSize=CGSizeMake(boundsWidth,CGRectGetMaxY(self.hotGoodCollectionView!.frame))
+            //在热门商品加载完成后结束刷新
+            self.scrollView!.headerEndRefreshing()
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     /**
@@ -599,50 +587,43 @@ extension IndexViewController{
      - parameter storeId:  这里storeId
      */
     func httpNewProduct(countyId:String,storeId:String){
-        Alamofire.request(.GET,URL+"queryGoodsForAndroidIndexForStoreNew.xhtml",parameters:["countyId":countyId,"storeId":storeId,"isDisplayFlag":2,"currentPage":1,"pageSize":2]).responseJSON{
-            response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsForAndroidIndexForStoreNew(countyId: countyId, storeId: storeId, isDisplayFlag: 2, currentPage: 1, pageSize: 2, order:""), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            for(_,value) in json{
+                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                self.newProductArr.addObject(entity!)
+                
             }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                for(_,value) in json{
-                    let entity=Mapper<GoodDetailEntity>().map(value.object)
-                    self.newProductArr.addObject(entity!)
-                    
-                }
-                if self.newProductArr.count > 0{//如果新品推荐有数据刷新
-                    //不管加没有加载直接先删除视图
-                    self.lblNilNewProduct?.removeFromSuperview()
-                    //数据请求完刷新数据
-                    self.newProductCollectionView?.reloadData()
-                }else{//如果没有数据给出提示
-                    //不管加没有加载直接先删除视图
-                    self.lblNilNewProduct?.removeFromSuperview()
-                    self.lblNilNewProduct=nilTitle("没有新品推荐商品")
-                    self.lblNilNewProduct!.center=self.newProductCollectionView!.center
-                    self.scrollView!.addSubview(self.lblNilNewProduct!)
-                }
+            if self.newProductArr.count > 0{//如果新品推荐有数据刷新
+                //不管加没有加载直接先删除视图
+                self.lblNilNewProduct?.removeFromSuperview()
+                //数据请求完刷新数据
+                self.newProductCollectionView?.reloadData()
+            }else{//如果没有数据给出提示
+                //不管加没有加载直接先删除视图
+                self.lblNilNewProduct?.removeFromSuperview()
+                self.lblNilNewProduct=nilTitle("没有新品推荐商品")
+                self.lblNilNewProduct!.center=self.newProductCollectionView!.center
+                self.scrollView!.addSubview(self.lblNilNewProduct!)
             }
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     /**
      发送分类请求
      */
     func httpClassify(){
-        Alamofire.request(.GET,URL+"queryOneCategory.xhtml",parameters:["isDisplayFlag":2]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryOneCategory(isDisplayFlag: 2), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            for(_,value) in json{
+                let entity=Mapper<GoodsCategoryEntity>().map(value.object)
+                self.classifyArr.addObject(entity!)
             }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                for(_,value) in json{
-                    let entity=Mapper<GoodsCategoryEntity>().map(value.object)
-                    self.classifyArr.addObject(entity!)
-                }
-                //数据加载完成分类
-                self.classifyCollectionView?.reloadData()
-            }
+            //数据加载完成分类
+            self.classifyCollectionView?.reloadData()
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     /**
@@ -651,18 +632,15 @@ extension IndexViewController{
      - parameter countyId:县区id
      */
     func httpSlide(countyId:String){
-        Alamofire.request(.GET,URL+"mobileAdvertising.xhtml",parameters:["countyId":countyId]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.mobileAdvertising(countyId: countyId), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            for(_,value) in json{
+                let entity=Mapper<AdvertisingEntity>().map(value.object)
+                self.zwadImgArr.addObject(URLIMG+entity!.advertisingURL!)
             }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                for(_,value) in json{
-                    let entity=Mapper<AdvertisingEntity>().map(value.object)
-                    self.zwadImgArr.addObject(URLIMG+entity!.advertisingURL!)
-                }
-                self.netWorkBanner?.imageURLStringsGroup=self.zwadImgArr as [AnyObject]
-            }
+            self.netWorkBanner?.imageURLStringsGroup=self.zwadImgArr as [AnyObject]
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
 

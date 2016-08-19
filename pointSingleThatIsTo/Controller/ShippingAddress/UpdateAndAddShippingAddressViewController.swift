@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 /// 修改 添加收货地址页面
@@ -127,48 +126,38 @@ class UpdateAndAddShippingAddressViewController:BaseViewController,UITableViewDe
                         }else{
                             entity!.defaultFlag=2
                         }
-                        Alamofire.request(.GET,URL+"updateStoreShippAddressforAndroid.xhtml", parameters:["flag":entity!.defaultFlag!,"storeId":storeId,"county":entity!.county!,"city":entity!.city!,"province":entity!.province!,"shippName":shippName!,"detailAddress":detailAddress!,"phoneNumber":phoneNumber!,"IPhonePenghao":520,"shippAddressId":entity!.shippAddressId!]).responseJSON{ response in
-                            if response.result.error != nil{
-                               SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+                        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.updateStoreShippAddressforAndroid(flag: entity!.defaultFlag!, storeId: storeId, county: entity!.county!, city: entity!.city!, province: entity!.province!, shippName: shippName!, detailAddress: detailAddress!, phoneNumber: phoneNumber!, IPhonePenghao: 520, shippAddressId: entity!.shippAddressId!), successClosure: { (result) -> Void in
+                            let json=JSON(result)
+                            let success=json["success"].stringValue
+                            SVProgressHUD.dismiss()
+                            if success == "success"{
+                                SVProgressHUD.showSuccessWithStatus("修改成功")
+                                self.popView()
+                            }else{
+                                SVProgressHUD.showErrorWithStatus("修改失败")
                             }
-                            if response.result.value != nil{
-                                let json=JSON(response.result.value!)
-                                let success=json["success"].stringValue
-                                SVProgressHUD.dismiss()
-                                if success == "success"{
-                                   SVProgressHUD.showSuccessWithStatus("修改成功")
-                                    self.popView()
-                                }else{
-                                    SVProgressHUD.showErrorWithStatus("修改失败")
-                                }
-                                
-                            }
-                        }
+                            }, failClosure: { (errorMsg) -> Void in
+                                SVProgressHUD.showErrorWithStatus(errorMsg)
+                        })
                     }else{//添加收货地址
                         var defaultFlag=2
                         if mySwitch!.on{//如果开关按钮打开
                             defaultFlag=1
                         }
-                        Alamofire.request(.GET,URL+"addStoreShippAddressforAndroid.xhtml",parameters:["flag":defaultFlag,"storeId":storeId,"county":county,"city":city,"province":province,"shippName":shippName!,"detailAddress":detailAddress!,"phoneNumber":phoneNumber!,"IPhonePenghao":520]).responseJSON{ response in
-                            if response.result.error != nil{
-                                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+                        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.addStoreShippAddressforAndroid(flag: defaultFlag, storeId: storeId, county: county, city: city, province: province, shippName: shippName!, detailAddress: detailAddress!, phoneNumber: phoneNumber!, IPhonePenghao: 520), successClosure: { (result) -> Void in
+                            let json=JSON(result)
+                            let success=json["success"].stringValue
+                            SVProgressHUD.dismiss()
+                            if success == "success"{
+                                SVProgressHUD.showSuccessWithStatus("修改成功")
+                                self.popView()
+                            }else{
+                                SVProgressHUD.showErrorWithStatus("修改失败")
                             }
-                            if response.result.value != nil{
-                                let json=JSON(response.result.value!)
-                                let success=json["success"].stringValue
-                                SVProgressHUD.dismiss()
-                                if success == "success"{
-                                    SVProgressHUD.showSuccessWithStatus("修改成功")
-                                    self.popView()
-                                }else{
-                                    SVProgressHUD.showErrorWithStatus("修改失败")
-                                }
-                                
-                            }
-                            
-                        }
+                            }, failClosure: { (errorMsg) -> Void in
+                                SVProgressHUD.showErrorWithStatus(errorMsg)
+                        })
                     }
-                    
                 }
             }
         }else{

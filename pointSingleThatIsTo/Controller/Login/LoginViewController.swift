@@ -136,7 +136,6 @@ class LoginViewController:BaseViewController{
                     NSLog("开始验证发送网络请求验证用户信息")
                     PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.login(memberName:name!, password:password!, deviceToken:str!, deviceName:UIDevice().name,flag:1), successClosure: { (result) -> Void in
                         let json=JSON(result)
-                        print(json)
                         let success=json["success"].stringValue
                         if success == "failds"{
                             SVProgressHUD.showErrorWithStatus("店铺信息不存在")
@@ -175,11 +174,12 @@ class LoginViewController:BaseViewController{
                             userDefaults.setObject(entity!.qrcode, forKey:"qrcode")
                             NSLog("店铺唯一标识码--\(entity!.storeFlagCode)")
                             NSLog("店铺ID--\(entity!.storeId)")
+                            NSLog("分站ID--\(entity!.substationId)")
                             //写入磁盘
                             userDefaults.synchronize()
                             //登录成功设置应用程序别名
                             JPUSHService.setAlias(entity!.storeFlagCode!, callbackSelector: nil, object:nil)
-                            //                                JPUSHService.setTags([entity!.substationId!], callbackSelector:nil, object:nil)
+                            JPUSHService.setTags([entity!.substationId!], callbackSelector:nil, object:nil)
                             //登录成功跳转到首页
                             let app=UIApplication.sharedApplication().delegate as! AppDelegate
                             

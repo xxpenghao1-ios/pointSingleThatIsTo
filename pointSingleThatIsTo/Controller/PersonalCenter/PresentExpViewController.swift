@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 /// 购物积分
@@ -106,68 +105,63 @@ extension PresentExpViewController:UITableViewDelegate,UITableViewDataSource,Pre
 // MARK: - 网络请求
 extension PresentExpViewController{
     func httpExchangeInfo(entity: IntegralGoodExchangeEntity,index:NSIndexPath) {
-        request(.GET,URL+"integralMallExchange.xhtml", parameters:["integralMallId":entity.integralMallId!,"memberId":IS_NIL_MEMBERID()!,"exchangeCount":1]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                let success=json["success"].stringValue
-                switch success{
-                case "success":
-                    let megInfo=json["megInfo"].stringValue
-                    if megInfo == "0"{
-                        self.integral!-=entity.exchangeIntegral!
-                        self.lblIntegral!.text="\(self.integral!)"
-                        let alert=UIAlertController(title:"点单即到", message:"兑换\(entity.goodsName!)成功", preferredStyle: UIAlertControllerStyle.Alert)
-                        let ok=UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
-                            self.table!.headerBeginRefreshing()
-                        })
-                        alert.addAction(ok)
-                        self.presentViewController(alert, animated:true, completion:nil)
-                    }else if megInfo == "1"{
-                        SVProgressHUD.showInfoWithStatus("兑换失败")
-                    }else if megInfo == "2"{
-                        SVProgressHUD.showInfoWithStatus("商品数量不足")
-                    }else if megInfo == "3"{
-                        SVProgressHUD.showInfoWithStatus("积分余额不足")
-                    }
-                    break
-                case "memberBalance":
-                    SVProgressHUD.showInfoWithStatus("积分余额不足")
-                    break
-                case "memberNull":
-                    SVProgressHUD.showInfoWithStatus("会员不存在")
-                    break
-                case "goodsNotEnough":
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.integralMallExchange(integralMallId: entity.integralMallId!, memberId: IS_NIL_MEMBERID()!, exchangeCount: 1), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            let success=json["success"].stringValue
+            switch success{
+            case "success":
+                let megInfo=json["megInfo"].stringValue
+                if megInfo == "0"{
+                    self.integral!-=entity.exchangeIntegral!
+                    self.lblIntegral!.text="\(self.integral!)"
+                    let alert=UIAlertController(title:"点单即到", message:"兑换\(entity.goodsName!)成功", preferredStyle: UIAlertControllerStyle.Alert)
+                    let ok=UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
+                        self.table!.headerBeginRefreshing()
+                    })
+                    alert.addAction(ok)
+                    self.presentViewController(alert, animated:true, completion:nil)
+                }else if megInfo == "1"{
+                    SVProgressHUD.showInfoWithStatus("兑换失败")
+                }else if megInfo == "2"{
                     SVProgressHUD.showInfoWithStatus("商品数量不足")
-                    break
-                case "goodsNull":
-                    SVProgressHUD.showInfoWithStatus("商品已经下架,不能兑换")
-                    break
-                case "integralMallIdNull":
-                    SVProgressHUD.showInfoWithStatus("积分商城商品已经不存在了")
-                    break
-                default:
-                    SVProgressHUD.showInfoWithStatus("发生未知错误")
-                    break
+                }else if megInfo == "3"{
+                    SVProgressHUD.showInfoWithStatus("积分余额不足")
                 }
+                break
+            case "memberBalance":
+                SVProgressHUD.showInfoWithStatus("积分余额不足")
+                break
+            case "memberNull":
+                SVProgressHUD.showInfoWithStatus("会员不存在")
+                break
+            case "goodsNotEnough":
+                SVProgressHUD.showInfoWithStatus("商品数量不足")
+                break
+            case "goodsNull":
+                SVProgressHUD.showInfoWithStatus("商品已经下架,不能兑换")
+                break
+            case "integralMallIdNull":
+                SVProgressHUD.showInfoWithStatus("积分商城商品已经不存在了")
+                break
+            default:
+                SVProgressHUD.showInfoWithStatus("发生未知错误")
+                break
             }
+
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     /**
      查看剩余积分
      */
     func httpQueryMemberIntegral(){
-        request(.GET,URL+"queryMemberIntegral.xhtml", parameters:["memberId":IS_NIL_MEMBERID()!]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                self.integral=json["success"].intValue
-                self.lblIntegral!.text="\(self.integral!)"
-            }
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryMemberIntegral(memberId: IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            self.integral=json["success"].intValue
+            self.lblIntegral!.text="\(self.integral!)"
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     /**
@@ -179,46 +173,43 @@ extension PresentExpViewController{
     func httpQueryIntegralMallForSubStation(currentPage:Int,isRefresh:Bool){
         var count=0
         let subStationId=userDefaults.objectForKey("subStationId") as! String
-        request(.GET,URL+"queryIntegralMallForSubStation.xhtml", parameters:["subStationId":subStationId,"currentPage":currentPage,"pageSize":10]).responseJSON{ response in
-            if response.result.error != nil{
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryIntegralMallForSubStation(subStationId: subStationId, currentPage: currentPage, pageSize: 10), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            if isRefresh{//如果是刷新先删除数据
+                self.arr.removeAllObjects()
+            }
+            for(_,value) in json{
+                count++
+                let entity=Mapper<IntegralGoodExchangeEntity>().map(value.object)
+                self.arr.addObject(entity!)
+            }
+            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                self.table?.setFooterHidden(true)
+            }else{//否则显示
+                self.table?.setFooterHidden(false)
+            }
+            if self.arr.count < 1{//表示没有数据加载空
+                self.lblNilTitle?.removeFromSuperview()
+                self.lblNilTitle=nilTitle("还没有积分商品")
+                self.lblNilTitle!.center=self.table!.center
+                self.view.addSubview(self.lblNilTitle!)
+            }else{//如果有数据清除
+                self.lblNilTitle?.removeFromSuperview()
+            }
+            //关闭刷新状态
+            self.table?.headerEndRefreshing()
+            //关闭加载状态
+            self.table?.footerEndRefreshing()
+            //关闭加载等待视图
+            SVProgressHUD.dismiss()
+            //刷新table
+            self.table?.reloadData()
+            }) { (errorMsg) -> Void in
                 //关闭刷新状态
                 self.table?.headerEndRefreshing()
                 //关闭加载状态
                 self.table?.footerEndRefreshing()
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                let json=JSON(response.result.value!)
-                if isRefresh{//如果是刷新先删除数据
-                    self.arr.removeAllObjects()
-                }
-                for(_,value) in json{
-                    count++
-                    let entity=Mapper<IntegralGoodExchangeEntity>().map(value.object)
-                    self.arr.addObject(entity!)
-                }
-                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.table?.setFooterHidden(true)
-                }else{//否则显示
-                    self.table?.setFooterHidden(false)
-                }
-                if self.arr.count < 1{//表示没有数据加载空
-                    self.lblNilTitle?.removeFromSuperview()
-                    self.lblNilTitle=nilTitle("还没有积分商品")
-                    self.lblNilTitle!.center=self.table!.center
-                    self.view.addSubview(self.lblNilTitle!)
-                }else{//如果有数据清除
-                    self.lblNilTitle?.removeFromSuperview()
-                }
-                //关闭刷新状态
-                self.table?.headerEndRefreshing()
-                //关闭加载状态
-                self.table?.footerEndRefreshing()
-                //关闭加载等待视图
-                SVProgressHUD.dismiss()
-                //刷新table
-                self.table?.reloadData()
-            }
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
 }

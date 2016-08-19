@@ -215,7 +215,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
             }else if indexPath.row == 3{
                 cell!.detailTextLabel!.text=tel
             }else if indexPath.row == 4{
-                cell!.detailTextLabel!.text="1.3.5"
+                cell!.detailTextLabel!.text="1.5.6"
                 cell!.accessoryType=UITableViewCellAccessoryType.None
             }
             img.image=UIImage(named:imgArr2[indexPath.row])
@@ -359,18 +359,14 @@ extension PersonalCenterViewContorller{
      请求分站信息和推荐人
      */
     func querySubstationInfo(){
-        let http=URL+"queryStoreMember.xhtml"
         let storeId=userDefaults.objectForKey("storeId") as! String
-        Alamofire.request(.GET, http, parameters: ["storeId":storeId,"memberId":IS_NIL_MEMBERID()!]).responseJSON{ response in
-            if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
-            }
-            if response.result.value != nil{
-                //解析json
-                let json=JSON(response.result.value!)
-                self.substationEntity=Mapper<SubstationEntity>().map(json["substationEntity"].object)
-                self.myRecommended=json["referralName"].stringValue
-            }
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStoreMember(storeId: storeId, memberId: IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
+            //解析json
+            let json=JSON(result)
+            self.substationEntity=Mapper<SubstationEntity>().map(json["substationEntity"].object)
+            self.myRecommended=json["referralName"].stringValue
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
 
@@ -401,6 +397,12 @@ extension PersonalCenterViewContorller{
             Void in
             //设置极光推送 别名为空
             JPUSHService.setAlias("",callbackSelector:nil, object:nil)
+            JPUSHService.setTags([], callbackSelector:nil, object:nil)
+//            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.outLoginForStore(memberId: IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
+//                
+//                }, failClosure: { (errorMsg) -> Void in
+//                    
+//            })
             request(.GET,URL+"outLoginForStore.xhtml,", parameters:["memebrId":IS_NIL_MEMBERID()!])
             //清除缓存中会员id
             NSUserDefaults.standardUserDefaults().removeObjectForKey("memberId")

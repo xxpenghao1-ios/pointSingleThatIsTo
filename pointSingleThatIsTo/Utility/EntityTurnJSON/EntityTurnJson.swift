@@ -67,9 +67,9 @@ func toJSONString(arr:NSMutableArray) ->String{
     for(value) in arr{
         let str=value as! GoodDetailEntity
         if str.flag == 1{
-            str.goodsSumMoney="\(Float(str.carNumber!)*Float(str.prefertialPrice!)!)"
+            str.goodsSumMoney="\(Double(str.carNumber!)*Double(str.prefertialPrice!)!)"
         }else{
-            str.goodsSumMoney="\(Float(str.carNumber!)*Float(str.uprice!)!)"
+            str.goodsSumMoney="\(Double(str.carNumber!)*Double(str.uprice!)!)"
         }
         josnString.appendString(str.toJSONString(true)!+",");
         

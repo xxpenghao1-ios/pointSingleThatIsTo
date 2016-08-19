@@ -91,24 +91,21 @@ class SweepersViewController:UIViewController,BMKLocationServiceDelegate,BMKGeoC
         }else if isStringNil(name) == false{
             SVProgressHUD.showInfoWithStatus("姓名为空")
         }else{
-            request(.POST,URL+"nmoreGlobalPosiUploadStore.xhtml", parameters:["map_coordinate":long!+","+lat!,"storeName":storeName!,"tel":tel!,"address":address!,"ownerName":name!,"savePath":imgPath!,"referralName":userId!,"password":"123456",]).responseJSON{ response in
-                if response.result.error != nil{
-                    SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.nmoreGlobalPosiUploadStore(map_coordinate: long!+","+lat!, storeName: storeName!, tel: tel!, address: address!, ownerName: name!, savePath: imgPath!, referralName: userId!, password: "123456"), successClosure: { (result) -> Void in
+                SVProgressHUD.dismiss()
+                let json=JSON(result)
+                let success=json["success"].stringValue
+                if success == "success"{
+                    SVProgressHUD.showSuccessWithStatus("店铺注册已完成")
+                    self.refreshLocation()
+                }else if success == "isrob"{
+                    SVProgressHUD.showErrorWithStatus("该账号已注册")
+                }else{
+                    SVProgressHUD.showErrorWithStatus("店铺注册失败")
                 }
-                if response.result.value != nil{
-                    SVProgressHUD.dismiss()
-                    let json=JSON(response.result.value!)
-                    let success=json["success"].stringValue
-                    if success == "success"{
-                        SVProgressHUD.showSuccessWithStatus("店铺注册已完成")
-                        self.refreshLocation()
-                    }else if success == "isrob"{
-                        SVProgressHUD.showErrorWithStatus("该账号已注册")
-                    }else{
-                        SVProgressHUD.showErrorWithStatus("店铺注册失败")
-                    }
-                }
-            }
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }
     }
     /**

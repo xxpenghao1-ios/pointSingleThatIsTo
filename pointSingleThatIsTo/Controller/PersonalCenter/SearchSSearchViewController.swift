@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 class SearchSSearchViewController:BaseViewController{
@@ -93,34 +92,30 @@ class SearchSSearchViewController:BaseViewController{
         if code == nil || code=="" || code==" "{
             SVProgressHUD.showErrorWithStatus("条形码不能为空")
         }else{//发送请求
-            let http=URL+"SuoYuan.xhtml"
-            let coucountyId=userDefaults.objectForKey("countyId") as? String
-            Alamofire.request(.GET, http, parameters:["countyId":coucountyId!,"goodInfoCode":code!]).responseJSON{res in
-                if res.result.error != nil{
-                    SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
-                }
-                if res.result.value != nil{
-                    //解析json
-                    let resJS=JSON(res.result.value!)
-                    if resJS["supplierName"].stringValue==""{
-                        SVProgressHUD.showErrorWithStatus("错误条形码")
-                    }else{
-                        self.addGoodView(resJS["supplierName"].stringValue, goodsNamestringValue: resJS["goodsName"].stringValue)
-                        for (_,value) in resJS["subSupplierVo"]{
-                            
-                            self.addSupplierName(value["subSupplierName"].stringValue)
-                            self.count=self.count+1
-                            
-                        }
-                        //设置可滑动容器的高
-                        self.scollViewH=CGRectGetMaxY(self.subSupplierVolbl.frame)+CGFloat(self.count)*35+10
-                        self.scollView?.frame=CGRectMake(10, CGRectGetMaxY(self.searchView!.frame)+10, boundsWidth-20, self.scollViewH!)
-                        //容器可滑动的空间
-                        self.scollView?.contentSize=CGSize(width: boundsWidth-20, height: self.scollViewH!+10)
+            let countyId=userDefaults.objectForKey("countyId") as? String
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.SuoYuan(countyId: countyId!, goodInfoCode: code!), successClosure: { (result) -> Void in
+                //解析json
+                let resJS=JSON(result)
+                if resJS["supplierName"].stringValue==""{
+                    SVProgressHUD.showErrorWithStatus("错误条形码")
+                }else{
+                    self.addGoodView(resJS["supplierName"].stringValue, goodsNamestringValue: resJS["goodsName"].stringValue)
+                    for (_,value) in resJS["subSupplierVo"]{
+                        
+                        self.addSupplierName(value["subSupplierName"].stringValue)
+                        self.count=self.count+1
+                        
                     }
-                    
+                    //设置可滑动容器的高
+                    self.scollViewH=CGRectGetMaxY(self.subSupplierVolbl.frame)+CGFloat(self.count)*35+10
+                    self.scollView?.frame=CGRectMake(10, CGRectGetMaxY(self.searchView!.frame)+10, boundsWidth-20, self.scollViewH!)
+                    //容器可滑动的空间
+                    self.scollView?.contentSize=CGSize(width: boundsWidth-20, height: self.scollViewH!+10)
                 }
-            }
+
+                }, failClosure: { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }
     }
     //添加分销商标签

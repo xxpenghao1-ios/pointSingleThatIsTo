@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 ///登录跳转后的页面（1为注册，2为修改密码）
@@ -103,42 +102,35 @@ class RegisterViewController:UIViewController{
     
     //发送请求（手机验证）
     func httpPhone(){
-        let http=URL+"doMemberTheOnly.xhtml"
         let phone=feildPhone?.text
-        Alamofire.request(.GET, http, parameters: ["memberName":phone!]).responseJSON{res in
-            if res.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
-            }
-            if res.result.value != nil{
-                //解析json
-                let JSONres=JSON(res.result.value!)
-                if JSONres["success"].stringValue == "failds"{
-                    if self.flag==1{//1则账号没有被注册 跳转页面
-                        let vc=RegisterValidationViewController();
-                        vc.phone=phone
-                        vc.flag=self.flag
-                        self.navigationController?.pushViewController(vc, animated:true);
-                        self.view.endEditing(true)
-                        
-                    }else if self.flag==2{//2为 没有被注册就不存在修改密码
-                        SVProgressHUD.showErrorWithStatus("账号不存在")
-                    }
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.doMemberTheOnly(memberName:phone!), successClosure: { (result) -> Void in
+            //解析json
+            let JSONres=JSON(result)
+            if JSONres["success"].stringValue == "failds"{
+                if self.flag==1{//1则账号没有被注册 跳转页面
+                    let vc=RegisterValidationViewController();
+                    vc.phone=phone
+                    vc.flag=self.flag
+                    self.navigationController?.pushViewController(vc, animated:true);
+                    self.view.endEditing(true)
                     
-                }else if JSONres["success"].stringValue == "success"{
-                    if self.flag==1{//账号已经被注册
-                        SVProgressHUD.showInfoWithStatus("该账号已经被注册", maskType: .Clear)
-                    }else if self.flag==2{// 已经被注册就可以修改密码
-                        let vc=RegisterValidationViewController();
-                        vc.phone=phone
-                        vc.flag=self.flag
-                        self.navigationController?.pushViewController(vc, animated:true);
-                        self.view.endEditing(true)
-                    }
-                }else{
-                    SVProgressHUD.showErrorWithStatus("无网络连接")
+                }else if self.flag==2{//2为 没有被注册就不存在修改密码
+                    SVProgressHUD.showErrorWithStatus("账号不存在")
                 }
-            
+                
+            }else if JSONres["success"].stringValue == "success"{
+                if self.flag==1{//账号已经被注册
+                    SVProgressHUD.showInfoWithStatus("该账号已经被注册", maskType: .Clear)
+                }else if self.flag==2{// 已经被注册就可以修改密码
+                    let vc=RegisterValidationViewController();
+                    vc.phone=phone
+                    vc.flag=self.flag
+                    self.navigationController?.pushViewController(vc, animated:true);
+                    self.view.endEditing(true)
+                }
             }
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     //点其他区域关闭键盘

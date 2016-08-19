@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 
@@ -113,29 +112,25 @@ class IRecommendViewController:BaseViewController,UITableViewDataSource,UITableV
     func http(){
         //加载等待视图
         SVProgressHUD.showWithStatus("数据加载中", maskType: .Clear)
-        let http=URL+"queryRecommended.xhtml"
         let storeId=self.storeId
-        Alamofire.request(.GET, http, parameters: ["storeId":storeId!]).responseJSON{res in
-            if res.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(res.result.error!.localizedDescription)
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryRecommended(storeId: storeId!), successClosure: { (result) -> Void in
+            SVProgressHUD.dismiss()
+            //解析json
+            let jsonResult=JSON(result)
+            for (_,value) in jsonResult{
+                let entity=Mapper<IRecommendEntity>().map(value.object)
+                self.IREntity.addObject(entity!)
             }
-            if res.result.value != nil{
-                SVProgressHUD.dismiss()
-                //解析json
-                let jsonResult=JSON(res.result.value!)
-                for (_,value) in jsonResult{
-                    let entity=Mapper<IRecommendEntity>().map(value.object)
-                    self.IREntity.addObject(entity!)
-                }
-                if self.IREntity.count > 0{
-                    self.tableView?.reloadData()
-                }else{
-                    self.nilView?.removeFromSuperview()
-                    self.nilView=nilPromptView("没有该信息记录")
-                    self.nilView!.center=self.view.center
-                    self.view.addSubview(self.nilView!)
-                }
+            if self.IREntity.count > 0{
+                self.tableView?.reloadData()
+            }else{
+                self.nilView?.removeFromSuperview()
+                self.nilView=nilPromptView("没有该信息记录")
+                self.nilView!.center=self.view.center
+                self.view.addSubview(self.nilView!)
             }
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
 }

@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import ObjectMapper
 import SVProgressHUD
 
@@ -131,69 +130,64 @@ class DeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITabl
      
     */
     func queryOrderInfo4AndroidStoreByOrderStatus(currentPage:Int,isRefresh:Bool){
-        let httpURL=URL+"queryOrderInfo4AndroidStoreByOrderStatus.xhtml"
         let storeId=userDefaults.objectForKey("storeId") as! String
         //判断有无网络
         if(IJReachability.isConnectedToNetwork()){
             //统计订单数，每次发请求先置空
             var count=0
             //开始发送已发货订单查询请求(orderStatus状态为2)
-            request(.GET, httpURL, parameters: ["orderStatus":"2","storeId":storeId,"pageSize":10,"currentPage":currentPage])
-                .responseJSON{rep in
-                    if(rep.result.error != nil){
-                        //关闭刷新状态
-                        self.deliverGoodsedTable?.headerEndRefreshing()
-                        //关闭加载状态
-                        self.deliverGoodsedTable?.footerEndRefreshing()
-                       SVProgressHUD.showErrorWithStatus(rep.result.error!.localizedDescription)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryOrderInfo4AndroidStoreByOrderStatus(orderStatus:2, storeId:storeId, pageSize: 10, currentPage: currentPage), successClosure: { (result) -> Void in
+                let jsonResult=JSON(result)
+                if isRefresh{
+                    self.stockOrderEntityArray.removeAll()
+                }
+                for(_,robbedListValue)in jsonResult{//取出订单entity
+                    
+                    // 每次循环加1
+                    count++
+                    //储存json一键转entity的值
+                    let robbedEntity=Mapper<OrderListEntity>().map(robbedListValue.object)
+                    //获取"list"的value
+                    let list=robbedListValue["list"]
+                    //临时储存商品数组
+                    let GoodsArray=NSMutableArray()
+                    for(_,GoodsDetailsValue)in list{//取出商品entity
+                        let GoodsDetailsEntity=Mapper<GoodDetailEntity>().map(GoodsDetailsValue.object)
+                        GoodsArray.addObject(GoodsDetailsEntity!)
                     }
-                    if(rep.result.value != nil){
-                        let jsonResult=JSON(rep.result.value!)
-                        if isRefresh{
-                            self.stockOrderEntityArray.removeAll()
-                        }
-                        for(_,robbedListValue)in jsonResult{//取出订单entity
-                            
-                            // 每次循环加1
-                            count++
-                            //储存json一键转entity的值
-                            let robbedEntity=Mapper<OrderListEntity>().map(robbedListValue.object)
-                            //获取"list"的value
-                            let list=robbedListValue["list"]
-                            //临时储存商品数组
-                            let GoodsArray=NSMutableArray()
-                            for(_,GoodsDetailsValue)in list{//取出商品entity
-                                let GoodsDetailsEntity=Mapper<GoodDetailEntity>().map(GoodsDetailsValue.object)
-                                GoodsArray.addObject(GoodsDetailsEntity!)
-                            }
-                            //将临时的商品数组赋值给订单实体类中的"list"
-                            robbedEntity?.list=GoodsArray
-                            //添加到订单entity数组中
-                            self.stockOrderEntityArray.append(robbedEntity!)
-                        }
-                        if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                            self.deliverGoodsedTable?.setFooterHidden(true)
-                        }else{//否则显示
-                            self.deliverGoodsedTable?.setFooterHidden(false)
-                        }
-                        if(self.stockOrderEntityArray.count < 1){//如果数据为空，显示默认视图
-                            self.nilView?.removeFromSuperview()
-                            self.nilView=nilPromptView("暂时木有发货的订单的哦^ - ^")
-                            self.nilView!.center=self.deliverGoodsedTable!.center
-                            self.view.addSubview(self.nilView!)
-                        }else{//如果有数据清除
-                            self.nilView?.removeFromSuperview()
-                        }
-                        //关闭下拉刷新状态
-                        self.deliverGoodsedTable?.headerEndRefreshing()
-                        //关闭上拉加载状态
-                        self.deliverGoodsedTable?.footerEndRefreshing()
-                        //关闭加载等待视图
-                        SVProgressHUD.dismiss()
-                        //重新加载Table
-                        self.deliverGoodsedTable?.reloadData()
-                    }
-            }
+                    //将临时的商品数组赋值给订单实体类中的"list"
+                    robbedEntity?.list=GoodsArray
+                    //添加到订单entity数组中
+                    self.stockOrderEntityArray.append(robbedEntity!)
+                }
+                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                    self.deliverGoodsedTable?.setFooterHidden(true)
+                }else{//否则显示
+                    self.deliverGoodsedTable?.setFooterHidden(false)
+                }
+                if(self.stockOrderEntityArray.count < 1){//如果数据为空，显示默认视图
+                    self.nilView?.removeFromSuperview()
+                    self.nilView=nilPromptView("暂时木有发货的订单的哦^ - ^")
+                    self.nilView!.center=self.deliverGoodsedTable!.center
+                    self.view.addSubview(self.nilView!)
+                }else{//如果有数据清除
+                    self.nilView?.removeFromSuperview()
+                }
+                //关闭下拉刷新状态
+                self.deliverGoodsedTable?.headerEndRefreshing()
+                //关闭上拉加载状态
+                self.deliverGoodsedTable?.footerEndRefreshing()
+                //关闭加载等待视图
+                SVProgressHUD.dismiss()
+                //重新加载Table
+                self.deliverGoodsedTable?.reloadData()
+                }, failClosure: { (errorMsg) -> Void in
+                    //关闭刷新状态
+                    self.deliverGoodsedTable?.headerEndRefreshing()
+                    //关闭加载状态
+                    self.deliverGoodsedTable?.footerEndRefreshing()
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            })
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }
