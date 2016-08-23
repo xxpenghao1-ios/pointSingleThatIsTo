@@ -78,7 +78,6 @@ public enum InterfaceSuffix:String{
     case XHTML = ".xhtml"
     case DO = ".do"
 }
-
 public enum RequestAPI {
     case login(memberName:String,password:String,deviceToken:String,deviceName:String,flag:Int)
     case register(memberName:String,password:String,phone_mob:String,referralName:String)
@@ -381,7 +380,7 @@ extension RequestAPI:TargetType{
         }
     }
     //  单元测试用
-    public var sampleData: NSData {
+    public var sampleData: NSData{
         return "{}".dataUsingEncoding(NSUTF8StringEncoding)!
     }
 }

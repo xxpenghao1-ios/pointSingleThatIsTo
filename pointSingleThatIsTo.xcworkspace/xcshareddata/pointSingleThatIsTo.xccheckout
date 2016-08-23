@@ -10,31 +10,43 @@
 	<string>pointSingleThatIsTo</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>79843BDAFE00893D84B56DD104D49191B747C8BA</key>
+		<key>8F563AA792D5954E5F7D85B5C78CAC5DB0018595</key>
+		<string>https://github.com/xxpenghao1-ios/pointSingleThatIsTo.git</string>
+		<key>B7AE2ED4B8DC5991A0F3C25331AC72ED7C4FC772</key>
 		<string>https://github.com/nmore-ios/pointSingleThatIsTo.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>pointSingleThatIsTo.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>79843BDAFE00893D84B56DD104D49191B747C8BA</key>
+		<key>8F563AA792D5954E5F7D85B5C78CAC5DB0018595</key>
 		<string>..</string>
+		<key>B7AE2ED4B8DC5991A0F3C25331AC72ED7C4FC772</key>
+		<string>../../pointSingleThatIsTo</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/nmore-ios/pointSingleThatIsTo.git</string>
+	<string>https://github.com/xxpenghao1-ios/pointSingleThatIsTo.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>79843BDAFE00893D84B56DD104D49191B747C8BA</string>
+	<string>8F563AA792D5954E5F7D85B5C78CAC5DB0018595</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>79843BDAFE00893D84B56DD104D49191B747C8BA</string>
+			<string>B7AE2ED4B8DC5991A0F3C25331AC72ED7C4FC772</string>
 			<key>IDESourceControlWCCName</key>
 			<string>pointSingleThatIsTo</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8F563AA792D5954E5F7D85B5C78CAC5DB0018595</string>
+			<key>IDESourceControlWCCName</key>
+			<string>pointSingleThatIsTo%20%E4%B8%8A%E5%8D%8811.44.12</string>
 		</dict>
 	</array>
 </dict>
