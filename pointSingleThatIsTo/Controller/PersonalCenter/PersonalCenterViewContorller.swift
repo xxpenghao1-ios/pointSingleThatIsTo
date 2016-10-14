@@ -68,6 +68,16 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
         tel=(userDefaults.objectForKey("subStationPhoneNumber") as? String) ?? "0731-82562729"
         UILayer()
         querySubstationInfo()
+        self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Compose, target:self, action:"pushFeedbackOnProblemsView")
+        
+    }
+    /**
+     跳转到问题反馈页面
+     */
+    func pushFeedbackOnProblemsView(){
+        let vc=FeedbackOnProblemsViewController()
+        vc.hidesBottomBarWhenPushed=true
+        self.navigationController!.pushViewController(vc, animated:true)
     }
     //ui控件及布局
     func UILayer(){
@@ -215,7 +225,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
             }else if indexPath.row == 3{
                 cell!.detailTextLabel!.text=tel
             }else if indexPath.row == 4{
-                cell!.detailTextLabel!.text="1.5.6"
+                cell!.detailTextLabel!.text="1.7.0"
                 cell!.accessoryType=UITableViewCellAccessoryType.None
             }
             img.image=UIImage(named:imgArr2[indexPath.row])

@@ -172,7 +172,7 @@ extension PresentExpViewController{
      */
     func httpQueryIntegralMallForSubStation(currentPage:Int,isRefresh:Bool){
         var count=0
-        let subStationId=userDefaults.objectForKey("subStationId") as! String
+        let subStationId=userDefaults.objectForKey("substationId") as! String
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryIntegralMallForSubStation(subStationId: subStationId, currentPage: currentPage, pageSize: 10), successClosure: { (result) -> Void in
             let json=JSON(result)
             if isRefresh{//如果是刷新先删除数据

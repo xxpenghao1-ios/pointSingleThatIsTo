@@ -165,6 +165,8 @@ public enum RequestAPI {
     case addStoreShippAddressforAndroid(flag:Int,storeId:String,county:String,city:String,province:String,shippName:String,detailAddress:String,phoneNumber:String,IPhonePenghao:Int)
     //下单
     case storeOrderForAndroid(goodsList:String,detailAddress:String,phoneNumber:String,shippName:String,storeId:String,pay_message:String,tag:Int)
+    //问题反馈
+    case complaintsAndSuggestions(complaint:String,storeId:String)
 }
 extension RequestAPI:TargetType{
     public var baseURL:NSURL{
@@ -268,12 +270,14 @@ extension RequestAPI:TargetType{
             return "addStoreShippAddressforAndroid"+InterfaceSuffix.XHTML.rawValue
         case .storeOrderForAndroid(_,_,_,_,_,_,_):
             return "storeOrderForAndroid"+InterfaceSuffix.XHTML.rawValue
+        case .complaintsAndSuggestions(_,_):
+            return "complaintsAndSuggestions"+InterfaceSuffix.XHTML.rawValue
         }
         
     }
     public var method:Moya.Method{
         switch self{
-        case .login(_,_,_,_,_),.register(_,_,_,_),.doRegest(_,_,_,_),.storeConfirmDelivergoods(_,_),.nmoreGlobalPosiUploadStoreLogin(_,_),.nmoreGlobalPosiUploadStore(_,_,_,_,_,_,_,_),.storeOrderForAndroid(_,_,_,_,_,_,_):
+        case .login(_,_,_,_,_),.register(_,_,_,_),.doRegest(_,_,_,_),.storeConfirmDelivergoods(_,_),.nmoreGlobalPosiUploadStoreLogin(_,_),.nmoreGlobalPosiUploadStore(_,_,_,_,_,_,_,_),.storeOrderForAndroid(_,_,_,_,_,_,_),.complaintsAndSuggestions(_,_):
             return .POST
         case .returnRandCode(_,_),.updatePassWord(_,_),.doMemberTheOnly(_),.queryCategory4AndroidAll(_),.queryCategory4Android(_),.queryBrandList4Android(_,_),.queryStoreAllRobOrderForList(_,_,_,_),.queryRobFor1OrderForList(_),.queryOrderInfo4AndroidByorderId(_),.robOrderByStore4Android(_,_),.insertShoppingCar(_,_,_,_,_,_,_),.queryGoodsForAndroidIndexForStoreNew(_,_,_,_,_,_),.queryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_),.searchGoodsInterfaceForStore(_,_,_,_,_,_,_,_),.queryStorePromotionGoodsList(_,_,_,_),.queryGoodsDetailsForAndroid(_,_,_,_,_,_),.queryPreferentialAndGoods4Store(_,_,_,_,_,_),.mobileAdvertisingPromotion(),.queryAdMessgInfo(_),.queryGoodsForAndroidIndexForStore(_,_,_),.queryOneCategory(_),.mobileAdvertising(_),.storeQueryMyNews(_,_,_,_),.queryRecommended(_),.queryMessageToStore(_,_,_),.queryStoreMember(_,_),.outLoginForStore(_),.SuoYuan(_,_),.queryOrderInfo4AndroidStoreByOrderStatus(_,_,_,_),.storeCancelOrder(_),.updataOrderStatus4Store(_),.bindingRecommended4Store(_,_),.integralMallExchange(_,_,_),.queryMemberIntegral(_),.queryIntegralMallForSubStation(_,_,_),.storeQueryMemberIntegralV1(_,_,_),.queryIntegralMallExchangeRecord(_,_,_),.queryStoreShippAddressforAndroid(_),.deleteStoreShippAddressforAndroid(_),.updateStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_,_),.addStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_):
             return .GET
@@ -377,6 +381,8 @@ extension RequestAPI:TargetType{
             return ["flag":flag,"storeId":storeId,"county":county,"city":city,"province":province,"shippName":shippName,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"IPhonePenghao":IPhonePenghao]
         case let .storeOrderForAndroid(goodsList, detailAddress, phoneNumber, shippName, storeId, pay_message, tag):
             return ["goodsList":goodsList,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"shippName":shippName,"storeId":storeId,"pay_message":pay_message,"tag":tag]
+        case let .complaintsAndSuggestions(complaint, storeId):
+            return ["complaint":complaint,"storeId":storeId]
         }
     }
     //  单元测试用

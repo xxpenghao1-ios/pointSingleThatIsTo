@@ -161,7 +161,7 @@ class LoginViewController:BaseViewController{
                             //保存区
                             userDefaults.setObject(entity!.county!, forKey:"county")
                             //保存分站id
-                            userDefaults.setObject(entity!.substationId, forKey:"subStationId")
+                            userDefaults.setObject(entity!.substationId, forKey:"substationId")
                             //保存用户名
                             userDefaults.setObject(name, forKey:"memberName")
                             //保存店铺唯一标识码

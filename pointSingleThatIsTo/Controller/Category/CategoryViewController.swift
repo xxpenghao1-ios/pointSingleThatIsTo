@@ -7,9 +7,8 @@
 //
 //分类
 import Foundation
-
 import UIKit
-class CategoryViewController:ViewController,UITableViewDelegate,UITableViewDataSource{
+class CategoryViewController:UIViewController,UITableViewDelegate,UITableViewDataSource{
     //左边Table
     var leftTable:UITableView?;
     //右分割线

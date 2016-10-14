@@ -4,7 +4,6 @@
 //
 //  Created by penghao on 16/1/14.
 //  Copyright © 2016年 penghao. All rights reserved.
-///
 import Foundation
 import UIKit
 import EAIntroView

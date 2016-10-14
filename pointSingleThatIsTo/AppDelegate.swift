@@ -74,6 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         // 得到当前应用的版本号
         let infoDictionary = NSBundle.mainBundle().infoDictionary
         let currentAppVersion = infoDictionary!["CFBundleShortVersionString"] as! String
+        
         // 取出之前保存的版本号
         let userDefaults = NSUserDefaults.standardUserDefaults()
         let appVersion = userDefaults.stringForKey("appVersion")
@@ -92,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
                 //初始化主页面
                 tab=TabBarViewController()
                 self.window?.rootViewController=tab
-                }
+            }
         }
         //设置菊花图默认前景色和背景色
         SVProgressHUD.setForegroundColor(UIColor(white: 1, alpha: 1))
