@@ -18,6 +18,8 @@ class ShoppingCarVo:Mappable{
     var supplierName:String?
     /// 商品集合
     var listGoods:NSMutableArray?
+    /// 是否选中(1选中2未选中)
+    var isSelected:Int?
     required init?(_ map: Map) {
         mapping(map)
     }

@@ -563,6 +563,7 @@ extension GoodDetailViewController{
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!, flag: 2, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!), successClosure: { (result) -> Void in
             SVProgressHUD.dismiss()
             let json=JSON(result)
+            print(json)
             self.goodDeatilEntity=Mapper<GoodDetailEntity>().map(json.object)
             self.goodDeatilEntity!.flag=2
             // 如果库存为空 默认给-1 表示库存充足

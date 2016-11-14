@@ -12,14 +12,9 @@ import UIKit
 protocol ShoppingCarTableViewCellDelegate : NSObjectProtocol {
     /**
      计算选择商品的总价格
-     
-     - parameter totalPrice: 总价格  单个商品＊数量
-     - parameter flag:       标示 是否选中 true ++  false  --
-     - parameter good:       商品entity
      - parameter index:      行索引
-     - parameter count:      每次加减数量
      */
-    func calculationSelectTotalPrice(totalPrice:Double,flag:Bool,good:GoodDetailEntity,index:NSIndexPath,count:Int,seletedFlag:Int?);
+    func calculationSelectTotalPrice(index:NSIndexPath);
     /**
      限购提示
      
@@ -185,16 +180,8 @@ class ShoppingCarTableViewCell:UITableViewCell {
     func reductionCount(sender:UIButton){
         if good!.carNumber > good!.miniCount{//购物车数量大于1的时候 可以进行减少操作
             good!.carNumber!-=good!.goodsBaseCount!
-            var totalPrice:Double=0;
-            if good!.flag! == 1{//如果是特价商品计算特价价格
-                totalPrice=Double(good!.prefertialPrice!)!*Double(good!.goodsBaseCount!);
-            }else{
-                totalPrice=Double(good!.uprice!)!*Double(good!.goodsBaseCount!);
-            }
             lblCountLeb.text="\(good!.carNumber!)";
-            if btnSelectImg.selected == true {//判断是否是选中状态 如果是通过协议 实现价格操作
-                    delelgate?.calculationSelectTotalPrice(totalPrice,flag:false, good: good!, index: index!,count:good!.goodsBaseCount!,seletedFlag:nil)
-            }
+            delelgate?.calculationSelectTotalPrice(index!)
             //恢复增加按钮 操作
             btnAddCount.enabled=true;
             //恢复数量文字颜色
@@ -209,69 +196,61 @@ class ShoppingCarTableViewCell:UITableViewCell {
      - parameter sender: UIButton
      */
     func addCount(sender:UIButton){
-        var totalPrice:Double=0;
         if good!.flag! == 1{//如果是特价商品计算特价价格
             if good!.stock != -1{//特价库存是否充足
-                //计算价格
-                totalPrice=Double(good!.prefertialPrice!)!*Double(good!.goodsBaseCount!);
                 if good!.eachCount > good!.stock{//如果特价限定数量 大于 库存数量
                     if good!.carNumber > good!.stock!-good!.goodsBaseCount!{//特价商品只能购买库存数量以内的商品数量
                         //调用达到限定数量方法
-                        reachALimitCount(totalPrice)
+                        reachALimitCount()
                         //调用限购提示方法
                         delelgate?.reachALimitPrompt(good!.stock!, eachCount:good!.eachCount!,count:good!.carNumber!,flag:1)
                     }else{//如果不等于库存数量 继续增加
                         good!.carNumber!+=good!.goodsBaseCount!
                         //调用没有达到限定数量方法
-                        noReachALimitCount(totalPrice)
+                        noReachALimitCount()
                     }
                 }else{//如果特价限定数量 小于 库存数量
                     if good!.carNumber > good!.eachCount!-good!.goodsBaseCount!{//如果商品数量大于限购数量
                         //调用达到限定数量方法
-                        reachALimitCount(totalPrice)
+                        reachALimitCount()
                         //调用限购提示方法
                         delelgate?.reachALimitPrompt(good!.stock!, eachCount:good!.eachCount!,count:good!.carNumber!,flag: 1)
                         
                     }else{//如果没有达到限购数量 继续增加
                         good!.carNumber!+=good!.goodsBaseCount!
                         //调用没有达到限定数量方法
-                        noReachALimitCount(totalPrice)
+                        noReachALimitCount()
                     }
                 }
             }else{
-                //计算价格
-                totalPrice=Double(good!.prefertialPrice!)!*Double(good!.goodsBaseCount!);
                 if good!.carNumber > good!.eachCount!-good!.goodsBaseCount!{//如果商品数量 达到限购数量
                     //调用达到限定数量方法
-                    reachALimitCount(totalPrice)
+                    reachALimitCount()
                     //调用限购提示方法
                     delelgate?.reachALimitPrompt(good!.goodsStock!, eachCount:good!.eachCount!,count:good!.carNumber!,flag:1)
                 }else{
                     good!.carNumber!+=good!.goodsBaseCount!
                     //调用没有达到限定数量方法
-                    noReachALimitCount(totalPrice)
+                    noReachALimitCount()
                 }
             }
         }else{//如果不是特价商品
             if good!.goodsStock != -1{//如果库存不充足
-                totalPrice=Double(good!.uprice!)!*Double(good!.goodsBaseCount!);
                 if good!.carNumber > good!.goodsStock!-good!.goodsBaseCount!{//如果商品达到限购数量
                     //调用达到限定数量方法
-                    reachALimitCount(totalPrice)
+                    reachALimitCount()
                     //调用限购提示方法
                     delelgate?.reachALimitPrompt(good!.goodsStock!, eachCount:good!.eachCount,count:good!.carNumber!,flag:2)
                     
                 }else{//如果没有达到限购数量
                     //调用没有达到限定数量方法
                     good!.carNumber!+=good!.goodsBaseCount!
-                    noReachALimitCount(totalPrice)
+                    noReachALimitCount()
                 }
             }else{
-                //计算价格
-                totalPrice=Double(good!.uprice!)!*Double(good!.goodsBaseCount!);
                 //调用没有达到限定数量方法
                 good!.carNumber!+=good!.goodsBaseCount!
-                noReachALimitCount(totalPrice)
+                noReachALimitCount()
             }
             
         }
@@ -279,7 +258,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
     /**
      达到限定数量
      */
-    func reachALimitCount(totalPrice:Double){
+    func reachALimitCount(){
             //禁用增加按钮
             btnAddCount.enabled=false
             //改变文字颜色
@@ -293,10 +272,10 @@ class ShoppingCarTableViewCell:UITableViewCell {
      
      - parameter totalPrice:价格
      */
-    func noReachALimitCount(totalPrice:Double){
-        if btnSelectImg.selected.boolValue == true {//判断是否是选中状态 如果是通过协议 实现价格操作
-            delelgate?.calculationSelectTotalPrice(totalPrice,flag:true, good: good!, index: index!,count:good!.goodsBaseCount!,seletedFlag:nil)
-        }
+    func noReachALimitCount(){
+        
+        delelgate?.calculationSelectTotalPrice(index!)
+        
         //改变文字数量
         lblCountLeb.text="\(good!.carNumber!)"
         //发送通知更新角标
@@ -310,25 +289,17 @@ class ShoppingCarTableViewCell:UITableViewCell {
      */
     func selectImgSwitch(sender:UIButton){
         
-        /// 定义变量 计算单个商品总价格
-        var totalPrice:Double=0;
-        
-        if good!.flag == 1{//如果等于2 表示是特价 计算特价价格
-            totalPrice=Double(good!.prefertialPrice!)!*Double(good!.carNumber!)
-        }else{//计算普通价格
-            totalPrice=Double(good!.uprice!)!*Double(good!.carNumber!)
-        }
         if sender.selected.boolValue == true{//如果是选中状态 切换
             //设置按钮状态 为未选中
             sender.selected=false
-            //通过协议传参
-            delelgate?.calculationSelectTotalPrice(totalPrice,flag: false, good: good!, index: index!,count:good!.carNumber!,seletedFlag:2)
+            good!.isSelected=2
         }else{
             //设置按钮状态 为选中
             sender.selected=true
-            //通过协议传参
-            delelgate?.calculationSelectTotalPrice(totalPrice,flag: true, good: good!, index: index!,count:good!.carNumber!,seletedFlag:1)
+            good!.isSelected=1
+            
         }
+        delelgate?.calculationSelectTotalPrice(index!)
         
     }
     /**
@@ -422,7 +393,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
                 }
             }
         }
-        if entity.selectedFlag == 1{
+        if entity.isSelected == 1{
             btnSelectImg.selected=true
         }else{
             btnSelectImg.selected=false

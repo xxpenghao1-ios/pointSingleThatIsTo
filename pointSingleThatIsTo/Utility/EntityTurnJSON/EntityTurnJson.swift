@@ -27,7 +27,6 @@ func toJSONString(dict:Dictionary<String,GoodDetailEntity>)->String{
             value.goodsSumMoney="\(Float(value.carNumber!)*Float(value.uprice!)!)"
         }
         josnString.appendString(value.toJSONString(true)!+",");
-        print(josnString as String)
         
     }
     //3. 获取末尾逗号所在位置

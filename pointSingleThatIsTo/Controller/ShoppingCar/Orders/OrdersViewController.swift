@@ -294,7 +294,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
             switch indexPath.row{
             case 0:
                 name.text="支付方式 : "
-                nameValue.text="微信支付"
+                nameValue.text="货到付款"
                 break
             case 1:
                 name.text="配送方式 : "

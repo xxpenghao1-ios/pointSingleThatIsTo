@@ -76,8 +76,6 @@ class GoodDetailEntity:Mappable {
     var goodsBaseCount:Int?
     /// 最低配送量
     var miniCount:Int?
-    /// 1表示选中
-    var selectedFlag:Int?
     /// 特价价格(购物车)
     var prefertialPrice:String?
     /// 商品总价
@@ -88,6 +86,8 @@ class GoodDetailEntity:Mappable {
     var salesCount:Int?
     /// 特价结束时间
     var endTime:String?
+    /// 是否选中(1选中2未选中)
+    var isSelected:Int?
     
     
     init(){}

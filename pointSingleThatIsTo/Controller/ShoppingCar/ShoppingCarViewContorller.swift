@@ -38,6 +38,9 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
     /// 选中的总数量
     var selectSumCount:Int=0
     
+    /// 编辑按钮
+    var editBar:UIBarButtonItem?
+    
     /// 保存总价格
     var totalPirce:Double = 0.00{
         didSet{
@@ -56,6 +59,7 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
         if !viewFlag{//false 表示可以加载
             arr.removeAllObjects()
             http()
+            self.editBar?.title="编辑"
         }
         viewFlag=false
     }
@@ -207,6 +211,18 @@ extension ShoppingCarViewContorller:UITableViewDelegate,UITableViewDataSource{
         view.layer.borderColor=UIColor.borderColor().CGColor
         view.backgroundColor=UIColor.whiteColor()
         
+        //选择图片
+        let selectImg=UIImage(named:"select_05");
+        let selectImgSelected=UIImage(named:"select_03");
+        
+        //给选择图片加上按钮实现点击切换
+        let btnSelectImg=UIButton(frame:CGRectMake(10,(40-20)/2,20,20));
+        btnSelectImg.setImage(selectImg, forState:.Normal)
+        btnSelectImg.setImage(selectImgSelected, forState:.Selected);
+        btnSelectImg.addTarget(self, action:"selectImgSwitch:", forControlEvents: UIControlEvents.TouchUpInside);
+        btnSelectImg.tag=section
+        view.addSubview(btnSelectImg)
+        
         let lblSupplierName=UILabel()
         lblSupplierName.lineBreakMode=NSLineBreakMode.ByWordWrapping
         lblSupplierName.numberOfLines=0
@@ -217,29 +233,42 @@ extension ShoppingCarViewContorller:UITableViewDelegate,UITableViewDataSource{
         }
         lblSupplierName.font=UIFont.systemFontOfSize(14)
         let size=lblSupplierName.text!.textSizeWithFont(lblSupplierName.font, constrainedToSize:CGSizeMake(300,30))
-        lblSupplierName.frame=CGRectMake(15,5,size.width,30)
+        lblSupplierName.frame=CGRectMake(CGRectGetMaxX(btnSelectImg.frame)+5,5,size.width,30)
         view.addSubview(lblSupplierName)
         
         
         let lblTotal=UILabel(frame:CGRectMake(CGRectGetMaxX(lblSupplierName.frame),5,boundsWidth-CGRectGetMaxX(lblSupplierName.frame)-15,30))
+        //每组小计价格
         var sum:Double=0
-        for var i=0;i<vo.listGoods!.count;i++ {
-            let entity=vo.listGoods![i] as! GoodDetailEntity
-            var sumMoney:Double=0
-            if entity.selectedFlag == 1{
-                if entity.flag == 1{
-                    sumMoney=(Double(entity.carNumber!)*Double(entity.prefertialPrice!)!)
-                }else{
-                    sumMoney=(Double(entity.carNumber!)*Double(entity.uprice!)!)
-                }
+        if vo.listGoods!.count == 0{//判断当前组下面是否有商品集合
+            return nil
+        }else{
+            if vo.isSelected == 1{//如果等于1选中
+                btnSelectImg.selected=true
             }
-            sum+=sumMoney
+            //循环所有商品统计
+            for var i=0;i<vo.listGoods!.count;i++ {
+                let entity=vo.listGoods![i] as! GoodDetailEntity
+                //每个商品小计价格
+                var sumMoney:Double=0
+                if entity.isSelected == 1{//只计算选中的商品
+                    if entity.flag == 1{//如果是特价
+                        sumMoney=(Double(entity.carNumber!)*Double(entity.prefertialPrice!)!)
+                    }else{//普通价格
+                        sumMoney=(Double(entity.carNumber!)*Double(entity.uprice!)!)
+                    }
+                }
+                sum+=sumMoney
+            }
+
         }
-        lblTotal.text="小计:\(sum)"
-        lblTotal.font=UIFont.systemFontOfSize(14)
-        lblTotal.textAlignment = .Right
-        lblTotal.textColor=UIColor.redColor()
-        view.addSubview(lblTotal)
+        if self.editBar?.title != "完成"{//如果true显示小计
+            lblTotal.text="小计:\(sum)"
+            lblTotal.font=UIFont.systemFontOfSize(14)
+            lblTotal.textAlignment = .Right
+            lblTotal.textColor=UIColor.redColor()
+            view.addSubview(lblTotal)
+        }
         return view
     }
     //返回头部高度
@@ -267,6 +296,7 @@ extension ShoppingCarViewContorller:UITableViewDelegate,UITableViewDataSource{
     func tableView(tableView: UITableView, titleForDeleteConfirmationButtonForRowAtIndexPath indexPath: NSIndexPath) -> String?{
         return "删除"
     }
+    
 }
 // MARK: - 购物车网络请求
 extension ShoppingCarViewContorller{
@@ -305,63 +335,16 @@ extension ShoppingCarViewContorller{
                     //获取对应cell
                     let cell = tableView.cellForRowAtIndexPath(indexPath) as? ShoppingCarTableViewCell
                     if cell != nil{
-                        if  cell!.btnSelectImg.selected == true{//如果当前删除 是选中状态
-                            var price:Double=0
-                            if entity.flag == 1{
-                                if entity.endTime != nil{
-                                    if Int(entity.endTime!) >= 0{
-                                        //计算价格
-                                        price+=Double(entity.prefertialPrice!)!*Double(entity.carNumber!)
-                                    }
-                                }
-                            }else{
-                                //价格
-                                price=Double(entity.uprice!)!*Double(entity.carNumber!);
-                            }
-                            //截取
-                            let toPrice=price.toDecimalNumberTwo(price);
-                            //总价-去对应的删除的单价
-                            self.totalPirce-=toPrice;
-                            //减去对应的数量
-                            self.selectSumCount-=entity.carNumber!
-                            self.btnClearing!.setTitle("去结算(\(self.selectSumCount))", forState: UIControlState.Normal)
-                            self.lblTotalPrice!.text="总价:￥\(self.totalPirce)"
-                            
-                        }
                         //删除数据源的对应数据
                         vo.listGoods!.removeObjectAtIndex(indexPath.row)
                         //删除对应的cell
                         if vo.listGoods!.count > 0{
-                            self.table!.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Top)
+                            self.table!.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
+                            self.isSection(indexPath)
                         }else{
                             self.arr.removeObjectAtIndex(indexPath.section)
-                            self.table!.deleteSections(NSIndexSet(index:indexPath.section), withRowAnimation: UITableViewRowAnimation.Top)
-                        }
-                        
-                        //用于判断当前所有商品是否全部选择 如果有一个为false表示还没有全部选中
-                        var cellSelectFlag=false
-                        //获取所有的cell
-                        for(var i=0;i<self.arr.count;i++){
-                            let vo=self.arr[i] as! ShoppingCarVo
-                            for(var j=0;j<vo.listGoods!.count;j++){
-                                let entity=vo.listGoods![j] as! GoodDetailEntity
-                                if entity.selectedFlag == 1{//判断选中按钮是否选中 如果选中cellSelectFlag设为true
-                                    cellSelectFlag=true;
-                                }else{//只有有1个为没有选中cellSelectFlag设为false
-                                    cellSelectFlag=false
-                                    break
-                                }
-                            }
-                        }
-                        if cellSelectFlag{//如果为true表示全部选中了
-                            self.btnCheckAll!.selected=true
-                        }else{
-                            self.btnCheckAll!.selected=false
-                        }
-                        
-                        if self.arr.count < 1{//如果没有数据 显示空提示视图 隐藏结算视图
-                            self.nilShoppingCarView!.hidden=false
-                            self.clearingView!.hidden=true
+                            self.table!.deleteSections(NSIndexSet(index:indexPath.section), withRowAnimation: UITableViewRowAnimation.None)
+                            self.totalPriceAndSumCount()
                         }
                         //发送通知更新角标
                         NSNotificationCenter.defaultCenter().postNotificationName("postBadgeValue", object:3, userInfo:["carCount":entity.carNumber!])
@@ -372,6 +355,9 @@ extension ShoppingCarViewContorller{
         }
 
     }
+    /**
+     请求购物车数据
+     */
     func http(){
         request(.GET,URL+"queryShoppingCarNew.xhtml", parameters:["memberId":IS_NIL_MEMBERID()!]).responseJSON{ response in
             if response.result.error != nil{
@@ -379,30 +365,35 @@ extension ShoppingCarViewContorller{
             }
             if response.result.value != nil{
                 let json=JSON(response.result.value!)
+                print(json)
                 for(_,value) in json{
                     let vo=Mapper<ShoppingCarVo>().map(value.object)
-                    if vo!.lowestMoney == nil{
+                    if vo!.lowestMoney == nil{//如果最低起送等于空
                         vo!.lowestMoney="0"
                     }
+                    //默认选中
+                    vo?.isSelected=1
                     let goodList=NSMutableArray()
                     for(_,list) in value["listGoods"]{
                         let entity=Mapper<GoodDetailEntity>().map(list.object)
-                        entity!.selectedFlag=1
+                        //默认选中
+                        entity!.isSelected=1
                         if entity!.prefertialPrice != nil{//如果特价价格不等于空(表示是特价)
                             entity!.flag=1 //特价
                             if entity!.endTime == nil{
                                 entity!.endTime="0"
                             }else{
+                                //截取时间字符
                                 entity!.endTime=entity!.endTime!.componentsSeparatedByString(".")[0]
-                                if Int(entity!.endTime!) <= 0{
-                                    entity!.carNumber=0
+                                if Int(entity!.endTime!) <= 0{//判断如果时间小于等于0
+                                    entity!.carNumber=0//购物车单个商品数量等于0
                                 }
                             }
                         }else{
                             entity!.flag=2 //非特价
                         }
-                        if entity!.stock == nil{
-                            entity!.stock = -1
+                        if entity!.stock == nil{//如果库存等于空
+                            entity!.stock = -1//默认给-1
                         }
                         goodList.addObject(entity!)
                     }
@@ -423,55 +414,139 @@ extension ShoppingCarViewContorller{
 // MARK: - 页面逻辑操作
 extension ShoppingCarViewContorller{
     /**
+     编辑
+     
+     - parameter sender:UIBarButtonItem
+     */
+    func edit(sender:UIBarButtonItem){
+        if sender.title == "编辑"{
+            sender.title="完成"
+            multiSelectDelete(2)
+            //改变结算为删除按钮
+            self.btnClearing!.setTitle("删除", forState: UIControlState.Normal)
+            self.lblTotalPrice!.text="全选"
+            self.btnCheckAll!.selected=false
+            
+        }else{
+            sender.title="编辑"
+            multiSelectDelete(1)
+            totalPriceAndSumCount()
+        }
+    }
+    /**
+     多选删除
+     
+     - parameter isDelete:是删除还是完成(2删除)
+     */
+    func multiSelectDelete(isDelete:Int){
+        //如果是删除让选中状态变为不选中(完成回到选中状态)
+        for(var i=0;i<arr.count;i++){
+            let vo=arr[i] as! ShoppingCarVo
+            vo.isSelected=isDelete
+            for(var j=0;j<vo.listGoods!.count;j++){
+                let entity=vo.listGoods![j] as! GoodDetailEntity
+                entity.isSelected=isDelete
+            }
+        }
+        self.table!.reloadData()
+    }
+    /**
+     每组是否选中
+     
+     - parameter sender:UIButton
+     */
+    func selectImgSwitch(sender:UIButton){
+        var isSelected=0
+        if sender.selected == true{
+            sender.selected=false
+            isSelected=2
+            
+        }else{
+            sender.selected=true
+            isSelected=1
+        }
+        let vo=arr[sender.tag] as! ShoppingCarVo
+        vo.isSelected=isSelected
+        for(var i=0;i<vo.listGoods!.count;i++){
+            let entity=vo.listGoods![i] as! GoodDetailEntity
+            entity.isSelected=isSelected
+        }
+        totalPriceAndSumCount()
+        self.table?.reloadSections(NSIndexSet(index:sender.tag), withRowAnimation: UITableViewRowAnimation.None)
+    }
+    /**
      统计总价格 和总数量
      */
     func totalPriceAndSumCount(){
         if arr.count > 0{//如果有数据
+            if editBar == nil{
+                editBar=UIBarButtonItem(title:"编辑", style: UIBarButtonItemStyle.Done, target:self, action:"edit:")
+                self.navigationItem.rightBarButtonItem=editBar
+            }
             /// 清零数据
             selectSumCount=0
             totalPirce=0.0
             //显示结算视图
             clearingView!.hidden=false
             for var i=0;i<arr.count;i++ {
-                
                 let vo=arr[i] as! ShoppingCarVo
                 for var j=0;j<vo.listGoods!.count;j++ {
                     let entity=vo.listGoods![j] as! GoodDetailEntity
-                    if entity.flag == 1{//如果是特价
-                        if entity.endTime != nil{
-                            if Int(entity.endTime!) > 0{
-                                //计算总价格
-                                totalPirce+=Double(entity.prefertialPrice!)!*Double(entity.carNumber!)
-                                //计算总数量
-                                selectSumCount+=entity.carNumber!
+                    if entity.isSelected == 1{//只统计选中的商品
+                        if entity.flag == 1{//如果是特价
+                            if entity.endTime != nil{
+                                if Int(entity.endTime!) > 0{
+                                    //计算总价格
+                                    totalPirce+=Double(entity.prefertialPrice!)!*Double(entity.carNumber!)
+                                    //计算总数量
+                                    selectSumCount+=entity.carNumber!
+                                }
                             }
+                        }else{
+                            //计算总价格
+                            totalPirce+=Double(entity.uprice!)!*Double(entity.carNumber!)
+                            //计算总数量
+                            selectSumCount+=entity.carNumber!
                         }
-                    }else{
-                        //计算总价格
-                        totalPirce+=Double(entity.uprice!)!*Double(entity.carNumber!)
-                        //计算总数量
-                        selectSumCount+=entity.carNumber!
                     }
-
                 }
                 
             }
-            //改变结算按钮状态
-            self.btnClearing!.setTitle("去结算(\(self.selectSumCount))", forState: UIControlState.Normal)
-            self.lblTotalPrice!.text="总价:￥\(self.totalPirce)"
-            //全选
-            btnCheckAll!.selected=true
-            let cellArr=table!.visibleCells
-            //获取所有的cell
-            for(var i=0;i<cellArr.count;i++){//所有cell选中状态设为true
-                let cell:ShoppingCarTableViewCell=cellArr[i] as! ShoppingCarTableViewCell
-                cell.btnSelectImg.selected=true;
+            if self.editBar!.title == "编辑"{
+                //改变结算按钮状态
+                self.btnClearing!.setTitle("去结算(\(self.selectSumCount))", forState: UIControlState.Normal)
+                self.lblTotalPrice!.text="总价:￥\(self.totalPirce)"
+            }else{
+                //改变结算按钮状态
+                self.btnClearing!.setTitle("删除", forState: UIControlState.Normal)
+                self.lblTotalPrice!.text="全选"
             }
+            //隐藏购物车空提示视图
             nilShoppingCarView!.hidden=true
+            //用于判断当前所有商品是否全部选择 如果有一个为false表示还没有全部选中
+            var cellSelectFlag=false
+            //获取所有的cell
+            for(var i=0;i<self.arr.count;i++){
+                let vo=self.arr[i] as! ShoppingCarVo
+                if vo.isSelected == 1{//判断选中按钮是否选中 如果选中cellSelectFlag设为true
+                    cellSelectFlag=true;
+                }else{//只有有1个为没有选中cellSelectFlag设为false
+                    cellSelectFlag=false
+                    break
+                }
+            }
+            if cellSelectFlag{//如果为true表示全部选中了
+                self.btnCheckAll!.selected=true
+            }else{
+                self.btnCheckAll!.selected=false
+            }
         }else{//如果没有数据 显示空提示视图
             nilShoppingCarView!.hidden=false
             //隐藏结算视图
             clearingView!.hidden=true
+            //隐藏编辑按钮
+            editBar=nil
+            self.navigationItem.rightBarButtonItem=nil
             
         }
         
@@ -483,65 +558,33 @@ extension ShoppingCarViewContorller{
      - parameter sender:UIButton
      */
     func checkAll(sender:UIButton){
-        var cellArr=self.table!.visibleCells;
+        var isSelected=0
         if sender.selected.boolValue == false{//表示全部选中
-            //先清0所有数据
-            selectSumCount=0
-            totalPirce=0.00;
             //设置按钮为选中状态
             sender.selected=true
-            //获取屏幕可见cell
-            for(var i=0;i<cellArr.count;i++){//所有cell选中状态设为true
-                let cell:ShoppingCarTableViewCell=cellArr[i] as! ShoppingCarTableViewCell
-                cell.btnSelectImg.selected=true;
-            }
-            for(var j=0;j<arr.count;j++){//循环所有entity 计算总价 和总数
-                let vo=arr[j] as! ShoppingCarVo
-                for(var t=0;t<vo.listGoods!.count;t++){
-                    let entity=vo.listGoods![t] as! GoodDetailEntity
-                    entity.selectedFlag=1
-                    if entity.flag == 1{//如果是特价
-                        if entity.endTime != nil{
-                            if Int(entity.endTime!) > 0{
-                                //计算总价格
-                                totalPirce+=Double(entity.prefertialPrice!)!*Double(entity.carNumber!)
-                                //计算总数量
-                                selectSumCount+=entity.carNumber!
-                            }
-                        }
-                    }else{
-                        //计算总价格
-                        totalPirce+=Double(entity.uprice!)!*Double(entity.carNumber!)
-                        //计算总数量
-                        selectSumCount+=entity.carNumber!
-                    }
-                }
-                
-            }
-            //重新设置总价
-            self.lblTotalPrice!.text="总价:￥\(self.totalPirce)"
-            //重新设置总结算数
-            self.btnClearing!.setTitle("去结算(\(selectSumCount))", forState: .Normal)
+            isSelected=1
             
         }else{//表示取消
             sender.selected=false
-            for(var i=0;i<cellArr.count;i++){
-                let cell:ShoppingCarTableViewCell=cellArr[i] as! ShoppingCarTableViewCell
-                cell.btnSelectImg.selected=false;
-            }
-            for(var j=0;j<arr.count;j++){//循环所有entity
-                let vo=arr[j] as! ShoppingCarVo
-                for(var t=0;t<vo.listGoods!.count;t++){
-                    let entity=vo.listGoods![t] as! GoodDetailEntity
-                    entity.selectedFlag=2
-                }
-            }
-            //所有数据请0
-            totalPirce=0.00;
-            selectSumCount=0
-            self.lblTotalPrice!.text="总价:￥\(self.totalPirce)"
-            self.btnClearing!.setTitle("去结算(\(0))", forState: UIControlState.Normal)
+            isSelected=2
+            
         }
+        for(var i=0;i<arr.count;i++){
+            let vo=arr[i] as! ShoppingCarVo
+            vo.isSelected=isSelected
+            for(var j=0;j<vo.listGoods!.count;j++){
+                let entity=vo.listGoods![j] as! GoodDetailEntity
+                entity.isSelected=isSelected
+            }
+        }
+        if self.btnClearing!.titleLabel!.text == "删除"{
+            //改变结算为删除按钮
+            self.btnClearing!.setTitle("删除", forState: UIControlState.Normal)
+            self.lblTotalPrice!.text="全选"
+        }else{
+            totalPriceAndSumCount()
+        }
+        
         table!.reloadData()
         
     }
@@ -571,77 +614,37 @@ extension ShoppingCarViewContorller{
     }
     /**
      计算选择商品的总价格
-     
-     - parameter totalPrice: 总价格  单个商品＊数量
-     - parameter flag:       标示 是否选中 true ++  false  --
-     - parameter good:       商品entity
      - parameter index:      行索引
-     - parameter seletedFlag: 是否选中
      */
-    func calculationSelectTotalPrice(totalPrice:Double,flag: Bool, good: GoodDetailEntity, index: NSIndexPath,count:Int,seletedFlag:Int?) {
-        if seletedFlag != nil{//如果不为空
-            if seletedFlag == 1 { // 表示选中 更新arr中对应entity的flag状态
-                let vo=arr[index.section] as! ShoppingCarVo
-                let entity=vo.listGoods![index.row] as! GoodDetailEntity
-                entity.selectedFlag=1
-            }else{
-                let vo=arr[index.section] as! ShoppingCarVo
-                let entity=vo.listGoods![index.row] as! GoodDetailEntity
-                entity.selectedFlag=2
-            }
-        }
-        //用于判断当前所有商品是否全部选择 如果有一个为false表示还没有全部选中
-        var cellSelectFlag=false
-        //获取所有的cell
-        for(var i=0;i<arr.count;i++){
-            let vo=arr[i] as! ShoppingCarVo
-            for(var j=0;j<vo.listGoods!.count;j++){
-                let entity=vo.listGoods![j] as! GoodDetailEntity
-                if entity.selectedFlag == 1{//判断选中按钮是否选中 如果选中cellSelectFlag设为true
-                    cellSelectFlag=true;
-                }else{//只有有1个为没有选中cellSelectFlag设为false
-                    cellSelectFlag=false
-                    break
-                }
-            }
-        }
-        /// 截取小数点后2位数
-        var toPrice=totalPirce.toDecimalNumberTwo(totalPirce);
-        if flag{//判断是++ 还是-- true表示++
-            //累加总和价格
-            toPrice+=totalPrice
-            //累加总数
-            self.selectSumCount+=count
-            if cellSelectFlag{//如果为true表示全部选中了  设置全选按钮为全选状态
-                btnCheckAll!.selected=true
-            }else{//设置全选按钮为取消状态
-                btnCheckAll!.selected=false
-            }
-            
-        }else{
-            //累减总和价格
-            toPrice-=totalPrice
-            //累减总数
-            self.selectSumCount-=count
-            if cellSelectFlag{//如果为true表示全部选中了  设置全选按钮为全选状态
-                btnCheckAll!.selected=true
-            }else{//设置全选按钮为取消状态
-                btnCheckAll!.selected=false
-            }
-        }
-        //把计算出来的总价 赋值给全局变量总价
-        totalPirce=toPrice;
-        if totalPirce < 0{//ios浮点数计算 会产生小于0的负值 目前没有解决方案  小于0 直接给0
-            totalPirce=0.00;
-        }
-        
-        //改变结算按钮状态
-        self.btnClearing!.setTitle("去结算(\(self.selectSumCount))", forState: UIControlState.Normal)
-        self.lblTotalPrice!.text="总价:￥\(self.totalPirce)"
+    func calculationSelectTotalPrice(index: NSIndexPath) {
+        isSection(index)
         self.table!.reloadSections(NSIndexSet(index:index.section), withRowAnimation: UITableViewRowAnimation.None)
         
     }
-
+    /**
+     是否让Section组选中
+     
+     - parameter index: NSIndexPath
+     */
+    func isSection(index:NSIndexPath){
+        if arr.count > 0{
+            let vo=arr[index.section] as! ShoppingCarVo
+            if vo.listGoods!.count > 0{
+                var isSelected=2
+                for(var i=0;i<vo.listGoods!.count;i++){
+                    let goodEntity=vo.listGoods![i] as! GoodDetailEntity
+                    if goodEntity.isSelected==1{
+                        isSelected=1
+                    }else{
+                        isSelected=2
+                        break
+                    }
+                }
+                vo.isSelected=isSelected
+            }
+        }
+        totalPriceAndSumCount()
+    }
     /**
      跳转到结算页面
      
@@ -654,7 +657,7 @@ extension ShoppingCarViewContorller{
             var sumMoney:Double=0
             for(var j=0;j<vo.listGoods!.count;j++){
                 let entity=vo.listGoods![j] as! GoodDetailEntity
-                if entity.selectedFlag == 1{//如果有 添加进新集合
+                if entity.isSelected == 1{//如果有 添加进新集合
                     if entity.flag == 1{//如果是特价商品
                         if entity.endTime != nil{ //如果剩余时间不等于空
                             if Int(entity.endTime!) > 0{//如果剩余时间大于0
@@ -679,15 +682,40 @@ extension ShoppingCarViewContorller{
                 }
             }
         }
-        if orderArr.count > 0{
-            let vc=OrdersViewController()
-            vc.arr=orderArr
-            vc.totalPirce=self.totalPirce
-            vc.sumCount=self.selectSumCount
-            vc.hidesBottomBarWhenPushed=true
-            self.navigationController!.pushViewController(vc, animated:true)
+        if sender.titleLabel!.text == "删除"{
+            if orderArr.count > 0{
+                request(.POST,URL+"deleteShoppingCar.xhtml", parameters:["memberId":IS_NIL_MEMBERID()!,"goodsList":toJSONString(orderArr)]).responseJSON{ response in
+                    if response.result.error != nil{
+                        SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+                    }
+                    if response.result.value != nil{
+                        let json=JSON(response.result.value!)
+                        let success=json["success"].stringValue
+                        if success == "success"{
+                            SVProgressHUD.showSuccessWithStatus("删除成功")
+                            self.arr.removeAllObjects()
+                            self.editBar?.title="编辑"
+                            self.http()
+
+                        }else{
+                            SVProgressHUD.showErrorWithStatus("删除失败")
+                        }
+                    }
+                }
+            }else{
+                SVProgressHUD.showInfoWithStatus("请选择要删除的商品")
+            }
         }else{
-            SVProgressHUD.showInfoWithStatus("请选择要下单的商品")
+            if orderArr.count > 0{
+                let vc=OrdersViewController()
+                vc.arr=orderArr
+                vc.totalPirce=self.totalPirce
+                vc.sumCount=self.selectSumCount
+                vc.hidesBottomBarWhenPushed=true
+                self.navigationController!.pushViewController(vc, animated:true)
+            }else{
+                SVProgressHUD.showInfoWithStatus("请选择要下单的商品")
+            }
         }
     }
 
