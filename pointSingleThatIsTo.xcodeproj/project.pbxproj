@@ -149,6 +149,7 @@
 		EF455FDD1D33847500E9539F /* StockOrderManageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F4A1D33847500E9539F /* StockOrderManageTableViewCell.swift */; };
 		EF455FDE1D33847500E9539F /* StockOrderManageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF455F4B1D33847500E9539F /* StockOrderManageTableViewCell.xib */; };
 		EF455FDF1D33847500E9539F /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F4D1D33847500E9539F /* TabBarViewController.swift */; };
+		EF7082D61DE80F4B00C47AC4 /* LetterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7082D51DE80F4B00C47AC4 /* LetterViewController.swift */; };
 		EFA34D6A1D3DBCF1007284C8 /* IntegralRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */; };
 		EFADF3AB1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */; };
 		EFD7D0031C7BFC6800DA8C1B /* (null) in Sources */ = {isa = PBXBuildFile; };
@@ -350,6 +351,7 @@
 		EF455F4A1D33847500E9539F /* StockOrderManageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StockOrderManageTableViewCell.swift; sourceTree = "<group>"; };
 		EF455F4B1D33847500E9539F /* StockOrderManageTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StockOrderManageTableViewCell.xib; sourceTree = "<group>"; };
 		EF455F4D1D33847500E9539F /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
+		EF7082D51DE80F4B00C47AC4 /* LetterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LetterViewController.swift; sourceTree = "<group>"; };
 		EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegralRecordViewController.swift; sourceTree = "<group>"; };
 		EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegralGoodExchangeEntity.swift; sourceTree = "<group>"; };
 		EFDA1C5B1CE31453002BFC04 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -523,6 +525,7 @@
 				EF455E7E1D33847500E9539F /* GoodCategory3ViewController.swift */,
 				EF455E7F1D33847500E9539F /* PriceViewController.swift */,
 				EF455E801D33847500E9539F /* SalesViewController.swift */,
+				EF7082D51DE80F4B00C47AC4 /* LetterViewController.swift */,
 			);
 			path = GoodCategory3;
 			sourceTree = "<group>";
@@ -1461,6 +1464,7 @@
 				EF455F631D33847500E9539F /* LoginViewController.swift in Sources */,
 				EF455F7A1D33847500E9539F /* ShippingAddressViewController.swift in Sources */,
 				EF455FA91D33847500E9539F /* Refresh.swift in Sources */,
+				EF7082D61DE80F4B00C47AC4 /* LetterViewController.swift in Sources */,
 				EF455F781D33847500E9539F /* SweepersViewController.swift in Sources */,
 				EF455F711D33847500E9539F /* StockOrderManage.swift in Sources */,
 				EF455F741D33847500E9539F /* RegisterMember.swift in Sources */,

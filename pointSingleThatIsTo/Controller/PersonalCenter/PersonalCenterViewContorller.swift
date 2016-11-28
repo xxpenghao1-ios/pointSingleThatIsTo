@@ -14,12 +14,12 @@ import SVProgressHUD
 class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITableViewDelegate{
     //标题文字
     private var titleArr0=["消息中心","进货订单","购物车","积分记录"]
-    private var titleArr1=["积分商城","清除缓存","可兑奖商品","搜一搜"]
-    private var titleArr2=["购买记录","扫一扫","我推荐的人","客服电话","当前版本"]
+    private var titleArr1=["积分商城","清除缓存","搜一搜"]
+    private var titleArr2=["购买记录","客服电话","当前版本"]
     //标题图标
     private var imgArr0=["preffont","member_orders","member_cart","member_jfjl"]
-    private var imgArr1=["exchange","member_clear","canBeTicketView","search_one_search"]
-    private var imgArr2=["purchaseRecords","code_img","referrer_manage","member_tell2","version"]
+    private var imgArr1=["exchange","member_clear","search_one_search"]
+    private var imgArr2=["purchaseRecords","member_tell2","version"]
     ///个人中心视图table
     private var table:UITableView?
     /// 图片mb
@@ -166,10 +166,10 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
     }
     //3.返回多少行
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 2{
-            return 5
+        if section == 0{
+            return 4
         }else{
-           return 4
+           return 3
         }
     }
     //4.返回行高
@@ -218,14 +218,10 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
             name.text=titleArr1[indexPath.row]
             break
         case 2:
-            if indexPath.row == 2{//我的推荐人
-                if myRecommended != nil{
-                    cell!.detailTextLabel!.text="我的推荐人:\(myRecommended!)"
-                }
-            }else if indexPath.row == 3{
+            if indexPath.row == 1{//我的推荐人
                 cell!.detailTextLabel!.text=tel
-            }else if indexPath.row == 4{
-                cell!.detailTextLabel!.text="1.7.0"
+            }else if indexPath.row == 2{
+                cell!.detailTextLabel!.text="2.0.0"
                 cell!.accessoryType=UITableViewCellAccessoryType.None
             }
             img.image=UIImage(named:imgArr2[indexPath.row])
@@ -259,7 +255,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
             }else if indexPath.row==2{
                 //购物车   点击事件
                 //跳转到购物车
-                self.tabBarController!.selectedIndex=3;
+                self.tabBarController!.selectedIndex=2;
             }else if indexPath.row==3{
                 if self.substationEntity?.subStationBalanceStatu == 1{
                     //积分记录
@@ -302,13 +298,6 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
                 alertController.addAction(okAction)
                 self.presentViewController(alertController, animated: true, completion: nil)
             }else if indexPath.row==2{
-                SVProgressHUD.showInfoWithStatus("暂未开放")
-//                //可兑奖商品   点击事件
-//                let vc=CanBeTicketViewController();
-//                //vc.memberId=memberId
-//                vc.hidesBottomBarWhenPushed=true;
-//                self.navigationController?.pushViewController(vc, animated:true)
-            }else if indexPath.row==3{
                 //搜一搜   点击事件
                 let vc=SearchSSearchViewController();
                 vc.hidesBottomBarWhenPushed=true;
@@ -326,18 +315,6 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
                 self.navigationController?.pushViewController(vc, animated:true)
                 
             }else if indexPath.row==1{
-                //扫一扫   点击事件
-                let vc=SweepOutViewController();
-                vc.shakeMemberInfoId=1;
-                vc.hidesBottomBarWhenPushed=true;
-                self.navigationController?.pushViewController(vc, animated:true);
-            }else if indexPath.row==2{
-                //我推荐的人   点击事件
-                let vc=IRecommendViewController();
-                //vc.memberId=memberId;
-                vc.hidesBottomBarWhenPushed=true;
-                self.navigationController?.pushViewController(vc, animated:true);
-            }else if indexPath.row==3{
                 //客服电话   点击事件
                 let alertController = UIAlertController(title: "点单即到",
                     message: "您确定要拨打客服吗？", preferredStyle: UIAlertControllerStyle.Alert)
@@ -419,7 +396,7 @@ extension PersonalCenterViewContorller{
             NSUserDefaults.standardUserDefaults().synchronize();
             //切换根视图
             let app=UIApplication.sharedApplication().delegate as! AppDelegate
-            app.window?.rootViewController=UINavigationController(rootViewController:storyboardPushView("LoginId") as! LoginViewController);
+            app.window?.rootViewController=UINavigationController(rootViewController:LoginViewController());
         })
         let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.Cancel, handler:nil)
         alert.addAction(ok)

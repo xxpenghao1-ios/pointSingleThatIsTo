@@ -48,6 +48,9 @@ class SalesViewController:AddShoppingCartAnimation,UITableViewDataSource,UITable
 
     /// 保存每一行的cell Entity
     private var cellGoodEntity:GoodDetailEntity?
+    
+    /// 索引组
+    private var indexSet:[String] = []
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         //每次进入页面清零
@@ -123,7 +126,9 @@ class SalesViewController:AddShoppingCartAnimation,UITableViewDataSource,UITable
         selectShoppingCar!.setBackgroundImage(shoppingCarImg, forState:.Normal);
         self.view.addSubview(selectShoppingCar!)
     }
-    
+}
+// MARK: - 实现table协议方法
+extension SalesViewController{
     //返回tabview每一行显示什么
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
         var cell=tableView.dequeueReusableCellWithIdentifier("GoodCategory3TableViewCellId") as? GoodCategory3TableViewCell
@@ -159,6 +164,7 @@ class SalesViewController:AddShoppingCartAnimation,UITableViewDataSource,UITable
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
         return 120;
     }
+
     //tableview开始载入的动画
     func tableView(tableView: UITableView, willDisplayCell cell:UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath){
         
@@ -292,6 +298,7 @@ extension SalesViewController{
         var count=0
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsInfoByCategoryForAndroidForStore(goodsCategoryId: goodsCategoryId!, countyId: countyId!, IPhonePenghao: 520, isDisplayFlag: 2, pageSize: 10, currentPage: currentPage, storeId: storeId!, order: "count"), successClosure: { (result) -> Void in
             let json=JSON(result)
+            print("3级分类：\(json)")
             if isRefresh{//如果是刷新先删除数据
                 self.goodArr.removeAllObjects()
             }
@@ -426,7 +433,7 @@ extension SalesViewController{
     func httpNewGoodList(currentPage:Int,isRefresh:Bool){
         /// 定义一个int类型的值 用于判断是否还有数据加载
         var count=0
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsForAndroidIndexForStoreNew(countyId: countyId!, storeId: storeId!, isDisplayFlag: 2, currentPage: currentPage, pageSize: 10, order: "count"), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsForAndroidIndexForStoreNew(countyId: countyId!, storeId: storeId!, isDisplayFlag: 2, currentPage: currentPage, pageSize:10, order: "count"), successClosure: { (result) -> Void in
             let json=JSON(result)
             if isRefresh{//如果是刷新先删除数据
                 self.goodArr.removeAllObjects()
@@ -447,6 +454,7 @@ extension SalesViewController{
                 if entity!.goodsBaseCount == nil{
                     entity!.goodsBaseCount=1
                 }
+                entity!.isNewGoodFlag=1
                 
                 self.goodArr.addObject(entity!)
             }

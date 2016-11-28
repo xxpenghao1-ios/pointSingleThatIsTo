@@ -11,7 +11,7 @@ import UIKit
 /// 商品3级分类(搜索条件) 3级分类传入flag=2,titleCategoryName,goodsCategoryId,搜索传入flag=1,searchName 促销传入flag=4
 class  GoodCategory3ViewController:BaseViewController{
     
-    /// 接收传入的状态 1表示搜索 2表示查询3级分类 3表示查询3级分类 4表示促销
+    /// 接收传入的状态 1表示搜索 2表示查询3级分类 3表示查询新品推荐 4表示促销
     var flag:Int?
     
     /// 接收传入搜索名称
@@ -28,6 +28,9 @@ class  GoodCategory3ViewController:BaseViewController{
     
     /// 价格
     var priceVC=PriceViewController()
+    
+    /// 按字母排序
+    var letterVC=LetterViewController()
     
     
     override func viewDidLoad() {
@@ -56,20 +59,31 @@ class  GoodCategory3ViewController:BaseViewController{
         priceVC.storeId=storeId
         priceVC.flag=flag
         
+        letterVC.title="首拼音"
+        letterVC.countyId=countyId
+        letterVC.storeId=storeId
+        letterVC.flag=flag
         
+        
+        
+        var skScNavC:SKScNavViewController?
         if flag == 1{//表示搜索
             salesVC.searchName=searchName
             priceVC.searchName=searchName
+            letterVC.searchName=searchName
+            skScNavC=SKScNavViewController(subViewControllers:[salesVC,priceVC])
             
         }else if flag == 2{//查询3级分类
             salesVC.goodsCategoryId=goodsCategoryId
             priceVC.goodsCategoryId=goodsCategoryId
+            letterVC.goodsCategoryId=goodsCategoryId
+            skScNavC=SKScNavViewController(subViewControllers:[letterVC,salesVC,priceVC])
             
+        }else{
+            skScNavC=SKScNavViewController(subViewControllers:[salesVC,priceVC])
         }
-        
-        let skScNavC=SKScNavViewController(subViewControllers:[salesVC,priceVC])
-        skScNavC.showArrowButton=false
-        skScNavC.addParentController(self)
+        skScNavC!.showArrowButton=false
+        skScNavC!.addParentController(self)
 
     }
 }

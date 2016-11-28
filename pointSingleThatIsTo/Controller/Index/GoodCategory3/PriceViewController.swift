@@ -310,6 +310,7 @@ extension PriceViewController{
                 if entity!.goodsBaseCount == nil{
                     entity!.goodsBaseCount=1
                 }
+                entity!.isNewGoodFlag=1
                 self.goodArr.addObject(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态

@@ -593,9 +593,9 @@ extension GoodDetailViewController{
             
             //商品零售价
             if self.goodDeatilEntity!.uitemPrice != nil{
-                self.lblUitemPrice!.text="零售价 : \(self.goodDeatilEntity!.uitemPrice!)"
+                self.lblUitemPrice!.text="建议零售价 : \(self.goodDeatilEntity!.uitemPrice!)"
             }else{
-                self.lblUitemPrice!.text="零售价 : 无"
+                self.lblUitemPrice!.text="建议零售价 : 无"
             }
             if self.goodDeatilEntity!.goodUnit != nil{
                 //商品单位

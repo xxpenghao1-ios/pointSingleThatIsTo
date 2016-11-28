@@ -62,10 +62,17 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
     
     /// 用于页面自动刷新
     private var updateViewFlag=false
+    
+    /// 定时器
+    private var timer:NSTimer?
+    
+    //保存索引(用于新品推荐滚动)
+    private var index=0
 
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        addTimer()
         if updateViewFlag{//如果等于true 自动刷新页面
             self.scrollView?.headerBeginRefreshing()
         }
@@ -200,6 +207,7 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         
         flowLayout.scrollDirection = UICollectionViewScrollDirection.Vertical//设置垂直显示
         
+        
         //        flowLayout.sectionInset = UIEdgeInsetsMake(10,10,10,10)//设置边距
         //
         flowLayout.minimumLineSpacing = 10;//每个相邻layout的上下
@@ -246,10 +254,10 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         
         
         let flowLayout = UICollectionViewFlowLayout()
-        let widthH=(boundsWidth-20-5)/2
+        let widthH=(boundsWidth-20-10)/2
         flowLayout.itemSize = CGSizeMake(widthH,220)
         
-        flowLayout.scrollDirection = UICollectionViewScrollDirection.Vertical//设置垂直显示
+        flowLayout.scrollDirection = UICollectionViewScrollDirection.Horizontal//设置垂直显示
         
         //        flowLayout.sectionInset = UIEdgeInsetsMake(10,10,10,10)//设置边距
         //
@@ -258,11 +266,11 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         flowLayout.minimumInteritemSpacing = 0;//每个相邻layout的左右
         
         flowLayout.headerReferenceSize = CGSizeMake(0, 0);
-        newProductCollectionView=UICollectionView(frame:CGRectMake(10,CGRectGetMaxY(lblNewProductTitle.frame)+10,boundsWidth-20,220), collectionViewLayout:flowLayout)
+        newProductCollectionView=UICollectionView(frame:CGRectMake(10,CGRectGetMaxY(lblNewProductTitle.frame)+10,boundsWidth-20,230), collectionViewLayout:flowLayout)
         newProductCollectionView!.backgroundColor=UIColor.clearColor();
-        newProductCollectionView!.alwaysBounceVertical=true;
         newProductCollectionView!.delegate=self;
         newProductCollectionView!.dataSource=self;
+        newProductCollectionView!.showsHorizontalScrollIndicator=false
         newProductCollectionView!.registerClass(IndexHotGoodCollectionViewCell.self, forCellWithReuseIdentifier:"NewProductCollectionViewCell");
         newProductCollectionView!.tag=200
         self.scrollView!.addSubview(newProductCollectionView!)
@@ -271,6 +279,7 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         newProductBorderView=UIView(frame:CGRectMake(0,CGRectGetMaxY(newProductCollectionView!.frame)+10,boundsWidth,10))
         newProductBorderView!.backgroundColor=UIColor.viewBackgroundColor()
         self.scrollView!.addSubview(newProductBorderView!)
+        addTimer()
     }
     /**
      构建热门商品
@@ -340,8 +349,12 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         }else if collectionView.tag == 200{//新品推荐
             let cell=collectionView.dequeueReusableCellWithReuseIdentifier("NewProductCollectionViewCell", forIndexPath:indexPath) as! IndexHotGoodCollectionViewCell
             if newProductArr.count > 0{//如果大于0更新cell  防止空数据  导致程序直接崩溃
+                let img=UIImageView(frame:CGRectMake(CGRectGetMaxX(cell.goodImgView.frame)-44,20,44, 46))
+                img.image=UIImage(named: "newGood")
+                
                 let entity=newProductArr[indexPath.row] as! GoodDetailEntity
                 cell.updateCell(entity)
+                cell.contentView.addSubview(img)
             }
             cells=cell
         }else if collectionView.tag == 300{//热门商品
@@ -422,9 +435,28 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
 //            }
         }
     }
-        //页面退出
+    //当前用户正在滑动的时候
+    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+        if scrollView.tag == 200{
+            removeTimer()
+        }
+    }
+    //当前用户结束滑动的时候
+    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView.tag == 200{
+            //拿到当前展示的cell中的第一个
+            let indexPath=newProductCollectionView!.indexPathsForVisibleItems().last
+            if indexPath != nil{//判断是否为空
+                index=indexPath!.row
+            }
+            addTimer()
+        }
+    }
+
+    //页面退出
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+        removeTimer()
 //        //重新设置导航栏的背景颜色
 //        self.navigationController!.navigationBar.lt_setBackgroundColor(UIColor.applicationMainColor())
     }
@@ -438,6 +470,38 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
 }
 // MARK: - 页面逻辑
 extension IndexViewController{
+    /**
+     新品推荐页面切换
+     
+     - parameter sender: NSTimer
+     */
+    func newProductSwitch(sender:NSTimer){
+        self.index+=2
+            if self.newProductArr.count > 0{//判断新品是否有数据
+                if self.newProductArr.count > 2{
+                    if self.index < self.newProductArr.count{//如果当前索引小于数组长度
+                        self.newProductCollectionView!.scrollToItemAtIndexPath(NSIndexPath(forItem:self.index, inSection:0), atScrollPosition: UICollectionViewScrollPosition.Left, animated:true)
+                    }else{
+                        self.index=0
+                        self.newProductCollectionView!.scrollToItemAtIndexPath(NSIndexPath(forItem:self.index, inSection:0), atScrollPosition: UICollectionViewScrollPosition.Left, animated:true)
+                        
+                    }
+                }
+            }
+    }
+    /**
+     添加定时器
+     */
+    func addTimer(){
+        if timer == nil{
+            timer=NSTimer.scheduledTimerWithTimeInterval(4, target: self, selector:"newProductSwitch:", userInfo:nil, repeats: true)
+        }
+        
+    }
+    func removeTimer(){
+        self.timer?.invalidate()
+        self.timer=nil
+    }
     /**
      弹出活动内容
      */
@@ -587,7 +651,7 @@ extension IndexViewController{
      - parameter storeId:  这里storeId
      */
     func httpNewProduct(countyId:String,storeId:String){
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsForAndroidIndexForStoreNew(countyId: countyId, storeId: storeId, isDisplayFlag: 2, currentPage: 1, pageSize: 2, order:""), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsForAndroidIndexForStoreNew(countyId: countyId, storeId: storeId, isDisplayFlag: 2, currentPage: 1, pageSize:18, order:""), successClosure: { (result) -> Void in
             let json=JSON(result)
             for(_,value) in json{
                 let entity=Mapper<GoodDetailEntity>().map(value.object)

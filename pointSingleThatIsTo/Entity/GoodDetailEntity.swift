@@ -72,6 +72,8 @@ class GoodDetailEntity:Mappable {
     var purchaseRecordsDate:String?
     /// 是否有促销活动 1(表示有) 其他没有
     var isPromotionFlag:Int?
+    /// 是否是新品 1是
+    var isNewGoodFlag:Int?
     /// 商品加减数量
     var goodsBaseCount:Int?
     /// 最低配送量

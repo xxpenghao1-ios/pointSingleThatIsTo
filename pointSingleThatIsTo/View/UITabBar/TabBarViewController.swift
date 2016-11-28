@@ -23,14 +23,14 @@ class TabBarViewController:UITabBarController {
         super.viewDidLoad();
         //首页
         addChildViewController(IndexViewController(), title: "首页", imageName: "1")
-        //我要抢单
-        addChildViewController(GrabASingleViewController(), title: "我要抢单", imageName: "2")
+//        //我要抢单
+//        addChildViewController(GrabASingleViewController(), title: "我要抢单", imageName: "2")
         //分类
-        addChildViewController(CategoryListController(), title: "分类", imageName: "3")
+        addChildViewController(CategoryListController(), title: "分类", imageName: "2")
         //购物车
-        addChildViewController(shoppingCarView, title: "购物车", imageName: "4")
+        addChildViewController(shoppingCarView, title: "购物车", imageName: "3")
         //个人中心
-        addChildViewController(personalCenterView, title: "个人中心", imageName: "5")
+        addChildViewController(personalCenterView, title: "个人中心", imageName: "4")
         self.tabBar.backgroundColor=UIColor.clearColor()
         let viewImg=UIView(frame:CGRectMake(0,0,UIScreen.mainScreen().bounds.width, 49))
         viewImg.backgroundColor=UIColor.blackColor()

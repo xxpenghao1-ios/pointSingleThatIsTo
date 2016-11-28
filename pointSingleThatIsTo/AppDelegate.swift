@@ -70,7 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         PHJPushHelper.setupWithOptions(launchOptions)
         
         //初始化登录页面
-        navLogin=UINavigationController(rootViewController:storyboardPushView("LoginId") as! LoginViewController)
+        navLogin=UINavigationController(rootViewController:LoginViewController())
         // 得到当前应用的版本号
         let infoDictionary = NSBundle.mainBundle().infoDictionary
         let currentAppVersion = infoDictionary!["CFBundleShortVersionString"] as! String

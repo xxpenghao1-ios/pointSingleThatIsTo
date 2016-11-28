@@ -68,8 +68,9 @@ class GoodCategory3TableViewCell:UITableViewCell {
     /// 商品图片view
     @IBOutlet weak var goodImgView: UIView!
     
-    /// 商品销量
-    @IBOutlet weak var lblGoodSales: UILabel!
+    //商品零售价
+    @IBOutlet weak var lblGoodRetailPrice: UILabel!
+    
     
     /// 商品名称
     @IBOutlet weak var lblGoodName: UILabel!
@@ -122,7 +123,7 @@ class GoodCategory3TableViewCell:UITableViewCell {
         //设置文字颜色
         lblGoodPrice.textColor=UIColor.redColor()
         lblGoodUcode.textColor=UIColor.textColor()
-        lblGoodSales.textColor=UIColor.textColor()
+        lblGoodRetailPrice.textColor=UIColor.textColor()
         lblGoodStock.textColor=UIColor.textColor()
         
         //设置加减数量点击事件
@@ -207,10 +208,10 @@ class GoodCategory3TableViewCell:UITableViewCell {
         goodImg.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
         
         //商品零售价
-        if entity.salesCount != nil{
-            lblGoodSales.text="销量 : \(entity.salesCount!)"
+        if entity.uitemPrice != nil{
+            lblGoodRetailPrice.text="建议零售价 : \(entity.uitemPrice!)"
         }else{
-            lblGoodSales.text="销量 : 暂无统计"
+            lblGoodRetailPrice.text="建议零售价 : 暂无"
         }
         
         //商品进价
@@ -240,6 +241,16 @@ class GoodCategory3TableViewCell:UITableViewCell {
             if entity.isPromotionFlag == 1{
                 //显示促销标识
                 salesPromotionImgView.hidden=false
+            }else{
+                salesPromotionImgView.hidden=true
+            }
+        }else if entity.isNewGoodFlag != nil{
+            if entity.isNewGoodFlag == 1{
+                //显示新品标识
+                salesPromotionImgView.hidden=false
+                salesPromotionImgView.image=UIImage(named: "newGood")
+            }else{
+                salesPromotionImgView.hidden=true
             }
         }
         if entity.goodsStock == 0{//库存等于0的时候
