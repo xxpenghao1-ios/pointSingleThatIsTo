@@ -138,6 +138,7 @@ class DeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITabl
             //开始发送已发货订单查询请求(orderStatus状态为2)
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryOrderInfo4AndroidStoreByOrderStatus(orderStatus:2, storeId:storeId, pageSize: 10, currentPage: currentPage), successClosure: { (result) -> Void in
                 let jsonResult=JSON(result)
+                print("订单\(jsonResult)")
                 if isRefresh{
                     self.stockOrderEntityArray.removeAll()
                 }

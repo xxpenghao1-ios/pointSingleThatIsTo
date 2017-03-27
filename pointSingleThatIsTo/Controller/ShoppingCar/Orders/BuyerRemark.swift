@@ -62,8 +62,10 @@ class BuyerRemark:UIViewController,UITextViewDelegate {
      - parameter sender: 当前完成按钮
      */
     func actionRemark(sender:UIButton){
-        //发送通知
+        if textLbl != nil{
+            //发送通知
         NSNotificationCenter.defaultCenter().postNotificationName("remarkNotification", object:textLbl!.check())
+        }
         self.navigationController?.popViewControllerAnimated(true)
         
     }
@@ -82,7 +84,6 @@ extension String{
     func check() -> String {
         
         let  result = NSMutableString()
-        
         // 使用正则表达式一定要加try语句
         
         do {

@@ -42,7 +42,7 @@ class categoryListCell:UICollectionViewCell{
     func loadItemsData(entity:GoodsCategoryEntity){
 
         //1.图片
-        imageItem=UIImageView(frame: CGRectMake((cellPicW-40)/2, 20, 45, 45))
+        imageItem=UIImageView(frame: CGRectMake((cellPicW-45)/2, 20, 45, 45))
         self.contentView.addSubview(imageItem!)
         //图片若为空，则给默认图
         let goodsCategoryIco=entity.goodsCategoryIco ?? ""

@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-import ObjectMapper
+//import ObjectMapper
 import SVProgressHUD
 //快速抢单详情
 class GrabASingleDetailsView:BaseViewController,UITableViewDataSource,UITableViewDelegate{

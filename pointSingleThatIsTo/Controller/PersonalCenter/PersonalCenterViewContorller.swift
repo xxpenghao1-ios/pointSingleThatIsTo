@@ -221,7 +221,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
             if indexPath.row == 1{//我的推荐人
                 cell!.detailTextLabel!.text=tel
             }else if indexPath.row == 2{
-                cell!.detailTextLabel!.text="2.0.0"
+                cell!.detailTextLabel!.text="3.0"
                 cell!.accessoryType=UITableViewCellAccessoryType.None
             }
             img.image=UIImage(named:imgArr2[indexPath.row])
@@ -263,7 +263,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
                     vc.hidesBottomBarWhenPushed=true
                     self.navigationController?.pushViewController(vc, animated:true);
                 }else{
-                    SVProgressHUD.showInfoWithStatus("暂未开放,请联系业务员申请开通")
+                    SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
                 }
             }
         }else if indexPath.section==1{
@@ -274,7 +274,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
                     vc.hidesBottomBarWhenPushed=true
                     self.navigationController?.pushViewController(vc, animated:true)
                 }else{
-                    SVProgressHUD.showInfoWithStatus("暂未开放,请联系业务员申请开通")
+                    SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
                 }
             }else if indexPath.row==1{
                 //清除缓存   点击事件
@@ -308,11 +308,12 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
             
         }else if indexPath.section==2{
             if indexPath.row==0{
-                //购买记录   点击事件
-                let vc=PurchaseRecordsViewController();
-                //vc.membrId=memberId
-                vc.hidesBottomBarWhenPushed=true;
-                self.navigationController?.pushViewController(vc, animated:true)
+                SVProgressHUD.showInfoWithStatus("开发中...")
+//                //购买记录   点击事件
+//                let vc=PurchaseRecordsViewController();
+//                //vc.membrId=memberId
+//                vc.hidesBottomBarWhenPushed=true;
+//                self.navigationController?.pushViewController(vc, animated:true)
                 
             }else if indexPath.row==1{
                 //客服电话   点击事件

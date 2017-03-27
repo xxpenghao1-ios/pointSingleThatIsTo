@@ -99,7 +99,7 @@ class RegisterValidationViewController:UIViewController{
     //点击 下一步按钮  触发
     func clickBtn(sender:UIButton){
         let count=feildCode?.text?.characters.count
-        if feildCode?.text==nil&&count==0{
+        if feildCode?.text==nil||count==0{
             SVProgressHUD.showInfoWithStatus("请输入验证码", maskType: .Clear)
         }else{
             if self.ranCode != nil{

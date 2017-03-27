@@ -69,6 +69,7 @@ class IntegralRecordViewController:BaseViewController{
         //加载等待视图
         SVProgressHUD.showWithStatus("数据加载中")
         table!.headerBeginRefreshing()
+        httpQueryMemberIntegral()
     }
 }
 // MARK: - 实现table协议
@@ -139,6 +140,18 @@ extension IntegralRecordViewController{
                 self.table?.headerEndRefreshing()
                 //关闭加载状态
                 self.table?.footerEndRefreshing()
+                SVProgressHUD.showErrorWithStatus(errorMsg)
+        }
+    }
+    /**
+     查看剩余积分
+     */
+    func httpQueryMemberIntegral(){
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryMemberIntegral(memberId: IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            let integral=json["success"].intValue
+            self.lblIntegral!.text="\(integral)"
+            }) { (errorMsg) -> Void in
                 SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }

@@ -331,6 +331,7 @@ extension ShoppingCarViewContorller{
             if response.result.value != nil{
                 let json=JSON(response.result.value!)
                 let success=json["success"].stringValue
+                print(json)
                 if success == "success"{
                     //获取对应cell
                     let cell = tableView.cellForRowAtIndexPath(indexPath) as? ShoppingCarTableViewCell
@@ -674,7 +675,7 @@ extension ShoppingCarViewContorller{
                     }
                 }
             }
-            if sender.titleLabel!.text == "编辑"{
+            if sender.titleLabel!.text != "删除"{
                 if vo.lowestMoney != nil{
                     if Double(vo.lowestMoney!) > sumMoney{//比较最低起送额 是否大于 小计价格
                         UIAlertController.showAlertYes(self, title:"点单即到", message:"\(vo.supplierName!)配送最低起送额是\(vo.lowestMoney!),您还需要购买\(Double(vo.lowestMoney!)! - sumMoney)元才能结算", okButtonTitle:"确定", okHandler: {  Void in

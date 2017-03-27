@@ -16,11 +16,11 @@ import UIKit
  - returns: 返回View
  */
 func nilPromptView(str:String) ->UIView{
-    let promptView=UIView(frame:CGRectMake(0,0,boundsWidth,91.5));
-    let promptImgView=UIImageView(frame:CGRectMake((promptView.frame.width-61.5)/2,0, 61.5,65.5))
+    let promptView=UIView(frame:CGRectMake(0,0,boundsWidth,80));
+    let promptImgView=UIImageView(frame:CGRectMake((promptView.frame.width-50)/2,0,50,50))
     promptImgView.image=UIImage(named:"nildd")
     promptView.addSubview(promptImgView)
-    let lblPrompt=UILabel(frame:CGRectMake(0,61.5+10,promptView.frame.width,20));
+    let lblPrompt=UILabel(frame:CGRectMake(0,50+5,promptView.frame.width,20));
     lblPrompt.textAlignment=NSTextAlignment.Center;
     lblPrompt.text=str;
     lblPrompt.font=UIFont.systemFontOfSize(14);

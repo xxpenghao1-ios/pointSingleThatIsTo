@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
+import Alamofire
 /// 价格
 class PriceViewController:AddShoppingCartAnimation,UITableViewDataSource,UITableViewDelegate,GoodCategory3TableViewCellAddShoppingCartsDelegate{
     
@@ -74,6 +75,8 @@ class PriceViewController:AddShoppingCartAnimation,UITableViewDataSource,UITable
                 self.httpNewGoodList(self.currentPage,isRefresh: true)
             }else if self.flag == 4{//查询促销
                 self.httpQueryStorePromotionGoodsList(self.currentPage, isRefresh: true)
+            }else if self.flag == 5{
+                self.http1YuanArea(self.currentPage, isRefresh:true)
             }
             
         })
@@ -89,6 +92,8 @@ class PriceViewController:AddShoppingCartAnimation,UITableViewDataSource,UITable
                 self.httpNewGoodList(self.currentPage,isRefresh: false)
             }else if self.flag == 4{//查询促销
                 self.httpQueryStorePromotionGoodsList(self.currentPage, isRefresh: false)
+            }else if self.flag == 5{
+                self.http1YuanArea(self.currentPage, isRefresh:false)
             }
         })
         self.view.addSubview(goodTable!)
@@ -351,7 +356,7 @@ extension PriceViewController{
     }
     
     /**
-     查询3级分类
+     查询3级分类商品
      
      - parameter currentPage: 展示到第几页
      - parameter isRefresh:   是否刷新true是
@@ -555,7 +560,75 @@ extension PriceViewController{
                 SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
-
+    /**
+     1元区
+     - parameter currentPage: 展示到第几页
+     - parameter isRefresh:   是否刷新true是
+     */
+    func http1YuanArea(currentPage:Int,isRefresh:Bool){
+        var count=0
+        Alamofire.request(.GET,URL+"queryGoodsInfoByCategoryForAndroidForStore.xhtml", parameters:["goodsCategoryId":goodsCategoryId!,"countyId":countyId!,"IPhonePenghao": 520, "isDisplayFlag": 2,"pageSize": 10, "currentPage": currentPage, "storeId":storeId!,"order": "price","priceScreen":1]).responseJSON { res in
+            if(res.result.error != nil){
+                SVProgressHUD.showErrorWithStatus(res.result.error?.description)
+                //关闭刷新状态
+                self.goodTable?.headerEndRefreshing()
+                //关闭加载状态
+                self.goodTable?.footerEndRefreshing()
+            }
+            if(res.result.value != nil){
+                let json=JSON(res.result.value!)
+                if isRefresh{//如果是刷新先删除数据
+                    self.goodArr.removeAllObjects()
+                }
+                for(_,value) in json{
+                    // 每次循环加1
+                    count++
+                    let entity=Mapper<GoodDetailEntity>().map(value.object)
+                    //如果库存为空
+                    if entity!.goodsStock == nil{
+                        entity!.goodsStock = -1
+                    }
+                    //如果最低起送量为空
+                    if entity!.miniCount == nil{
+                        entity!.miniCount=1
+                    }
+                    //如果商品加减数量为空
+                    if entity!.goodsBaseCount == nil{
+                        entity!.goodsBaseCount=1
+                    }
+                    self.goodArr.addObject(entity!)
+                }
+                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                    self.goodTable?.setFooterHidden(true)
+                }else{//否则显示
+                    self.goodTable?.setFooterHidden(false)
+                }
+                if self.goodArr.count < 1{//表示没有数据加载空
+                    self.nilView?.removeFromSuperview()
+                    self.nilView=nilPromptView("商品正在上传中...")
+                    self.nilView!.center=self.goodTable!.center
+                    self.view.addSubview(self.nilView!)
+                    //隐藏跳转购物车按钮
+                    self.selectShoppingCar!.hidden=true
+                    
+                }else{//如果有数据清除
+                    self.nilView?.removeFromSuperview()
+                    //显示跳转购物车按钮
+                    self.selectShoppingCar!.hidden=false
+                    
+                }
+                //关闭刷新状态
+                self.goodTable?.headerEndRefreshing()
+                //关闭加载状态
+                self.goodTable?.footerEndRefreshing()
+                //关闭加载等待视图
+                SVProgressHUD.dismiss()
+                //刷新table
+                self.goodTable?.reloadData()
+                
+            }
+        }
+    }
 
 }
 // MARK: - 页面跳转

@@ -66,8 +66,11 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
      */
     func actionRemark(sender:UIButton){
         let storeId=userDefaults.objectForKey("storeId") as! String
-        SVProgressHUD.showWithStatus("正在提交",maskType: SVProgressHUDMaskType.Gradient)
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.complaintsAndSuggestions(complaint:textLbl, storeId:storeId), successClosure: { (result) -> Void in
+        if textLbl.characters.count==0{
+            SVProgressHUD.showInfoWithStatus("内容为空")
+        }else{
+            SVProgressHUD.showWithStatus("正在提交",maskType: SVProgressHUDMaskType.Gradient)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.complaintsAndSuggestions(complaint:textLbl, storeId:storeId), successClosure: { (result) -> Void in
                 let json=JSON(result)
                 let success=json["success"].stringValue
                 if success == "success"{
@@ -75,9 +78,10 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
                     self.navigationController?.popViewControllerAnimated(true)
                 }else{
                     SVProgressHUD.showErrorWithStatus("提交失败")
+                }
+                }) { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
             }
-            }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
     //点击view隐藏键盘

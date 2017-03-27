@@ -578,7 +578,7 @@ extension GoodSpecialPriceDetailViewController{
      */
     func httpGoodDetail(){
         SVProgressHUD.showWithStatus("数据加载中")
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!, flag: 1, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!, flag: 1, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!,memberId:IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
             SVProgressHUD.dismiss()
             let json=JSON(result)
             self.goodDeatilEntity=Mapper<GoodDetailEntity>().map(json.object)

@@ -5,17 +5,15 @@
 //  Created by 卢洋 on 16/1/31.
 //  Copyright © 2016年 penghao. All rights reserved.
 //
-//品项
+
 import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
-
+///品项
 class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewDataSource,UICollectionViewDelegate,UICollectionViewDataSource{
-    
-    //用户信息
-    var userDefaults=NSUserDefaults.standardUserDefaults()
-    
+    //接收分类名称
+    var itemsTitle:String?
     //左边Table
     var leftTable:UITableView?
     
@@ -31,37 +29,23 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
     //一级分类ID
     var pid:Int?
     
-    //存储二级分类实体类
+    //存储二级分类实体类(从菜单栏点击进入)
     var childCategory:[GoodsCategoryEntity]=[]
-    
+    //存储分类String(从首页分类点击进入)
+    var pushIndexChildCategory:[String]=[]
     //存储三级分类实体类
     var threeCategory:[GoodsCategoryEntity]=[]
-    
-    //网络连接状态码
-    private var isNetWork:Bool=true
-    
+    //存储23级分类数据源
+    var categoryMap=Dictionary<String,NSMutableArray>()
     //判断页面从首页传过来还是底部工具栏(1-首页，其他从底部传过来)
     var pushState:Int=0
-    
     //左边Table和右边UICollectionView的动态高度
     var flyHeight:CGFloat=0
-    
-    
     // 没有数据加载该视图
     var nilView:UIView?
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
-        //若无网络,改变状态码下次进来直接刷新
-        if(!IJReachability.isConnectedToNetwork()){
-            isNetWork=false
-        }
-        //状态码变成false并且有网络则发送二级分类请求
-        if(!isNetWork){
-            if(IJReachability.isConnectedToNetwork()){
-                queryChildCategory()
-            }
-        }
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,6 +58,17 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
         }else{//从底部点击
             queryChildCategoryBottom()
         }
+        if self.itemsTitle == "休闲零食"{
+            self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"1元区", style: UIBarButtonItemStyle.Done, target:self, action:"push1yuanqu")
+        }
+    }
+    //跳转1元区
+    func push1yuanqu(){
+        /// 获取对应分类entity
+        let GoodCategory3VC=GoodCategory3ViewController()
+        GoodCategory3VC.flag=5
+        GoodCategory3VC.goodsCategoryId=pid ?? 1
+        self.navigationController!.pushViewController(GoodCategory3VC, animated:true)
     }
     //左边Table视图
     func creatLeftView(){
@@ -114,14 +109,45 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
         rightCollection?.registerClass(categoryListCell.self, forCellWithReuseIdentifier: "rightCollection");
         self.view.addSubview(rightCollection!)
     }
-    
+    /**
+     点击首页进来点击2级分类展示对应的3级分类
+     
+     - parameter key:String
+     */
+    func pushIndexpushIndex3Category(key:String){
+        self.threeCategory.removeAll()
+        //拿到对应分类的值
+        let obj=categoryMap[key]
+        if obj != nil{
+            let map=obj![0] as! Dictionary<String,[GoodsCategoryEntity]>
+            if map["goodsCategory"]?.count > 0{
+                self.threeCategory=map["goodsCategory"]!
+                self.nilView?.removeFromSuperview()
+                self.rightCollection?.reloadData()
+            }else{
+                self.rightCollection?.reloadData()
+                self.nilView?.removeFromSuperview()
+                self.nilView=nilPromptView("还没有相关分类")
+                self.nilView!.center=self.rightCollection!.center
+                self.view.addSubview(self.nilView!)
+            }
+        }
+        
+    }
+}
+// MARK: - 协议实现
+extension ItemsViewController{
     //MARK -------Table的代理-----------------------
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return childCategory.count
+        if pushState == 1{
+            return pushIndexChildCategory.count
+        }else{
+            return childCategory.count
+        }
     }
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         return 44
@@ -136,8 +162,14 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
         rightLine=UILabel(frame: CGRectMake(leftTable!.frame.width-0.5, 0, 0.5, cell!.contentView.frame.height))
         rightLine.backgroundColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
         cell!.contentView.addSubview(rightLine)
-        if(childCategory.count > 0){
-            cell?.textLabel?.text=childCategory[indexPath.row].goodsCategoryName
+        if pushState == 1{
+            if(pushIndexChildCategory.count > 0){
+                cell?.textLabel?.text=pushIndexChildCategory[indexPath.row]
+            }
+        }else{
+            if childCategory.count > 0{
+                cell?.textLabel?.text=childCategory[indexPath.row].goodsCategoryName
+            }
         }
         cell?.textLabel?.font=UIFont.systemFontOfSize(14)
         cell?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
@@ -161,8 +193,14 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
         rightLine.backgroundColor=UIColor.whiteColor()
         cell?.backgroundColor=UIColor.whiteColor()
         cell?.textLabel?.textColor=UIColor.applicationMainColor()
-        let pid=childCategory[indexPath.row].goodsCategoryId
-        httpGoodCategoryThree(pid!)
+        if pushState == 1{
+            let key=pushIndexChildCategory[indexPath.row]
+            pushIndexpushIndex3Category(key)
+        }else{
+            let pid=childCategory[indexPath.row].goodsCategoryId
+            httpGoodCategoryThree(pid!)
+        }
+
     }
     func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
         let cell=tableView.cellForRowAtIndexPath(indexPath)
@@ -197,42 +235,71 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
         GoodCategory3VC.titleCategoryName=entity.goodsCategoryName
         self.navigationController!.pushViewController(GoodCategory3VC, animated:true)
     }
+    
+    
+}
+// MARK: - 网络请求
+extension ItemsViewController{
     /**
-    queryCategory4AndroidAll.xhtml   发送二级分类请求
-    - parameter goodsCategoryId: 一级分类ID
-    */
+     queryCategory4AndroidAll.xhtml   发送二级分类请求
+     - parameter goodsCategoryId: 一级分类ID
+     */
     func queryChildCategory(){
         //判断网络状态
         if(IJReachability.isConnectedToNetwork()){
             SVProgressHUD.showWithStatus("数据加载中")
             let currPid=pid ?? 1
-            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryCategory4Android(goodsCategoryId:currPid), successClosure: { (result) -> Void in
+            //获取分站ID
+            let substationId=userDefaults.objectForKey("substationId") as! String
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryTwoCategoryForMob(goodsCategoryId:currPid,substationId:substationId), successClosure: { (result) -> Void in
                 let json=JSON(result)
-                //每次发请求之前先清除数据源，否则数据会叠加
-                self.childCategory.removeAll()
-                for(_,value) in json{
-                    let entity=Mapper<GoodsCategoryEntity>().map(value.object)
-                    self.childCategory.append(entity!);
+                //先添加全部的2级分类
+                self.pushIndexChildCategory.append("全部")
+                if let dic=json.dictionaryObject{
+                    for(key,value) in dic{
+                        let arr=NSMutableArray()
+                        if key != "全部"{//循环2级分类
+                            self.pushIndexChildCategory.append(key)
+                        }
+                        let jsonArr=JSON(value)
+                        for(titleKey,value1) in jsonArr{
+                            var map=Dictionary<String,[GoodsCategoryEntity]>()
+                            var entityArr=[GoodsCategoryEntity]()
+                            for(_,entityValue) in value1{
+                                let entity=Mapper<GoodsCategoryEntity>().map(entityValue.object)
+                                entityArr.append(entity!)
+                            }
+                            map[titleKey]=entityArr
+                            arr.addObject(map)
+                        }
+                        self.categoryMap[key]=arr
+                    }
+                    SVProgressHUD.dismiss()
+                    self.leftTable?.reloadData()
+                    let first=NSIndexPath(forRow: 0, inSection: 0)
+                    self.leftTable?.selectRowAtIndexPath(first, animated: true, scrollPosition: UITableViewScrollPosition.None)
+                    if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
+                        self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
+                    }
+                    
+                }else{
+                    SVProgressHUD.showErrorWithStatus("数据解析出错")
                 }
-                SVProgressHUD.dismiss()
-                self.leftTable?.reloadData()
-                let first=NSIndexPath(forRow: 0, inSection: 0)
-                self.leftTable?.selectRowAtIndexPath(first, animated: true, scrollPosition: UITableViewScrollPosition.None)
-                if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
-                    self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
-                }
-                self.isNetWork=true
-                }, failClosure: { (errorMsg) -> Void in
+                
+                }) { (errorMsg) -> Void in
                     SVProgressHUD.showErrorWithStatus(errorMsg)
-            })
+            }
+            
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }
+        
+        
     }
     
     /**
-    从底部点击分类
-    */
+     从底部点击分类
+     */
     func queryChildCategoryBottom(){
         //判断网络状态
         if(IJReachability.isConnectedToNetwork()){
@@ -254,7 +321,6 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
                 if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
                     self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
                 }
-                self.isNetWork=true
                 }, failClosure: { (errorMsg) -> Void in
                     SVProgressHUD.showErrorWithStatus(errorMsg)
             })
@@ -263,35 +329,34 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
         }
     }
     
-    /**
-    queryCategory4Android.xhtml   发送三级分类请求
-    - parameter goodsCategoryId: 二级分类ID
-    */
-    func httpGoodCategoryThree(goodsCategoryId:Int){
-        if IJReachability.isConnectedToNetwork(){
-            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryCategory4Android(goodsCategoryId:goodsCategoryId), successClosure: { (result) -> Void in
-                let json=JSON(result)
-                self.threeCategory.removeAll()
-                if(json.count > 0){
-                    for(_,value) in json{
-                        let entity=Mapper<GoodsCategoryEntity>().map(value.object)
-                        self.threeCategory.append(entity!);
+        /**
+        queryCategory4Android.xhtml   发送三级分类请求
+        - parameter goodsCategoryId: 二级分类ID
+        */
+        func httpGoodCategoryThree(goodsCategoryId:Int){
+            if IJReachability.isConnectedToNetwork(){
+                PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryCategory4Android(goodsCategoryId:goodsCategoryId), successClosure: { (result) -> Void in
+                    let json=JSON(result)
+                    self.threeCategory.removeAll()
+                    if(json.count > 0){
+                        for(_,value) in json{
+                            let entity=Mapper<GoodsCategoryEntity>().map(value.object)
+                            self.threeCategory.append(entity!);
+                        }
+                        self.nilView?.removeFromSuperview()
+                        self.rightCollection?.reloadData()
+                    }else{
+                        self.rightCollection?.reloadData()
+                        self.nilView?.removeFromSuperview()
+                        self.nilView=nilPromptView("还没有相关分类")
+                        self.nilView!.center=self.rightCollection!.center
+                        self.view.addSubview(self.nilView!)
                     }
-                    self.nilView?.removeFromSuperview()
-                    self.rightCollection?.reloadData()
-                }else{
-                    self.rightCollection?.reloadData()
-                    self.nilView?.removeFromSuperview()
-                    self.nilView=nilPromptView("赶快上传商品吧")
-                    self.nilView!.center=self.rightCollection!.center
-                    self.view.addSubview(self.nilView!)
-                }
-                }, failClosure: { (errorMsg) -> Void in
-                    SVProgressHUD.showErrorWithStatus(errorMsg)
-            })
-        }else{
-            SVProgressHUD.showErrorWithStatus("无网络连接")
+                    }, failClosure: { (errorMsg) -> Void in
+                        SVProgressHUD.showErrorWithStatus(errorMsg)
+                })
+            }else{
+                SVProgressHUD.showErrorWithStatus("无网络连接")
+            }
         }
-    }
-    
 }

@@ -29,7 +29,7 @@ class PresentExpViewController:BaseViewController{
     override func viewDidLoad(){
         super.viewDidLoad()
         httpQueryMemberIntegral()
-        self.title="积分兑换商品"
+        self.title="点单商城"
         self.view.backgroundColor=UIColor.whiteColor()
         
         self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"兑换记录", style: UIBarButtonItemStyle.Plain, target:self, action:"pushRecordOfConversion")

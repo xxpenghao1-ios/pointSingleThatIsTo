@@ -275,7 +275,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
                     let deviceName=json["deviceName"].stringValue;
                     
                     if deviceToken != "penghao"{//如果用户在打开app没有选择接收通知 直接在登录界面 给服务器传入了默认值(penghao) 不等于表示 用户开启了消息通知
-                        if deviceToken != NSUserDefaults.standardUserDefaults().objectForKey("deviceToken") as! String{//判断服务器返回的设备标识与当前本机的缓存中的设备标识是否相等  如果不等于表示该账号在另一台设备在登录
+                        if deviceToken != NSUserDefaults.standardUserDefaults().objectForKey("deviceToken") as? String{//判断服务器返回的设备标识与当前本机的缓存中的设备标识是否相等  如果不等于表示该账号在另一台设备在登录
                             //直接跳转到登录页面
                             self.window?.rootViewController=self.navLogin
                             userDefaults.removeObjectForKey("memberId")

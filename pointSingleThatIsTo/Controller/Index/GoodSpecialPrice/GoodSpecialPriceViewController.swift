@@ -31,8 +31,8 @@ class  GoodSpecialPriceViewController:BaseViewController{
         self.title="特价商品"
         self.view.backgroundColor=UIColor.whiteColor()
         
-        let categoryItem=UIBarButtonItem(title:"分类查询", style: UIBarButtonItemStyle.Plain, target:self, action:"categorySelect:");
-        self.navigationItem.rightBarButtonItem=categoryItem
+//        let categoryItem=UIBarButtonItem(title:"分类查询", style: UIBarButtonItemStyle.Plain, target:self, action:"categorySelect:");
+//        self.navigationItem.rightBarButtonItem=categoryItem
         //默认给0
         buildView(0)
         

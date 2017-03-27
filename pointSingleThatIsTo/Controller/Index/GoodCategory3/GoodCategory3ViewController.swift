@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-/// 商品3级分类(搜索条件) 3级分类传入flag=2,titleCategoryName,goodsCategoryId,搜索传入flag=1,searchName 促销传入flag=4
+/// 商品3级分类(搜索条件) 3级分类传入flag=2,titleCategoryName,goodsCategoryId,搜索传入flag=1,searchName 促销传入flag=4  5查询1元区商品
 class  GoodCategory3ViewController:BaseViewController{
     
     /// 接收传入的状态 1表示搜索 2表示查询3级分类 3表示查询新品推荐 4表示促销
@@ -43,6 +43,8 @@ class  GoodCategory3ViewController:BaseViewController{
             self.title="新品推荐"
         }else if flag == 4{
             self.title="促销商品"
+        }else if flag == 5{
+            self.title="1元区"
         }
         self.view.backgroundColor=UIColor.whiteColor()
         /// 获取登录中  保存的县区id 店铺id
@@ -79,6 +81,11 @@ class  GoodCategory3ViewController:BaseViewController{
             letterVC.goodsCategoryId=goodsCategoryId
             skScNavC=SKScNavViewController(subViewControllers:[letterVC,salesVC,priceVC])
             
+        }else if flag == 5{
+            salesVC.goodsCategoryId=goodsCategoryId
+            priceVC.goodsCategoryId=goodsCategoryId
+            letterVC.goodsCategoryId=goodsCategoryId
+            skScNavC=SKScNavViewController(subViewControllers:[salesVC,priceVC])
         }else{
             skScNavC=SKScNavViewController(subViewControllers:[salesVC,priceVC])
         }

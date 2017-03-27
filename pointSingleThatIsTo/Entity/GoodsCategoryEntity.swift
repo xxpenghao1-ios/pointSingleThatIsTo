@@ -20,6 +20,8 @@ class GoodsCategoryEntity:Mappable {
     var goodsCategoryIco:String?
     ///分类描述
     var goodsCategoryIdRemark:String?
+    ///分类类型
+    var categoryType:Int?
     
     /// 分站品牌名字
     var brandname:String?
@@ -46,6 +48,7 @@ class GoodsCategoryEntity:Mappable {
         brandname <- map["brandname"]
         brandId <- map["brandId"]
         goodscategoryId <- map["goodscategoryId"]
+        categoryType <- map["categoryType"]
         substationId <- map["substationId"]
     }
 }

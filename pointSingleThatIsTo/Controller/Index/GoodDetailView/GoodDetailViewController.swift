@@ -53,7 +53,10 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
     private var arr=NSMutableArray()
     /// 商品数量
     private var count=1;
-    
+    /// 收藏view
+    private var collectView:UIView?
+    private var collectImgView:UIImageView?
+    private var lblCollectName:UILabel?
     /// 添加的总数量
     private var badgeCount=0
     override func viewDidLoad() {
@@ -92,6 +95,21 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         goodView=UIView(frame:CGRectMake(0,CGRectGetMaxY(goodImgView!.frame),boundsWidth,152))
         goodView!.backgroundColor=UIColor.viewBackgroundColor()
         self.scrollView!.addSubview(goodView!)
+        
+        collectView=UIView(frame:CGRectMake(boundsWidth-50,CGRectGetMaxY(goodImgView!.frame)-50,40,40))
+        collectView!.backgroundColor=UIColor(red:187/255, green:187/255, blue:187/255, alpha:1)
+        collectView!.layer.cornerRadius=5
+        collectImgView=UIImageView(frame:CGRectMake((40-12.8)/2,7,15.1,12.8))
+        collectView!.addSubview(collectImgView!)
+        lblCollectName=UILabel(frame:CGRectMake(0,CGRectGetMaxY(collectImgView!.frame),40,18))
+        lblCollectName!.text="收藏"
+        lblCollectName!.textColor=UIColor.whiteColor()
+        lblCollectName!.font=UIFont.systemFontOfSize(10)
+        lblCollectName!.textAlignment = .Center
+        collectView!.userInteractionEnabled=true
+        collectView!.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"goodsAddCollection"))
+        collectView!.addSubview(lblCollectName!)
+        self.scrollView!.addSubview(collectView!)
         
         /// 4条边线边线
         let border1=UIView(frame:CGRectMake(0,0,boundsWidth,0.5))
@@ -560,7 +578,7 @@ extension GoodDetailViewController{
      */
     func httpGoodDetail(){
         SVProgressHUD.showWithStatus("数据加载中")
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!, flag: 2, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!, flag: 2, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!,memberId:IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
             SVProgressHUD.dismiss()
             let json=JSON(result)
             print(json)
@@ -611,6 +629,13 @@ extension GoodDetailViewController{
             }else{
                 self.lblUcode!.text="规格 : 无"
             }
+            if self.goodDeatilEntity!.goodsCollectionStatu != nil{
+                self.collectImgView!.image=UIImage(named:"collectioned_icon")
+                self.lblCollectName!.text="已收藏"
+            }else{
+                self.collectImgView!.image=UIImage(named:"collection_icon")
+                self.lblCollectName!.text="收藏"
+            }
             //如果有数据构建table
             self.buildTable()
             self.btnSelectShoppingCar!.hidden=false
@@ -619,6 +644,32 @@ extension GoodDetailViewController{
                 SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
+    /**
+     加入收藏
+     */
+    func goodsAddCollection(){
+        if self.goodDeatilEntity!.goodsCollectionStatu == 1{
+            SVProgressHUD.showInfoWithStatus("该商品已经被收藏")
+        }else{
+            SVProgressHUD.showWithStatus("数据加载中", maskType: SVProgressHUDMaskType.Clear)
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.goodsAddCollection(goodId:self.goodDeatilEntity!.goodsbasicinfoId!, supplierId:self.goodDeatilEntity!.supplierId!, subSupplierId:self.goodDeatilEntity!.subSupplier!, memberId:IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
+                let json=JSON(result)
+                let success=json["success"].stringValue
+                if success == "success"{
+                    SVProgressHUD.showSuccessWithStatus("收藏成功")
+                    self.collectImgView!.image=UIImage(named:"collectioned_icon")
+                    self.lblCollectName!.text="已收藏"
+                    self.goodDeatilEntity!.goodsCollectionStatu=1
+                }else{
+                    SVProgressHUD.showErrorWithStatus("收藏失败")
+                }
+                
+                }) { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            }
+        }
+    }
+    
 }
 // MARK: - 页面跳转
 extension GoodDetailViewController{

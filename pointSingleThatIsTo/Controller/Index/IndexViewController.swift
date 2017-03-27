@@ -12,34 +12,26 @@ import ObjectMapper
 import SVProgressHUD
 import SDCycleScrollView
 /// 首页
-class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectionViewDataSource,UICollectionViewDelegate,UITextFieldDelegate,UIScrollViewDelegate{
+class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UITextFieldDelegate,UIScrollViewDelegate{
     /// 可滑动容器
     private var scrollView:UIScrollView?
-    
-    //*****导航控制器begin******
     /// 滚动显示地址信息
     private var lblAddress:CBAutoScrollLabel?
-    //*****导航控制器end********
-    
-    //*****幻灯片begin**********
     /// 幻灯片控件
     private var netWorkBanner:SDCycleScrollView?
     /// 幻灯片图片数组
     private var zwadImgArr=NSMutableArray()
-    //*****幻灯片end************
-    
-    /// 促销
-    private var promotionImageView:UIImageView?
-    
-    
-    //******分类begin*******
     private var classifyArr=NSMutableArray()
     /// 分类
     private var classifyCollectionView:UICollectionView?
     /// 分类下边背景view
     private var classifyCollectionBorderView:UIView?
-    //******分类end*********
-    
+    /// 特价和促销区
+    private var specialAndPromotionsCollectionView:UICollectionView?
+    ///分割线
+    private var specialAndPromotionsCollectionBorderView:UIView?
+    private var specialAndPromotionsCollectionButtomBorderView:UIView?
+    private var specialAndPromotionsArr=NSMutableArray()
     //******新品推荐begin********
     private var newProductArr=NSMutableArray()
     /// 新品推荐
@@ -48,28 +40,20 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
     private var lblNilNewProduct:UILabel?
     /// 新品推荐下边背景view
     private var newProductBorderView:UIView?
-    //******新品推荐end**********
-    
-    //******热门商品begin*******
     /// 热门商品数组
     private var hotGoodArr=NSMutableArray()
     /// 热门商品CollectionView
     private var hotGoodCollectionView:UICollectionView?
-    //******热门商品end*********
-    
     /// 公告栏entity
     private var adMessgInfoEntity:AdMessgInfoEntity?
-    
     /// 用于页面自动刷新
     private var updateViewFlag=false
-    
     /// 定时器
     private var timer:NSTimer?
-    
     //保存索引(用于新品推荐滚动)
     private var index=0
-
-    
+    //分站信息
+    private var substationEntity:SubstationEntity?
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         addTimer()
@@ -77,7 +61,6 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
             self.scrollView?.headerBeginRefreshing()
         }
     }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 //        //设置当前页面导航控制器背景色为0.2透明度
@@ -108,6 +91,7 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
                 self.classifyArr.removeAllObjects()
                 self.newProductArr.removeAllObjects()
                 self.hotGoodArr.removeAllObjects()
+                self.specialAndPromotionsArr.removeAllObjects()
                 //发送数据请求
                 self.http()
             }else{//如果没有给出提示结束刷新
@@ -120,6 +104,55 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
     }
     
     
+    //实现可滑动容器协议
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        if scrollView.tag == 2016{//判断tag防止其他类似控件执行
+//            //在可滑动容器滚动的时候控制导航栏背景颜色渐变
+//            let color=UIColor.applicationMainColor()
+//            let offsetY=scrollView.contentOffset.y
+//            if  offsetY > 25{//如果滑动的距离大于25开始渐变颜色
+//                let alpha:CGFloat=min(1,1 - ((25 + 64 - offsetY) / 64))
+//                self.navigationController!.navigationBar.lt_setBackgroundColor(color.colorWithAlphaComponent(alpha))
+//            }else{//否者 回复原来0.2的透明度
+//                self.navigationController!.navigationBar.lt_setBackgroundColor(color.colorWithAlphaComponent(0.2))
+//            }
+        }
+    }
+    //当前用户正在滑动的时候
+    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+        if scrollView.tag == 200{
+            removeTimer()
+        }
+    }
+    //当前用户结束滑动的时候
+    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView.tag == 200{
+            //拿到当前展示的cell中的第一个
+            let indexPath=newProductCollectionView!.indexPathsForVisibleItems().last
+            if indexPath != nil{//判断是否为空
+                index=indexPath!.row
+            }
+            addTimer()
+        }
+    }
+
+    //页面退出
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        removeTimer()
+//        //重新设置导航栏的背景颜色
+//        self.navigationController!.navigationBar.lt_setBackgroundColor(UIColor.applicationMainColor())
+    }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+
+    
+}
+// MARK: - 页面布局
+extension IndexViewController{
     /**
      构建页面
      */
@@ -135,18 +168,12 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         netWorkBanner!.pageControlAliment = SDCycleScrollViewPageContolAlimentRight
         netWorkBanner!.backgroundColor=UIColor.whiteColor()
         self.scrollView!.addSubview(netWorkBanner!)
-        //构建促销图片
-        promotionImageView=UIImageView(frame:CGRectMake(0,CGRectGetMaxY(netWorkBanner!.frame),boundsWidth,140))
-        promotionImageView!.userInteractionEnabled=true
-        promotionImageView!.image=UIImage(named:"def_promotion")
-        promotionImageView!.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushPromotionView:"))
-        self.scrollView!.addSubview(promotionImageView!)
         //构建分类collectionView
         buildClassifCollectionView()
-        
+        //构建特价与促销collectionView
+        buildSpecialAndPromotionsCollectionView()
         //构建新品推荐collectionView
         buildNewProductCollectonView()
-        
         //构建热门商品collectionView
         buildHotGoodCollectionView()
         
@@ -162,7 +189,7 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         barImgView.frame=CGRectMake(0,0,11.5,18);
         //gps图片按钮
         let leftBarImg=UIBarButtonItem(customView:barImgView);
-        //设置这个的UIBarButtonItem的宽为-15
+        //设置这个的UIBarButtonItem的宽为-10
         leftBarNil.width = -10;
         //直接创建一个文本框
         let txt=UITextField(frame:CGRectMake(0,0,boundsWidth-120,30))
@@ -179,8 +206,15 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         txt.leftView=leftView
         txt.leftViewMode=UITextFieldViewMode.Always
         let leftBarTxt=UIBarButtonItem(customView:txt)
+        //公告
+        let noticeImg=UIImageView(frame:CGRectMake(0,0,20,20))
+        noticeImg.image=UIImage(named:"notice")
+        noticeImg.userInteractionEnabled=true
+        noticeImg.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"showActivityAlert"))
+        
+        let barNotice=UIBarButtonItem(customView:noticeImg)
         ///定位文字
-        lblAddress=CBAutoScrollLabel(frame:CGRectMake(0,0,60,20))
+        lblAddress=CBAutoScrollLabel(frame:CGRectMake(0,0,50,20))
         lblAddress!.textColor=UIColor.whiteColor()
         lblAddress!.font=UIFont.boldSystemFontOfSize(16)
         //获取缓登录中得到的缓存地址
@@ -195,7 +229,7 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         lblAddress!.observeApplicationNotifications()
         /// 定位titleBar
         let addressTitleBar=UIBarButtonItem(customView:lblAddress!)
-        self.navigationItem.leftBarButtonItems=[leftBarNil,leftBarImg,addressTitleBar,leftBarTxt]
+        self.navigationItem.leftBarButtonItems=[leftBarNil,leftBarImg,addressTitleBar,leftBarTxt,barNotice]
     }
     /**
      构建分类collectionView
@@ -215,7 +249,7 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         flowLayout.minimumInteritemSpacing = 0;//每个相邻layout的左右
         
         flowLayout.headerReferenceSize = CGSizeMake(0, 0);
-        classifyCollectionView=UICollectionView(frame:CGRectMake(15,CGRectGetMaxY(promotionImageView!.frame)+15,boundsWidth-30,boundsWidth/4*2), collectionViewLayout:flowLayout)
+        classifyCollectionView=UICollectionView(frame:CGRectMake(15,CGRectGetMaxY(netWorkBanner!.frame)+15,boundsWidth-30,boundsWidth/4*2), collectionViewLayout:flowLayout)
         classifyCollectionView!.backgroundColor=UIColor.whiteColor();
         classifyCollectionView!.alwaysBounceVertical=true;
         classifyCollectionView!.delegate=self;
@@ -224,9 +258,35 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         classifyCollectionView!.tag=100
         self.scrollView!.addSubview(classifyCollectionView!);
         //商品分类borderView
-        classifyCollectionBorderView=UIView(frame:CGRectMake(0,CGRectGetMaxY(classifyCollectionView!.frame),boundsWidth,10))
+        classifyCollectionBorderView=UIView(frame:CGRectMake(0,CGRectGetMaxY(classifyCollectionView!.frame),boundsWidth,7))
         classifyCollectionBorderView!.backgroundColor=UIColor.viewBackgroundColor();
         self.scrollView!.addSubview(classifyCollectionBorderView!)
+    }
+    /**
+     构建特价与促销collectionView
+     */
+    func buildSpecialAndPromotionsCollectionView(){
+        let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.itemSize = CGSizeMake(boundsWidth/2,boundsWidth/2-70)
+        flowLayout.scrollDirection = UICollectionViewScrollDirection.Vertical//设置垂直显示
+        flowLayout.minimumLineSpacing = 0;//每个相邻layout的上下
+        flowLayout.minimumInteritemSpacing = 0;//每个相邻layout的左右
+        flowLayout.headerReferenceSize = CGSizeMake(0, 0);
+        specialAndPromotionsCollectionView=UICollectionView(frame:CGRectMake(0,CGRectGetMaxY(classifyCollectionBorderView!.frame)+8,boundsWidth,boundsWidth/2-70), collectionViewLayout:flowLayout)
+        specialAndPromotionsCollectionView!.backgroundColor=UIColor.whiteColor();
+        specialAndPromotionsCollectionView!.alwaysBounceVertical=true;
+        specialAndPromotionsCollectionView!.delegate=self;
+        specialAndPromotionsCollectionView!.dataSource=self;
+        specialAndPromotionsCollectionView!.registerClass(IndexSpecialAndPromotions.self, forCellWithReuseIdentifier:"IndexSpecialAndPromotions");
+        specialAndPromotionsCollectionView!.tag=700
+        self.scrollView!.addSubview(specialAndPromotionsCollectionView!);
+        specialAndPromotionsCollectionBorderView=UIView(frame:CGRectMake(boundsWidth/2-2,specialAndPromotionsCollectionView!.frame.origin.y,1,specialAndPromotionsCollectionView!.frame.height))
+        specialAndPromotionsCollectionBorderView!.backgroundColor=UIColor.viewBackgroundColor()
+        self.scrollView!.addSubview(specialAndPromotionsCollectionBorderView!)
+        specialAndPromotionsCollectionButtomBorderView=UIView(frame:CGRectMake(0,CGRectGetMaxY(specialAndPromotionsCollectionView!.frame)+8,boundsWidth,7))
+        specialAndPromotionsCollectionButtomBorderView!.backgroundColor=UIColor.viewBackgroundColor()
+        self.scrollView!.addSubview(specialAndPromotionsCollectionButtomBorderView!)
+        
     }
     /**
      构建新品推荐collectionView
@@ -234,12 +294,12 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
     func buildNewProductCollectonView(){
         
         //边线
-        let lblNewProductBorderView=UIView(frame:CGRectMake(10,CGRectGetMaxY(classifyCollectionBorderView!.frame)+20,boundsWidth-20,1))
+        let lblNewProductBorderView=UIView(frame:CGRectMake(10,CGRectGetMaxY(specialAndPromotionsCollectionButtomBorderView!.frame)+20,boundsWidth-20,1))
         lblNewProductBorderView.backgroundColor=UIColor(red:215/255, green:215/255, blue: 215/255, alpha: 1)
         self.scrollView!.addSubview(lblNewProductBorderView)
         
         //新品推荐标题
-        let lblNewProductTitle=UILabel(frame:CGRectMake((boundsWidth-80)/2,CGRectGetMaxY(classifyCollectionBorderView!.frame)+10,80,20))
+        let lblNewProductTitle=UILabel(frame:CGRectMake((boundsWidth-80)/2,CGRectGetMaxY(specialAndPromotionsCollectionButtomBorderView!.frame)+10,80,20))
         lblNewProductTitle.textColor=UIColor.applicationMainColor()
         lblNewProductTitle.text="新品推荐"
         lblNewProductTitle.backgroundColor=UIColor.whiteColor()
@@ -327,23 +387,18 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
         self.scrollView!.addSubview(hotGoodCollectionView!);
     }
 
-
-            //每个collectionViewCell展示的内容
+}
+// MARK: - 协议实现
+extension IndexViewController:UICollectionViewDataSource,UICollectionViewDelegate{
+    //每个collectionViewCell展示的内容
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         var cells=UICollectionViewCell()
         if collectionView.tag == 100{//分类
             let cell=collectionView.dequeueReusableCellWithReuseIdentifier("IndexClassifyCollectionViewCell", forIndexPath:indexPath) as! IndexClassifyCollectionViewCell
             if classifyArr.count > 0{//如果大于0更新cell  防止空数据  导致程序直接崩溃
-                if indexPath.row < classifyArr.count{
-                    let entity=classifyArr[indexPath.row] as! GoodsCategoryEntity
-                    cell.updaeCell(entity)
-                }else{
-                    if indexPath.row == classifyArr.count{
-                        cell.updateCell1("公告栏", pic:"category7")
-                    }else if indexPath.row == classifyArr.count+1{
-                        cell.updateCell1("每日特惠", pic:"category8")
-                    }
-                }
+                let entity=classifyArr[indexPath.row] as! GoodsCategoryEntity
+                cell.updaeCell(entity)
+               
             }
             cells=cell
         }else if collectionView.tag == 200{//新品推荐
@@ -364,6 +419,13 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
                 cell.updateCell(entity)
             }
             cells=cell
+        }else if collectionView.tag == 700{//特价与促销
+            let cell=collectionView.dequeueReusableCellWithReuseIdentifier("IndexSpecialAndPromotions", forIndexPath:indexPath) as! IndexSpecialAndPromotions
+            if specialAndPromotionsArr.count > 0{//如果大于0更新cell  防止空数据  导致程序直接崩溃
+                let entity=specialAndPromotionsArr[indexPath.row] as! SpecialAndPromotionsEntity
+                cell.updateCell(entity)
+            }
+            cells=cell
         }
         
         return cells
@@ -372,11 +434,13 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var count=0
         if collectionView.tag == 100{//分类
-            count=classifyArr.count+2
+            count=classifyArr.count
         }else if collectionView.tag == 200{//新品推荐
             count=newProductArr.count
         }else if collectionView.tag == 300{//热门商品
             count=hotGoodArr.count
+        }else if collectionView.tag == 700{
+            count=specialAndPromotionsArr.count
         }
         return count
     }
@@ -387,24 +451,28 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
     //每个collectionViewCell点击事件
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         if collectionView.tag == 100{//分类
-            if indexPath.row < self.classifyArr.count{
-                let entity=self.classifyArr[indexPath.row] as! GoodsCategoryEntity
+            let entity=self.classifyArr[indexPath.row] as! GoodsCategoryEntity
+            if entity.categoryType == 1{//跳转到收藏区
+                let vc=CollectListViewController()
+                vc.hidesBottomBarWhenPushed=true
+                self.navigationController?.pushViewController(vc, animated:true)
+            }else if entity.categoryType == 2{//跳转到积分商城
+                if self.substationEntity?.subStationBalanceStatu == 1{
+                    /// 跳转到积分商城
+                    let vc=PresentExpViewController()
+                    vc.hidesBottomBarWhenPushed=true
+                    self.navigationController?.pushViewController(vc, animated:true)
+                }else{
+                    SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
+                }
+            }else{//其他跳转到分类
                 let goodCaregoryVc=CategoryListController()
                 goodCaregoryVc.pid=entity.goodsCategoryId
                 goodCaregoryVc.pushState=1
+                goodCaregoryVc.categoryName=entity.goodsCategoryName
                 goodCaregoryVc.hidesBottomBarWhenPushed=true
                 self.navigationController?.pushViewController(goodCaregoryVc, animated:true);
-            }else{
-                if indexPath.row == self.classifyArr.count{//弹出提示
-                    self.showActivityAlert()
-                }else if indexPath.row == classifyArr.count+1{//跳转特价区
-                    let vc=GoodSpecialPriceViewController()
-                    vc.arr=classifyArr
-                    vc.hidesBottomBarWhenPushed=true
-                    self.navigationController!.pushViewController(vc, animated:true)
-                }
             }
-
         }else if collectionView.tag == 200{//新品推荐
             let vc=GoodCategory3ViewController()
             vc.flag=3
@@ -418,55 +486,22 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UICollectio
             vc.goodEntity=entity
             vc.storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as? String
             self.navigationController!.pushViewController(vc, animated:true)
-        }
-    }
-    
-    //实现可滑动容器协议
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-        if scrollView.tag == 2016{//判断tag防止其他类似控件执行
-//            //在可滑动容器滚动的时候控制导航栏背景颜色渐变
-//            let color=UIColor.applicationMainColor()
-//            let offsetY=scrollView.contentOffset.y
-//            if  offsetY > 25{//如果滑动的距离大于25开始渐变颜色
-//                let alpha:CGFloat=min(1,1 - ((25 + 64 - offsetY) / 64))
-//                self.navigationController!.navigationBar.lt_setBackgroundColor(color.colorWithAlphaComponent(alpha))
-//            }else{//否者 回复原来0.2的透明度
-//                self.navigationController!.navigationBar.lt_setBackgroundColor(color.colorWithAlphaComponent(0.2))
-//            }
-        }
-    }
-    //当前用户正在滑动的时候
-    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
-        if scrollView.tag == 200{
-            removeTimer()
-        }
-    }
-    //当前用户结束滑动的时候
-    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if scrollView.tag == 200{
-            //拿到当前展示的cell中的第一个
-            let indexPath=newProductCollectionView!.indexPathsForVisibleItems().last
-            if indexPath != nil{//判断是否为空
-                index=indexPath!.row
+        }else if collectionView.tag == 700{
+            let entity=specialAndPromotionsArr[indexPath.row] as! SpecialAndPromotionsEntity
+            if entity.mobileOrPc == 3{
+                let vc=GoodSpecialPriceViewController()
+                vc.arr=classifyArr
+                vc.hidesBottomBarWhenPushed=true
+                self.navigationController!.pushViewController(vc, animated:true)
+            }else if entity.mobileOrPc == 2{
+                let vc=GoodCategory3ViewController()
+                vc.flag=4
+                vc.hidesBottomBarWhenPushed=true
+                self.navigationController?.pushViewController(vc, animated:true)
             }
-            addTimer()
         }
     }
 
-    //页面退出
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        removeTimer()
-//        //重新设置导航栏的背景颜色
-//        self.navigationController!.navigationBar.lt_setBackgroundColor(UIColor.applicationMainColor())
-    }
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
-    
 }
 // MARK: - 页面逻辑
 extension IndexViewController{
@@ -546,9 +581,11 @@ extension IndexViewController{
         dispatch_group_async(group,queue,{
             //发送幻灯片请求
             self.httpSlide(countyId)
+            //发分站信息请求
+            self.querySubstationInfo(storeId)
         })
         dispatch_group_async(group,queue,{
-            //发送促销图片请求
+            //发送促销与特价图片请求
             self.httpPromotionImg()
         })
         dispatch_group_async(group,queue,{
@@ -580,10 +617,13 @@ extension IndexViewController{
      发送促销图片请求
      */
     func httpPromotionImg(){
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.mobileAdvertisingPromotion(), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.mobileAdvertisingPromotionAndPreferential(), successClosure: { (result) -> Void in
             let json=JSON(result)
-            let advertisingURL=json["advertisingURL"].stringValue
-            self.promotionImageView!.sd_setImageWithURL(NSURL(string:URLIMG+advertisingURL), placeholderImage:UIImage(named: "def_promotion"))
+            for(_,value) in json{
+                let entity=Mapper<SpecialAndPromotionsEntity>().map(value.object)
+                self.specialAndPromotionsArr.addObject(entity!)
+            }
+            self.specialAndPromotionsCollectionView?.reloadData()
             }) { (errorMsg) -> Void in
                 SVProgressHUD.showErrorWithStatus(errorMsg)
         }
@@ -703,6 +743,18 @@ extension IndexViewController{
                 self.zwadImgArr.addObject(URLIMG+entity!.advertisingURL!)
             }
             self.netWorkBanner?.imageURLStringsGroup=self.zwadImgArr as [AnyObject]
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
+        }
+    }
+    /**
+     请求分站信息和推荐人
+     */
+    func querySubstationInfo(storeId:String){
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStoreMember(storeId: storeId, memberId: IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
+            //解析json
+            let json=JSON(result)
+            self.substationEntity=Mapper<SubstationEntity>().map(json["substationEntity"].object)
             }) { (errorMsg) -> Void in
                 SVProgressHUD.showErrorWithStatus(errorMsg)
         }

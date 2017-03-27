@@ -250,7 +250,7 @@ extension SweepersViewController{
             .POST,
             URL+"commUploadImageServlet.do",
             multipartFormData: { multipartFormData in
-                multipartFormData.appendBodyPart(fileURL:NSURL(fileURLWithPath:filePath), name: "filePath")
+                multipartFormData.appendBodyPart(fileURL:NSURL(fileURLWithPath:filePath), name:"filePath")
                 
             },
             encodingCompletion: { encodingResult in

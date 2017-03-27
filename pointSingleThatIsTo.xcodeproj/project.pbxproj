@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		63452A0B1E8273080039E6A1 /* CollectListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63452A0A1E8273080039E6A1 /* CollectListViewController.swift */; };
+		63452A0D1E8275B60039E6A1 /* CollectionEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63452A0C1E8275B60039E6A1 /* CollectionEntity.swift */; };
+		63C5CDF21E77955600BAAFF4 /* IndexSpecialAndPromotions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C5CDF11E77955600BAAFF4 /* IndexSpecialAndPromotions.swift */; };
+		63D720891E7F894800424993 /* SpecialAndPromotionsEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D720881E7F894800424993 /* SpecialAndPromotionsEntity.swift */; };
+		63E99A211E83BA9600A6C018 /* BrandCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E99A201E83BA9600A6C018 /* BrandCollectionCell.swift */; };
 		8F4E98D339F955D44581EE5C /* Pods_pointSingleThatIsTo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E8C477E58EC698C1BBDE19F /* Pods_pointSingleThatIsTo.framework */; };
 		EF1B4F5D1D813EA9008BD770 /* FeedbackOnProblemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1B4F5C1D813EA9008BD770 /* FeedbackOnProblemsViewController.swift */; };
 		EF2A300F1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2A300D1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift */; };
@@ -201,6 +206,11 @@
 
 /* Begin PBXFileReference section */
 		5E8C477E58EC698C1BBDE19F /* Pods_pointSingleThatIsTo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_pointSingleThatIsTo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		63452A0A1E8273080039E6A1 /* CollectListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectListViewController.swift; sourceTree = "<group>"; };
+		63452A0C1E8275B60039E6A1 /* CollectionEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionEntity.swift; sourceTree = "<group>"; };
+		63C5CDF11E77955600BAAFF4 /* IndexSpecialAndPromotions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexSpecialAndPromotions.swift; sourceTree = "<group>"; };
+		63D720881E7F894800424993 /* SpecialAndPromotionsEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecialAndPromotionsEntity.swift; sourceTree = "<group>"; };
+		63E99A201E83BA9600A6C018 /* BrandCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrandCollectionCell.swift; sourceTree = "<group>"; };
 		7ABD49AC08B6BDABAE840F39 /* Pods-pointSingleThatIsTo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pointSingleThatIsTo.release.xcconfig"; path = "Pods/Target Support Files/Pods-pointSingleThatIsTo/Pods-pointSingleThatIsTo.release.xcconfig"; sourceTree = "<group>"; };
 		9373174AB77EE10B1A8034C4 /* Pods-pointSingleThatIsTo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pointSingleThatIsTo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-pointSingleThatIsTo/Pods-pointSingleThatIsTo.debug.xcconfig"; sourceTree = "<group>"; };
 		EF1B4F5C1D813EA9008BD770 /* FeedbackOnProblemsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedbackOnProblemsViewController.swift; sourceTree = "<group>"; };
@@ -535,6 +545,7 @@
 			children = (
 				EF455E821D33847500E9539F /* GoodDetailPromotionsDetailView.swift */,
 				EF455E831D33847500E9539F /* GoodDetailViewController.swift */,
+				63452A0A1E8273080039E6A1 /* CollectListViewController.swift */,
 			);
 			path = GoodDetailView;
 			sourceTree = "<group>";
@@ -694,6 +705,8 @@
 				EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */,
 				EF2CCA1D1D4B2AB600F2D69B /* ExchangeRecordEntity.swift */,
 				EFED436A1D5967740041B0BE /* ShoppingCarVo.swift */,
+				63D720881E7F894800424993 /* SpecialAndPromotionsEntity.swift */,
+				63452A0C1E8275B60039E6A1 /* CollectionEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -956,6 +969,8 @@
 				EF455F1D1D33847500E9539F /* IndexClassifyCollectionViewCell.swift */,
 				EF455F1E1D33847500E9539F /* IndexHotGoodCollectionViewCell.swift */,
 				EF455F1F1D33847500E9539F /* SalePriceCollectionViewCell.swift */,
+				63C5CDF11E77955600BAAFF4 /* IndexSpecialAndPromotions.swift */,
+				63E99A201E83BA9600A6C018 /* BrandCollectionCell.swift */,
 			);
 			path = CollectionViewCell;
 			sourceTree = "<group>";
@@ -1365,7 +1380,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1390,10 +1405,12 @@
 				EF455F6B1D33847500E9539F /* PurchaseRecordsViewController.swift in Sources */,
 				EF455F931D33847500E9539F /* AddShoppingCartAnimation.swift in Sources */,
 				EF455FBC1D33847500E9539F /* IndexClassifyCollectionViewCell.swift in Sources */,
+				63E99A211E83BA9600A6C018 /* BrandCollectionCell.swift in Sources */,
 				EFE0B5431D3CBCA200E3C5AA /* IntegralExchangeEntity.swift in Sources */,
 				EF455FCE1D33847500E9539F /* GoodCategory3TableViewCell.swift in Sources */,
 				EF455FAD1D33847500E9539F /* RefreshHeaderView.swift in Sources */,
 				EF455FBE1D33847500E9539F /* SalePriceCollectionViewCell.swift in Sources */,
+				63D720891E7F894800424993 /* SpecialAndPromotionsEntity.swift in Sources */,
 				EF455F5C1D33847500E9539F /* GoodDetailPromotionsDetailView.swift in Sources */,
 				EF2CCA1E1D4B2AB600F2D69B /* ExchangeRecordEntity.swift in Sources */,
 				EF455FB31D33847500E9539F /* SKLaunchMenuItem.swift in Sources */,
@@ -1435,6 +1452,8 @@
 				EF455FA71D33847500E9539F /* PHJPushHelper.swift in Sources */,
 				EF455F571D33847500E9539F /* RobbedListViewController.swift in Sources */,
 				EF455F821D33847500E9539F /* AdvertisingEntity.swift in Sources */,
+				63C5CDF21E77955600BAAFF4 /* IndexSpecialAndPromotions.swift in Sources */,
+				63452A0D1E8275B60039E6A1 /* CollectionEntity.swift in Sources */,
 				EF455FA41D33847500E9539F /* HYScratchCardView.m in Sources */,
 				EF455FBB1D33847500E9539F /* categoryListCell.swift in Sources */,
 				EF2A300F1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift in Sources */,
@@ -1512,6 +1531,7 @@
 				EF455F4F1D33847500E9539F /* CategoryListController.swift in Sources */,
 				EF2CCA211D4B3F1A00F2D69B /* ExchangeRecordTableViewCell.swift in Sources */,
 				EF455FD71D33847500E9539F /* OrderGoodTableViewCell.swift in Sources */,
+				63452A0B1E8273080039E6A1 /* CollectListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

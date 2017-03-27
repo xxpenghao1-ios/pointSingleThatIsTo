@@ -10,76 +10,58 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
-
-class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewDataSource,UICollectionViewDelegate,UICollectionViewDataSource{
-    //用户信息
-    var userDefaults=NSUserDefaults.standardUserDefaults()
-    
-    //左边Table
-    var leftTable:UITableView?
-    
-    //右边Collection
-    var rightCollection:UICollectionView?
-    
-    //UICollectionView总宽度
-    var cellPicW:CGFloat=0
-    
-    //Table右垂直分割线
-    var rightLine:UILabel!
-    
-    //一级分类ID
+/// 品牌
+class BrandViewController:BaseViewController,UICollectionViewDelegate,UICollectionViewDataSource,UITableViewDelegate,UITableViewDataSource{
+    //接受1级分类id
     var pid:Int?
-    
-    //存储二级分类实体类
-    var childCategory:[GoodsCategoryEntity]=[]
-    
-    //存储三级分类实体类
-    var threeCategory:[GoodsCategoryEntity]=[]
-    
-    //网络连接状态码
-    private var isNetWork:Bool=true
-    
     //判断页面从首页传过来还是底部工具栏(1-首页，其他从底部传过来)
     var pushState:Int=0
-    
     //左边Table和右边UICollectionView的动态高度
     var flyHeight:CGFloat=0
-    
-    // 没有数据加载该视图
+    private let arr=NSMutableArray()
+    private var collection:UICollectionView?
+    //左边Table
+    var leftTable:UITableView?
+    //右边Collection
+    var rightCollection:UICollectionView?
+    //UICollectionView总宽度
+    var cellPicW:CGFloat=0
+    //存储二级分类实体类
+    var childCategory:[GoodsCategoryEntity]=[]
     var nilView:UIView?
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(true)
-        //若无网络,改变状态码下次进来直接刷新
-        if(!IJReachability.isConnectedToNetwork()){
-            isNetWork=false
-        }
-        //状态码变成false并且有网络则发送二级分类请求
-        if(!isNetWork){
-            if(IJReachability.isConnectedToNetwork()){
-                queryChildCategory()
-            }
-        }
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor=UIColor.whiteColor()
-        creatLeftView()
-        creatRightCollection()
-        if(pushState == 1){//从首页点击
-            queryChildCategory()
-        }else{//底部点击
-            queryChildCategoryBottom()
-        }
-    }
-    //左边Table视图
-    func creatLeftView(){
         //根据push状态码动态修改Table的高度
         if(pushState == 1){
             flyHeight=boundsHeight - CGFloat(104)
+            indexBuildView()
+            queryChildCategory()
         }else{
             flyHeight=boundsHeight - CGFloat(153)
+            bottomBuildView()
+            queryChildCategoryBottom()
         }
+    }
+    /**
+     首页点击进入页面
+     */
+    func indexBuildView(){
+        let flowLayout=UICollectionViewFlowLayout()
+        flowLayout.minimumInteritemSpacing=0//左右间隔
+        flowLayout.minimumLineSpacing=0
+        flowLayout.itemSize=CGSizeMake(boundsWidth/3,50)
+        collection=UICollectionView(frame:CGRectMake(0,10,boundsWidth,flyHeight-20), collectionViewLayout: flowLayout)
+        collection!.dataSource=self
+        collection!.delegate=self
+        collection!.backgroundColor=UIColor.whiteColor()
+        collection!.registerClass(BrandCollectionCell.self, forCellWithReuseIdentifier: "BrandCollectionCell");
+        self.view.addSubview(collection!)
+    }
+    /**
+     底部菜单点击进入
+     */
+    func bottomBuildView(){
         leftTable=UITableView(frame: CGRectMake(0, 0, 100,flyHeight), style: UITableViewStyle.Plain)
         leftTable?.dataSource=self
         leftTable?.delegate=self
@@ -95,23 +77,18 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
         leftTable?.separatorColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
         //去除多余的单元格
         leftTable?.tableFooterView = UIView(frame:CGRectZero)
-    }
-    
-    //右边UICollectionView视图
-    func creatRightCollection(){
         let flowLayout=UICollectionViewFlowLayout()
-        cellPicW=boundsWidth-leftTable!.frame.width
         flowLayout.minimumInteritemSpacing=0//左右间隔
         flowLayout.minimumLineSpacing=0
-        flowLayout.itemSize=CGSizeMake(cellPicW/3, cellPicW/3)
-        rightCollection=UICollectionView(frame: CGRectMake(leftTable!.frame.width-1, 0, cellPicW, flyHeight), collectionViewLayout: flowLayout)
-        rightCollection?.dataSource=self
-        rightCollection?.delegate=self
-        rightCollection?.backgroundColor=UIColor.whiteColor()
-        rightCollection?.registerClass(categoryListCell.self, forCellWithReuseIdentifier: "rightCollection");
-        self.view.addSubview(rightCollection!)
+        cellPicW=boundsWidth-leftTable!.frame.width
+        flowLayout.itemSize=CGSizeMake(cellPicW/3,50)
+        collection=UICollectionView(frame:CGRectMake(leftTable!.frame.width-1,10,cellPicW,flyHeight-20), collectionViewLayout: flowLayout)
+        collection!.dataSource=self
+        collection!.delegate=self
+        collection!.backgroundColor=UIColor.whiteColor()
+        collection!.registerClass(BrandCollectionCell.self, forCellWithReuseIdentifier: "BrandCollectionCell");
+        self.view.addSubview(collection!)
     }
-    
     //MARK ------------Table的代理--------------------------
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
@@ -129,10 +106,6 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
             cell=UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier:Identifier)
             
         }
-        //创建分割线
-        rightLine=UILabel(frame: CGRectMake(leftTable!.frame.width-0.5, 0, 0.5, cell!.contentView.frame.height))
-        rightLine.backgroundColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
-        cell!.contentView.addSubview(rightLine)
         if(childCategory.count > 0){
             cell?.textLabel?.text=childCategory[indexPath.row].goodsCategoryName
         }
@@ -154,7 +127,6 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let cell=tableView.cellForRowAtIndexPath(indexPath)
         tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
-        rightLine.backgroundColor=UIColor.whiteColor()
         cell?.backgroundColor=UIColor.whiteColor()
         cell?.textLabel?.textColor=UIColor.applicationMainColor()
         let pid=childCategory[indexPath.row].goodsCategoryId
@@ -165,24 +137,23 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
         cell?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
         cell?.textLabel?.textColor=UIColor.blackColor()
     }
-    
-    //MARK ----------UICollectionView的代理--------------------------
+
+    //MARK ----------UICollectionView的代理--------------------
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return threeCategory.count;
+        return arr.count;
     }
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell=collectionView.dequeueReusableCellWithReuseIdentifier("rightCollection", forIndexPath: indexPath) as? categoryListCell
-        //文字
-        if(threeCategory.count > 0){
-            cell?.loadBrandData(threeCategory[indexPath.row])
+        let cell=collectionView.dequeueReusableCellWithReuseIdentifier("BrandCollectionCell", forIndexPath: indexPath) as! BrandCollectionCell
+        if arr.count > 0{
+            let entity=arr[indexPath.row] as! GoodsCategoryEntity
+            cell.updateCell(entity)
+            cell.btn.addTarget(self, action:"pushGoodCategory3:", forControlEvents: UIControlEvents.TouchUpInside)
+            cell.btn.tag=indexPath.row
         }
-        cell?.backgroundColor=UIColor.whiteColor()
-        return cell!;
+        return cell;
     }
-    //点击事件
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        /// 获取对应分类entity
-        let entity=threeCategory[indexPath.row]
+    func pushGoodCategory3(sender:UIButton){
+        let entity=arr[sender.tag] as! GoodsCategoryEntity
         let GoodCategory3VC=GoodCategory3ViewController()
         GoodCategory3VC.hidesBottomBarWhenPushed=true
         GoodCategory3VC.flag=1
@@ -190,58 +161,70 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
         GoodCategory3VC.searchName=entity.brandname
         self.navigationController!.pushViewController(GoodCategory3VC, animated:true)
     }
-    
     /**
-    从底部点击分类
-    */
+     queryCategory4AndroidAll.xhtml   请求所有品牌
+     - parameter goodsCategoryId: 一级分类ID
+     */
+    func queryChildCategory(){
+        //判断网络状态
+        if(IJReachability.isConnectedToNetwork()){
+            SVProgressHUD.showWithStatus("数据加载中")
+            let currPid=pid ?? 1
+            //获取分站ID
+            let substationId=userDefaults.objectForKey("substationId") as! String
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryTwoCategoryForMob(goodsCategoryId:currPid,substationId:substationId), successClosure: { (result) -> Void in
+                let json=JSON(result)
+                if let dic=json.dictionaryObject{
+                    for(key,value) in dic{
+                        if key == "全部"{
+                            let jsonArr=JSON(value)
+                            for(_,bValue) in jsonArr["brand"]{
+                                
+                                let entity=Mapper<GoodsCategoryEntity>().map(bValue.object)
+                                self.arr.addObject(entity!)
+                                
+                            }
+                            break
+                        }
+                        
+                    }
+
+                }
+                if self.arr.count > 0{
+                    self.nilView?.removeFromSuperview()
+                }else{
+                    self.nilView?.removeFromSuperview()
+                    self.nilView=nilPromptView("还木有相关品牌")
+                    self.nilView!.center=self.collection!.center
+                    self.view.addSubview(self.nilView!)
+                }
+                SVProgressHUD.dismiss()
+                self.collection!.reloadData()
+                }) { (errorMsg) -> Void in
+                    SVProgressHUD.showErrorWithStatus(errorMsg)
+            }
+            
+        }else{
+            SVProgressHUD.showErrorWithStatus("无网络连接")
+        }
+        
+        
+    }
+    /**
+     从底部点击分类
+     */
     func queryChildCategoryBottom(){
         //判断网络状态
         if(IJReachability.isConnectedToNetwork()){
             let currPid=pid ?? 1
             SVProgressHUD.showWithStatus("数据加载中")
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryCategory4AndroidAll(goodsCategoryId:currPid), successClosure: { (result) -> Void in
-                    let json=JSON(result)
-                    //每次发请求之前先清除数据源，否则数据会叠加
-                    self.childCategory.removeAll()
-                    for(_,value) in json{
-                        let entity=Mapper<GoodsCategoryEntity>().map(value.object)
-                        self.childCategory.append(entity!);
-                    }
-                    SVProgressHUD.dismiss()
-                    //NSLog("二级分类结果：\(json)")
-                    self.leftTable?.reloadData()
-                    let first=NSIndexPath(forRow: 0, inSection: 0)
-                    self.leftTable?.selectRowAtIndexPath(first, animated: true, scrollPosition: UITableViewScrollPosition.None)
-                    if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
-                        self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
-                    }
-                    self.isNetWork=true
-                }, failClosure: { (errorMsg) -> Void in
-                    SVProgressHUD.showErrorWithStatus(errorMsg)
-            })
-        }else{
-            SVProgressHUD.showErrorWithStatus("无网络连接")
-        }
-    }
-    
-    /**
-    queryCategory4Android.xhtml   发送二级分类请求
-    - parameter goodsCategoryId: 一级分类ID
-    */
-    func queryChildCategory(){
-        //判断网络状态
-        if(IJReachability.isConnectedToNetwork()){
-            SVProgressHUD.showWithStatus("数据加载中")
-            let currPid=pid ?? 1
-            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryCategory4Android(goodsCategoryId:currPid), successClosure: { (result) -> Void in
                 let json=JSON(result)
-                //每次发请求之前先清除数据源，否则数据会叠加
-                self.childCategory.removeAll()
+                print("二级分类\(json)")
                 for(_,value) in json{
                     let entity=Mapper<GoodsCategoryEntity>().map(value.object)
                     self.childCategory.append(entity!)
                 }
-                //NSLog("二级分类结果：\(json)")
                 SVProgressHUD.dismiss()
                 self.leftTable?.reloadData()
                 let first=NSIndexPath(forRow: 0, inSection: 0)
@@ -249,39 +232,38 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
                 if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
                     self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
                 }
-                self.isNetWork=true
                 }, failClosure: { (errorMsg) -> Void in
                     SVProgressHUD.showErrorWithStatus(errorMsg)
             })
+            
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }
     }
     /**
-    queryCategory4Android.xhtml   发送三级分类请求
-    - parameter goodsCategoryId: 二级分类ID
-    - parameter substationId: 分站ID
-    */
+     queryCategory4Android.xhtml   发送三级分类请求
+     - parameter goodsCategoryId: 二级分类ID
+     - parameter substationId: 分站ID
+     */
     func httpGoodCategoryThree(goodsCategoryId:Int){
-         //获取分站ID
+        //获取分站ID
         let substationId=userDefaults.objectForKey("substationId") as! String
         if IJReachability.isConnectedToNetwork(){
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryBrandList4Android(goodscategoryId:goodsCategoryId, substationId: substationId), successClosure: { (result) -> Void in
                 let json=JSON(result)
-                self.threeCategory.removeAll()
-                if(json.count > 0){
-                    for(_,value) in json{
-                        let entity=Mapper<GoodsCategoryEntity>().map(value.object)
-                        self.threeCategory.append(entity!);
-                    }
-                    NSLog("三级分类结果：\(json)")
+                print("3级分类\(json)")
+                self.arr.removeAllObjects()
+                for(_,value) in json{
+                    let entity=Mapper<GoodsCategoryEntity>().map(value.object)
+                    self.arr.addObject(entity!)
+                }
+                self.collection!.reloadData()
+                if self.arr.count > 0{
                     self.nilView?.removeFromSuperview()
-                    self.rightCollection?.reloadData()
                 }else{
-                    self.rightCollection?.reloadData()
                     self.nilView?.removeFromSuperview()
-                    self.nilView=nilPromptView("赶快上传商品吧")
-                    self.nilView!.center=self.rightCollection!.center
+                    self.nilView=nilPromptView("还木有相关品牌")
+                    self.nilView!.center=self.collection!.center
                     self.view.addSubview(self.nilView!)
                 }
                 }, failClosure: { (errorMsg) -> Void in
@@ -291,4 +273,6 @@ class BrandViewController:BaseViewController,UITableViewDelegate,UITableViewData
             SVProgressHUD.showErrorWithStatus("无网络连接")
         }
     }
+
 }
+   

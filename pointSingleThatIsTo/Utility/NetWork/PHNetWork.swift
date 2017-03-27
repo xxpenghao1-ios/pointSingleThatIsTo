@@ -110,11 +110,13 @@ public enum RequestAPI {
     //查询促销商品
     case queryStorePromotionGoodsList(storeId:String,order:String,pageSize:Int,currentPage:Int)
     //发送商品详情请求
-    case queryGoodsDetailsForAndroid(goodsbasicinfoId:Int,supplierId:Int,flag:Int,storeId:String,aaaa:Int,subSupplier:Int)
+    case queryGoodsDetailsForAndroid(goodsbasicinfoId:Int,supplierId:Int,flag:Int,storeId:String,aaaa:Int,subSupplier:Int,memberId:String)
     //查询特价商品集合
     case queryPreferentialAndGoods4Store(countyId:String,categoryId:Int,storeId:String,pageSize:Int,currentPage:Int,order:String)
     //促销图片请求
     case mobileAdvertisingPromotion()
+    //促销图片和特价
+    case mobileAdvertisingPromotionAndPreferential()
     //发送公告栏请求
     case queryAdMessgInfo(substationId:String)
     //热门商品请求
@@ -169,6 +171,14 @@ public enum RequestAPI {
     case storeOrderForAndroid(goodsList:String,detailAddress:String,phoneNumber:String,shippName:String,storeId:String,pay_message:String,tag:Int)
     //问题反馈
     case complaintsAndSuggestions(complaint:String,storeId:String)
+    //查询所有的2,3级分类
+    case queryTwoCategoryForMob(goodsCategoryId:Int,substationId:String)
+    //加入收藏
+    case goodsAddCollection(goodId:Int,supplierId:Int,subSupplierId:Int,memberId:String)
+    //查询收藏区
+    case queryStoreCollectionList(memebrId:String,pageSize:Int,currentPage:Int)
+    //删除收藏商品
+    case goodsCancelCollection(memberId:String,goodId:Int)
 }
 extension RequestAPI:TargetType{
     public var baseURL:NSURL{
@@ -216,7 +226,7 @@ extension RequestAPI:TargetType{
             return "searchGoodsInterfaceForStore"+InterfaceSuffix.XHTML.rawValue
         case .queryStorePromotionGoodsList(_,_,_,_):
             return "queryStorePromotionGoodsList"+InterfaceSuffix.XHTML.rawValue
-        case .queryGoodsDetailsForAndroid(_,_,_,_,_,_):
+        case .queryGoodsDetailsForAndroid(_,_,_,_,_,_,_):
             return "queryGoodsDetailsForAndroid"+InterfaceSuffix.XHTML.rawValue
         case .queryPreferentialAndGoods4Store(_,_,_,_,_,_):
             return "queryPreferentialAndGoods4Store"+InterfaceSuffix.XHTML.rawValue
@@ -276,6 +286,16 @@ extension RequestAPI:TargetType{
             return "storeOrderForAndroid"+InterfaceSuffix.XHTML.rawValue
         case .complaintsAndSuggestions(_,_):
             return "complaintsAndSuggestions"+InterfaceSuffix.XHTML.rawValue
+        case .queryTwoCategoryForMob(_,_):
+            return "queryTwoCategoryForMob"+InterfaceSuffix.XHTML.rawValue
+        case .goodsAddCollection(_,_,_,_):
+            return "goodsAddCollection.sc"
+        case .queryStoreCollectionList(_,_,_):
+            return "queryStoreCollectionList.sc"
+        case .goodsCancelCollection(_,_):
+            return "goodsCancelCollection.sc"
+        case .mobileAdvertisingPromotionAndPreferential():
+            return "mobileAdvertisingPromotionAndPreferential"+InterfaceSuffix.XHTML.rawValue
         }
         
     }
@@ -283,7 +303,7 @@ extension RequestAPI:TargetType{
         switch self{
         case .login(_,_,_,_,_),.register(_,_,_,_),.doRegest(_,_,_,_),.storeConfirmDelivergoods(_,_),.nmoreGlobalPosiUploadStoreLogin(_,_),.nmoreGlobalPosiUploadStore(_,_,_,_,_,_,_,_),.storeOrderForAndroid(_,_,_,_,_,_,_),.complaintsAndSuggestions(_,_):
             return .POST
-        case .returnRandCode(_,_),.updatePassWord(_,_),.doMemberTheOnly(_),.queryCategory4AndroidAll(_),.queryCategory4Android(_),.queryBrandList4Android(_,_),.queryStoreAllRobOrderForList(_,_,_,_),.queryRobFor1OrderForList(_),.queryOrderInfo4AndroidByorderId(_),.robOrderByStore4Android(_,_),.insertShoppingCar(_,_,_,_,_,_,_),.queryGoodsForAndroidIndexForStoreNew(_,_,_,_,_,_),.queryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_),.searchGoodsInterfaceForStore(_,_,_,_,_,_,_,_),.queryStorePromotionGoodsList(_,_,_,_),.queryGoodsDetailsForAndroid(_,_,_,_,_,_),.queryPreferentialAndGoods4Store(_,_,_,_,_,_),.mobileAdvertisingPromotion(),.queryAdMessgInfo(_),.queryGoodsForAndroidIndexForStore(_,_,_),.queryOneCategory(_),.mobileAdvertising(_),.storeQueryMyNews(_,_,_,_),.queryRecommended(_),.queryMessageToStore(_,_,_),.queryStoreMember(_,_),.outLoginForStore(_),.SuoYuan(_,_),.queryOrderInfo4AndroidStoreByOrderStatus(_,_,_,_),.storeCancelOrder(_),.updataOrderStatus4Store(_),.bindingRecommended4Store(_,_),.integralMallExchange(_,_,_),.queryMemberIntegral(_),.queryIntegralMallForSubStation(_,_,_),.storeQueryMemberIntegralV1(_,_,_),.queryIntegralMallExchangeRecord(_,_,_),.queryStoreShippAddressforAndroid(_),.deleteStoreShippAddressforAndroid(_),.updateStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_,_),.addStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_),.letterQueryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_,_):
+        case .returnRandCode(_,_),.updatePassWord(_,_),.doMemberTheOnly(_),.queryCategory4AndroidAll(_),.queryCategory4Android(_),.queryBrandList4Android(_,_),.queryStoreAllRobOrderForList(_,_,_,_),.queryRobFor1OrderForList(_),.queryOrderInfo4AndroidByorderId(_),.robOrderByStore4Android(_,_),.insertShoppingCar(_,_,_,_,_,_,_),.queryGoodsForAndroidIndexForStoreNew(_,_,_,_,_,_),.queryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_),.searchGoodsInterfaceForStore(_,_,_,_,_,_,_,_),.queryStorePromotionGoodsList(_,_,_,_),.queryGoodsDetailsForAndroid(_,_,_,_,_,_,_),.queryPreferentialAndGoods4Store(_,_,_,_,_,_),.mobileAdvertisingPromotion(),.queryAdMessgInfo(_),.queryGoodsForAndroidIndexForStore(_,_,_),.queryOneCategory(_),.mobileAdvertising(_),.storeQueryMyNews(_,_,_,_),.queryRecommended(_),.queryMessageToStore(_,_,_),.queryStoreMember(_,_),.outLoginForStore(_),.SuoYuan(_,_),.queryOrderInfo4AndroidStoreByOrderStatus(_,_,_,_),.storeCancelOrder(_),.updataOrderStatus4Store(_),.bindingRecommended4Store(_,_),.integralMallExchange(_,_,_),.queryMemberIntegral(_),.queryIntegralMallForSubStation(_,_,_),.storeQueryMemberIntegralV1(_,_,_),.queryIntegralMallExchangeRecord(_,_,_),.queryStoreShippAddressforAndroid(_),.deleteStoreShippAddressforAndroid(_),.updateStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_,_),.addStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_),.letterQueryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_,_),.queryTwoCategoryForMob(_,_),goodsAddCollection(_,_,_,_),.queryStoreCollectionList(_,_,_),.goodsCancelCollection(_,_),.mobileAdvertisingPromotionAndPreferential():
             return .GET
         }
     }
@@ -329,8 +349,8 @@ extension RequestAPI:TargetType{
             return ["searchCondition":searchCondition,"countyId":countyId,"IPhonePenghao":IPhonePenghao,"isDisplayFlag":isDisplayFlag,"pageSize":pageSize,"currentPage":currentPage,"storeId":storeId,"order":order]
         case let .queryStorePromotionGoodsList(storeId, order, pageSize, currentPage):
             return ["storeId":storeId,"order":order,"pageSize":pageSize,"currentPage":currentPage]
-        case let .queryGoodsDetailsForAndroid(goodsbasicinfoId, supplierId, flag, storeId, aaaa, subSupplier):
-            return ["goodsbasicinfoId":goodsbasicinfoId,"supplierId":supplierId,"flag":flag,"storeId":storeId,"aaaa":aaaa,"subSupplier":subSupplier]
+        case let .queryGoodsDetailsForAndroid(goodsbasicinfoId, supplierId, flag, storeId, aaaa, subSupplier,memberId):
+            return ["goodsbasicinfoId":goodsbasicinfoId,"supplierId":supplierId,"flag":flag,"storeId":storeId,"aaaa":aaaa,"subSupplier":subSupplier,"memberId":memberId]
         case let .queryPreferentialAndGoods4Store(countyId, categoryId, storeId, pageSize, currentPage, order):
             return ["countyId":countyId,"categoryId":categoryId,"storeId":storeId,"pageSize":pageSize,"currentPage":currentPage,"order":order]
         case .mobileAdvertisingPromotion():
@@ -389,6 +409,16 @@ extension RequestAPI:TargetType{
             return ["goodsList":goodsList,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"shippName":shippName,"storeId":storeId,"pay_message":pay_message,"tag":tag]
         case let .complaintsAndSuggestions(complaint, storeId):
             return ["complaint":complaint,"storeId":storeId]
+        case let .queryTwoCategoryForMob(goodsCategoryId,substationId):
+            return ["goodsCategoryId":goodsCategoryId,"substationId":substationId]
+        case let .goodsAddCollection(goodId, supplierId, subSupplierId, memberId):
+            return ["goodId":goodId,"supplierId":supplierId,"subSupplierId":subSupplierId,"memberId":memberId]
+        case let .queryStoreCollectionList(memberId,pageSize,currentPage):
+            return ["memberId":memberId,"pageSize":pageSize,"currentPage":currentPage]
+        case let .goodsCancelCollection(memberId, goodId):
+            return ["memberId":memberId,"goodId":goodId]
+        case .mobileAdvertisingPromotionAndPreferential():
+            return nil
         }
     }
     //  单元测试用

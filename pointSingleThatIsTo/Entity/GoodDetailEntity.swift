@@ -90,6 +90,8 @@ class GoodDetailEntity:Mappable {
     var endTime:String?
     /// 是否选中(1选中2未选中)
     var isSelected:Int?
+    //默认为null；如果=1，此商品被用户收藏
+    var goodsCollectionStatu:Int?
     
     
     init(){}
@@ -140,5 +142,6 @@ class GoodDetailEntity:Mappable {
         preferentialId <- map["preferentialId"]
         salesCount <- map["salesCount"]
         endTime <- map["endTime"]
+        goodsCollectionStatu <- map["goodsCollectionStatu"]
     }
 }
