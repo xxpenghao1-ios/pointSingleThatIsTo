@@ -32,7 +32,8 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
         textViews.font=UIFont.systemFontOfSize(14)
         textViews.layer.borderWidth=0.5
         textViews.layer.borderColor=UIColor.borderColor().CGColor
-        textViews.placeholder="感谢您能在百忙之中给我们提供宝贵的建议"
+        textViews.layer.cornerRadius=5
+        textViews.placeholder="感谢您能在百忙之中给我们提供宝贵的意见"
         textViews.text=textLbl
         //textView响应弹出键盘
         textViews.resignFirstResponder();
@@ -70,7 +71,7 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
             SVProgressHUD.showInfoWithStatus("内容为空")
         }else{
             SVProgressHUD.showWithStatus("正在提交",maskType: SVProgressHUDMaskType.Gradient)
-            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.complaintsAndSuggestions(complaint:textLbl, storeId:storeId), successClosure: { (result) -> Void in
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.complaintsAndSuggestions(complaint:textLbl.check(), storeId:storeId), successClosure: { (result) -> Void in
                 let json=JSON(result)
                 let success=json["success"].stringValue
                 if success == "success"{

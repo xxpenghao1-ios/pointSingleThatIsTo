@@ -61,7 +61,7 @@ class  GoodCategory3ViewController:BaseViewController{
         priceVC.storeId=storeId
         priceVC.flag=flag
         
-        letterVC.title="首拼音"
+        letterVC.title="首字母"
         letterVC.countyId=countyId
         letterVC.storeId=storeId
         letterVC.flag=flag

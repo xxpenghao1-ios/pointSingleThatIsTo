@@ -93,6 +93,7 @@ class PriceViewController:AddShoppingCartAnimation,UITableViewDataSource,UITable
             }else if self.flag == 4{//查询促销
                 self.httpQueryStorePromotionGoodsList(self.currentPage, isRefresh: false)
             }else if self.flag == 5{
+                 
                 self.http1YuanArea(self.currentPage, isRefresh:false)
             }
         })

@@ -65,6 +65,12 @@ let boundsHeight=UIScreen.mainScreen().bounds.height
 /// 全局缓存
 let userDefaults=NSUserDefaults.standardUserDefaults()
 
+///// 计算代码执行时间
+//let startTime:NSDate = NSDate()
+//let endTime:NSDate = NSDate()
+//
+//log.debug("代码块执行时间:\(endTime.timeIntervalSinceDate(startTime)*1000.0)")
+
 //app公用方法
 
 /**

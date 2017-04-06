@@ -255,6 +255,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
+    
     /**
      判断用户是否已经被别人登录
      

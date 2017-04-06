@@ -14,7 +14,7 @@ import SVProgressHUD
 class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITableViewDelegate{
     //标题文字
     private var titleArr0=["消息中心","进货订单","购物车","积分记录"]
-    private var titleArr1=["积分商城","清除缓存","搜一搜"]
+    private var titleArr1=["投诉与建议","清除缓存","搜一搜"]
     private var titleArr2=["购买记录","客服电话","当前版本"]
     //标题图标
     private var imgArr0=["preffont","member_orders","member_cart","member_jfjl"]
@@ -68,7 +68,6 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
         tel=(userDefaults.objectForKey("subStationPhoneNumber") as? String) ?? "0731-82562729"
         UILayer()
         querySubstationInfo()
-        self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Compose, target:self, action:"pushFeedbackOnProblemsView")
         
     }
     /**
@@ -221,7 +220,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
             if indexPath.row == 1{//我的推荐人
                 cell!.detailTextLabel!.text=tel
             }else if indexPath.row == 2{
-                cell!.detailTextLabel!.text="3.0"
+                cell!.detailTextLabel!.text="3.51"
                 cell!.accessoryType=UITableViewCellAccessoryType.None
             }
             img.image=UIImage(named:imgArr2[indexPath.row])
@@ -268,14 +267,7 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
             }
         }else if indexPath.section==1{
             if indexPath.row==0{
-                if self.substationEntity?.subStationBalanceStatu == 1{
-                    /// 跳转到积分商城
-                    let vc=PresentExpViewController()
-                    vc.hidesBottomBarWhenPushed=true
-                    self.navigationController?.pushViewController(vc, animated:true)
-                }else{
-                    SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
-                }
+                pushFeedbackOnProblemsView()
             }else if indexPath.row==1{
                 //清除缓存   点击事件
                 //添加提示框

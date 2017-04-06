@@ -186,9 +186,7 @@ class LoginViewController:BaseViewController{
     }
     //跳转到注册页面
     func pushRegisterView(){
-        let vc=RegisterViewController();
-        vc.flag=1
-        self.navigationController?.pushViewController(vc, animated:true);
+        SVProgressHUD.showInfoWithStatus("请去平台官网http://www.hnzltx.com联系客服注册")
     }
     /**
      登录

@@ -61,7 +61,7 @@ class LetterViewController:AddShoppingCartAnimation,UITableViewDataSource,UITabl
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title="价格"
+        self.title="首字母"
         self.view.backgroundColor=UIColor.whiteColor()
         goodTable=UITableView(frame:CGRectMake(0,0,boundsWidth,boundsHeight-64-40), style: UITableViewStyle.Plain)
         goodTable!.delegate=self
