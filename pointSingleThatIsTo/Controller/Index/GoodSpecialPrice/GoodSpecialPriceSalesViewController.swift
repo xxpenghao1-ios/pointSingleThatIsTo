@@ -13,6 +13,7 @@ import SVProgressHUD
 /// 特价商品销量
 class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDataSource,UITableViewDelegate,GoodSpecialPriceTableCellAddShoppingCartsDelegate {
     
+    var flag:Int?
     /// 分类id 默认0
     var categoryId:Int?;
     
@@ -63,15 +64,23 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
         table!.addHeaderWithCallback({//刷新
             //从第一页开始
             self.currentPage=1
+            if self.flag == 1{
             //发送网络请求
             self.httpSpecialPrice(self.categoryId!, countyId:countyId, storeId:storeId, currentPage:self.currentPage,isRefresh: true)
+            }else{
+                self.httpQueryStorePromotionGoodsList(self.currentPage, isRefresh:true, order:"count", storeId:storeId)
+            }
             
         })
         table!.addFooterWithCallback({//加载更多
             //每次页面索引加1
             self.currentPage+=1
+            if self.flag == 1{
             //发送网络请求
             self.httpSpecialPrice(self.categoryId!, countyId:countyId, storeId:storeId, currentPage:self.currentPage,isRefresh: false)
+            }else{
+                self.httpQueryStorePromotionGoodsList(self.currentPage, isRefresh:false, order:"count", storeId:storeId)
+            }
         })
         //加载视图
         SVProgressHUD.showWithStatus("数据加载中")
@@ -102,7 +111,7 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
             cell!.delegate=self
             //拿到每行对应索引
             cell!.indexPath=indexPath
-            cell!.updateCell(entity)
+            cell!.updateCell(entity,flag:flag!)
         }
         return cell!
         
@@ -207,9 +216,6 @@ extension GoodSpecialPriceSalesViewController{
                 if entity!.goodsBaseCount == nil{
                     entity!.goodsBaseCount=1
                 }
-                if entity!.salesCount == nil{
-                    entity!.salesCount=0
-                }
                 entity!.flag=1
                 entity!.goodsbasicinfoId=value["goodsId"].intValue
                 self.arr.addObject(entity!)
@@ -248,6 +254,80 @@ extension GoodSpecialPriceSalesViewController{
                 SVProgressHUD.showErrorWithStatus(errorMsg)
         }
     }
+    /**
+     查询促销商品
+     
+     - parameter currentPage: 展示到第几页
+     - parameter isRefresh:   是否刷新true是
+     */
+    func httpQueryStorePromotionGoodsList(currentPage:Int,isRefresh:Bool,order:String,storeId:String){
+        /// 定义一个int类型的值 用于判断是否还有数据加载
+        var count=0
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStorePromotionGoodsList(storeId:storeId, order:order, pageSize: 10, currentPage: currentPage), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            if isRefresh{//如果是刷新先删除数据
+                self.arr.removeAllObjects()
+            }
+            for(_,value) in json{
+                // 每次循环加1
+                count++
+                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                //如果销量为空
+                if entity!.salesCount == nil{
+                    entity!.salesCount=0
+                }
+                
+                if entity!.promotionEndTime == nil{
+                    entity!.promotionEndTime="0"
+                }
+                //如果库存为空
+                if entity!.goodsStock == nil{
+                    entity!.goodsStock = -1
+                }
+                //如果最低起送量为空
+                if entity!.miniCount == nil{
+                    entity!.miniCount=1
+                }
+                //如果商品加减数量为空
+                if entity!.goodsBaseCount == nil{
+                    entity!.goodsBaseCount=1
+                }
+                
+                self.arr.addObject(entity!)
+            }
+            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+                self.table!.setFooterHidden(true)
+            }else{//否则显示
+                self.table!.setFooterHidden(false)
+            }
+            if self.arr.count < 1{//表示没有数据加载空
+                self.nilView?.removeFromSuperview()
+                self.nilView=nilPromptView("还没有促销商品哦...")
+                self.nilView!.center=self.table!.center
+                self.view.addSubview(self.nilView!)
+                
+            }else{//如果有数据清除
+                self.nilView?.removeFromSuperview()
+                //加载定时器
+                self.createTimer()
+            }
+            //关闭刷新状态
+            self.table!.headerEndRefreshing()
+            //关闭加载状态
+            self.table!.footerEndRefreshing()
+            //关闭加载等待视图
+            SVProgressHUD.dismiss()
+            //刷新table
+            self.table!.reloadData()
+            }) { (errorMsg) -> Void in
+                //关闭刷新状态
+                self.table!.headerEndRefreshing()
+                //关闭加载状态
+                self.table!.footerEndRefreshing()
+                //关闭加载等待视图
+                SVProgressHUD.showErrorWithStatus(errorMsg)
+        }
+    }
 }
 // MARK: - 跳转页面
 extension GoodSpecialPriceSalesViewController{
@@ -267,11 +347,19 @@ extension GoodSpecialPriceSalesViewController{
      - parameter entity: 商品entity
      */
     func pushGoodSpecialPriceDetail(entity: GoodDetailEntity) {
-        let vc=GoodSpecialPriceDetailViewController()
-        vc.hidesBottomBarWhenPushed=true
-        vc.goodEntity=entity
-        vc.storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as? String
-        self.navigationController!.pushViewController(vc, animated:true)
+        if flag == 1{
+            let vc=GoodSpecialPriceDetailViewController()
+            vc.hidesBottomBarWhenPushed=true
+            vc.goodEntity=entity
+            vc.storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as? String
+            self.navigationController!.pushViewController(vc, animated:true)
+        }else{
+            let vc=GoodDetailViewController()
+            vc.hidesBottomBarWhenPushed=true
+            vc.goodEntity=entity
+            vc.storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as? String
+            self.navigationController!.pushViewController(vc, animated:true)
+        }
     }
 }
 // MARK: - 倒计时
@@ -292,11 +380,21 @@ extension GoodSpecialPriceSalesViewController{
     func timerEvent(){
         for(var j=0;j<arr.count;j++){//获取数据源所有剩余时间
             let entity=arr[j] as! GoodDetailEntity
-            var time=Int(entity.endTime!)!
+            var time=0
+            if flag == 1{
+                time=Int(entity.endTime!)!
+            }else{
+                time=Int(entity.promotionEndTime!)!
+            }
             //每次-1
             --time
-            //从新赋值保证所有的剩余时间都更新
-            entity.endTime="\(time)"
+            if flag == 1{
+                //从新赋值保证所有的剩余时间都更新
+                entity.endTime="\(time)"
+            }else{
+                //从新赋值保证所有的剩余时间都更新
+                entity.promotionEndTime="\(time)"
+            }
             //从新保存到指定位置
             arr.removeObjectAtIndex(j)
             arr.insertObject(entity, atIndex:j)
@@ -306,9 +404,14 @@ extension GoodSpecialPriceSalesViewController{
         for(var i=0;i<cells.count;i++){
             let cell=cells[i] as! GoodSpecialPriceTableCell
             let entity=arr[cell.indexPath!.row] as! GoodDetailEntity
-            let time=Int(entity.endTime!)!
+            var time=0
+            if flag == 1{
+                time=Int(entity.endTime!)!
+            }else{
+                time=Int(entity.promotionEndTime!)!
+            }
             if entity.goodsStock != 0{
-                if Int(entity.endTime!) <= 0{//如果剩余时间小于等于0 表示活动已经结束
+                if time <= 0{//如果剩余时间小于等于0 表示活动已经结束
                     cell.img?.removeFromSuperview()
                     /// 展示活动已结束
                     cell.img=UIImageView(frame:CGRectMake(boundsWidth-70,30,60,60))

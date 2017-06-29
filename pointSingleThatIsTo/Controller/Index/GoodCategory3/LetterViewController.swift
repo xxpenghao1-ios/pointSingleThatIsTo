@@ -165,6 +165,7 @@ class LetterViewController:AddShoppingCartAnimation,UITableViewDataSource,UITabl
         SVProgressHUD.showWithStatus("数据加载中")
         seachLetter=title
         self.goodArr.removeAllObjects()
+        //按字母查询商品
         httpSelectLetterGoodCategoryList(1, seachLetterValue:title)
         return 0
     }
@@ -300,7 +301,7 @@ extension LetterViewController{
      */
     func httpSelectGoodCategoryList(currentPage:Int,isRefresh:Bool){
         var count=0
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsInfoByCategoryForAndroidForStore(goodsCategoryId:goodsCategoryId!, countyId: countyId!, IPhonePenghao:520, isDisplayFlag: 2, pageSize: 10, currentPage: currentPage, storeId: storeId!, order: "letter"), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsInfoByCategoryForAndroidForStore(goodsCategoryId:goodsCategoryId!, countyId: countyId!, IPhonePenghao:520, isDisplayFlag: 2, pageSize: 10, currentPage: currentPage, storeId: storeId!, order: "letter",tag:3), successClosure: { (result) -> Void in
             let json=JSON(result)
             if isRefresh{//如果是刷新先删除数据
                 self.goodArr.removeAllObjects()

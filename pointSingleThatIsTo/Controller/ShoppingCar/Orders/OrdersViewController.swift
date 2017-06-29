@@ -112,10 +112,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
     func submitOrder(sender:UIButton){
         if IJReachability.isConnectedToNetwork(){
             if self.addressArr.count > 0{//查看用户是否有收获地址信息
-                print("附言:\(buyerRemark)")
-                if self.buyerRemark == nil || self.buyerRemark!.characters.count == 0{
-                    self.buyerRemark="无附言"
-                }
+                self.buyerRemark=self.buyerRemark ?? ""
                 //详细地址
                 let detailAddress=addressEntity!.province!+addressEntity!.city!+addressEntity!.county!+addressEntity!.detailAddress!;
                 /// 把字典中的entity转换成json格式的字符串

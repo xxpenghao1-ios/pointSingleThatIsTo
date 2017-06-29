@@ -55,6 +55,7 @@ class OrderListEntity:Mappable{
     var finished_time:String?;
     /**卖家附言*/
     var postscript:String?;
+    var returnGoodsFlag:Int?
     
     init(){}
     required init?(_ map: Map) {
@@ -84,6 +85,7 @@ class OrderListEntity:Mappable{
         supplierName <- map["supplierName"]
         finished_time <- map["finished_time"]
         postscript <- map["postscript"]
+        returnGoodsFlag <- map["returnGoodsFlag"]
         
     }
 }

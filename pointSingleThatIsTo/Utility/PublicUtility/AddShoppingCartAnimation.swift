@@ -40,11 +40,11 @@ class AddShoppingCartAnimation:BaseViewController{
                 path!.moveToPoint(_layer!.position)
                 path!.addQuadCurveToPoint(CGPointMake(boundsWidth-40, UIScreen.mainScreen().bounds.height-90), controlPoint:CGPointMake(boundsWidth/2,rect.origin.y-80))
             }else{
-                _layer!.position=CGPointMake(imageView.center.x, CGRectGetMidY(rect))
+                _layer!.position=CGPointMake(imageView.center.x, CGRectGetMidY(rect)+120)
                 self.view.layer.addSublayer(_layer!)
                 path=UIBezierPath()
                 path!.moveToPoint(_layer!.position)
-                path!.addQuadCurveToPoint(CGPointMake(boundsWidth-40, UIScreen.mainScreen().bounds.height-64-40-40), controlPoint:CGPointMake(boundsWidth/2,rect.origin.y-80))
+                path!.addQuadCurveToPoint(CGPointMake(boundsWidth-40, UIScreen.mainScreen().bounds.height-90), controlPoint:CGPointMake(boundsWidth/2,rect.origin.y-80))
             }
         }
         self.groupAnimation()

@@ -251,8 +251,10 @@ extension ItemsViewController{
             let currPid=pid ?? 1
             //获取分站ID
             let substationId=userDefaults.objectForKey("substationId") as! String
+            
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryTwoCategoryForMob(goodsCategoryId:currPid,substationId:substationId), successClosure: { (result) -> Void in
                 let json=JSON(result)
+
                 //先添加全部的2级分类
                 self.pushIndexChildCategory.append("全部")
                 if let dic=json.dictionaryObject{

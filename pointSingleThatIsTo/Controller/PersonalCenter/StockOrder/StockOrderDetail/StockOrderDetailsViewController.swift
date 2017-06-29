@@ -229,6 +229,17 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         //取消选中效果颜色
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        if indexPath.section == 2{
+            if indexPath.row == 2{
+                if orderList?.postscript != nil{
+                    UIAlertController.showAlertYes(self, title:"卖家留言", message: orderList?.postscript, okButtonTitle:"确定")
+                }
+            }else if indexPath.row == 3{
+                if orderList?.pay_message != nil{
+                    UIAlertController.showAlertYes(self, title:"买家留言", message: orderList?.pay_message, okButtonTitle:"确定")
+                }
+            }
+        }
     }
     
     /**
@@ -252,6 +263,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
                     goodEntity.goodPic=GoodsDetailsValue["goodPic"].stringValue
                     //商品数量
                     goodEntity.goodsSumCount=GoodsDetailsValue["goodsSumCount"].stringValue
+                    goodEntity.returnGoodsFlag=GoodsDetailsValue["returnGoodsFlag"].intValue
                     self.goodArr.addObject(goodEntity)
                 }
                 //将临时的商品数组赋值给订单实体类中的"list"

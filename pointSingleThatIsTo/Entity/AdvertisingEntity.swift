@@ -32,6 +32,7 @@ class AdvertisingEntity:Mappable {
     ///分站Id
     var substationId:Int?
     var isPromotion:Int?
+    var searchStatu:Int?
     init(){}
     required init?(_ map: Map) {
         mapping(map)
@@ -48,5 +49,6 @@ class AdvertisingEntity:Mappable {
         mobileOrPc <- map["mobileOrPc"]
         substationId <- map["substationId"]
         isPromotion <- map["isPromotion"]
+        searchStatu <- map["searchStatu"]
     }
 }

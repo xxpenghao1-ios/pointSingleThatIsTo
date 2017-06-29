@@ -222,8 +222,8 @@ class GoodCategory3TableViewCell:UITableViewCell {
         }
         
         //商品单位
-        if entity.ucode != nil{
-            lblGoodUcode.text="单位 : \(entity.ucode!)"
+        if entity.goodUnit != nil{
+            lblGoodUcode.text="单位 : \(entity.goodUnit!)"
         }else{
             lblGoodUcode.text="单位 : 无"
         }

@@ -13,8 +13,6 @@ import SVProgressHUD
 import Siren
 import XCGLogger
 import RealReachability
-
-/// 设置全局log打印对象
 let log: XCGLogger = {
     let log = XCGLogger.defaultInstance()
     log.setup(.Debug, showThreadName: true, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile:nil)
@@ -22,7 +20,6 @@ let log: XCGLogger = {
     dateFormatter.dateFormat = "yyyy/MM/dd hh:mma"
     dateFormatter.locale = NSLocale.currentLocale()
     log.dateFormatter = dateFormatter
-    
     //使用XCGLogger记录日志 begin
     log.xcodeColorsEnabled = true // Or set the XcodeColors environment variable in your scheme to YES
     log.xcodeColors = [
@@ -34,7 +31,6 @@ let log: XCGLogger = {
         .Severe: XCGLogger.XcodeColor(fg: (255, 255, 255), bg: (255, 0, 0)) // Optionally use RGB values directly
     ]
     //使用XCGLogger记录日志 end
-    
     return log
 }()
 @UIApplicationMain
@@ -68,17 +64,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         setUpNav()
         //启动极光推送
         PHJPushHelper.setupWithOptions(launchOptions)
-        
         //初始化登录页面
         navLogin=UINavigationController(rootViewController:LoginViewController())
         // 得到当前应用的版本号
         let infoDictionary = NSBundle.mainBundle().infoDictionary
         let currentAppVersion = infoDictionary!["CFBundleShortVersionString"] as! String
-        
         // 取出之前保存的版本号
         let userDefaults = NSUserDefaults.standardUserDefaults()
         let appVersion = userDefaults.stringForKey("appVersion")
-        
         // 如果 appVersion 为 nil 说明是第一次启动；如果 appVersion 不等于 currentAppVersion 说明是更新了
         if appVersion == nil || appVersion != currentAppVersion {
             // 保存最新的版本号

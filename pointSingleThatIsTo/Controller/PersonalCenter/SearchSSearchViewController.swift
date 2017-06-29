@@ -78,7 +78,7 @@ class SearchSSearchViewController:BaseViewController{
         //按钮
         btnSearch=UIButton()
         btnSearch?.frame=CGRectMake(10, CGRectGetMaxY(Downline.frame)+10, upline.frame.width, 40)
-        btnSearch?.backgroundColor=UIColor.redColor()
+        btnSearch?.backgroundColor=UIColor.applicationMainColor()
         btnSearch?.setTitle("搜一搜", forState: UIControlState.Normal)
         btnSearch?.layer.cornerRadius=4
         btnSearch?.addTarget(self, action: "clickBtn:", forControlEvents: UIControlEvents.TouchUpInside)

@@ -20,6 +20,7 @@ class ShoppingCarVo:Mappable{
     var listGoods:NSMutableArray?
     /// 是否选中(1选中2未选中)
     var isSelected:Int?
+    var subSupplier:Int?
     required init?(_ map: Map) {
         mapping(map)
     }
@@ -27,5 +28,6 @@ class ShoppingCarVo:Mappable{
         lowestMoney <- map["lowestMoney"]
         supplierId <- map["supplierId"]
         supplierName <- map["supplierName"]
+        subSupplier <- map["subSupplier"]
     }
 }

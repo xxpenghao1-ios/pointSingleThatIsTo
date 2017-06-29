@@ -53,7 +53,7 @@ import SDWebImage
 ///图片请求路径
 let URLIMG="http://www.hnddjd.com";
 
-///数据请求路径  http://192.168.199.121/  http://www.zltxgw.com 124.232.163.140
+///数据请求路径  http://192.168.1.100/  http://www.zltxgw.com 124.232.163.140
 let URL="http://www.hnddjd.com/front/";
 
 /// 屏幕宽

@@ -65,7 +65,7 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="购物车"
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.viewBackgroundColor()
         http()
         //table高度
         var tableHeight:CGFloat=0
@@ -74,9 +74,10 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
         //拿到缓存中的会员id
         memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as? String
         //初始化table
-        table=UITableView(frame:CGRectMake(0,0,boundsWidth,tableHeight), style: UITableViewStyle.Plain)
+        table=UITableView(frame:CGRectMake(0,0,boundsWidth,tableHeight), style: UITableViewStyle.Grouped)
         table!.dataSource=self
         table!.delegate=self
+        table!.backgroundColor=UIColor.clearColor()
         self.view.addSubview(table!)
         //移除空单元格
         table!.tableFooterView = UIView(frame:CGRectZero)
@@ -102,7 +103,7 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
         nilShoppingCarView=UIView(frame:CGRectMake(0,0,300,200));
         nilShoppingCarView!.center=self.view.center;
         //购物车图片
-        let shoppingCarImg=UIImage(named:"nulChar");
+        let shoppingCarImg=UIImage(named:"nildd");
         let shoppingCarImgView=UIImageView(image:shoppingCarImg);
         shoppingCarImgView.frame=CGRectMake((nilShoppingCarView!.frame.width-90)/2,0,90,90);
         nilShoppingCarView!.addSubview(shoppingCarImgView);
@@ -231,49 +232,88 @@ extension ShoppingCarViewContorller:UITableViewDelegate,UITableViewDataSource{
                 lblSupplierName.text=vo.supplierName!+"(满0元起送)"
             }
             lblSupplierName.font=UIFont.systemFontOfSize(14)
-            let size=lblSupplierName.text!.textSizeWithFont(lblSupplierName.font, constrainedToSize:CGSizeMake(300,30))
-            lblSupplierName.frame=CGRectMake(CGRectGetMaxX(btnSelectImg.frame)+5,5,size.width,30)
+            lblSupplierName.frame=CGRectMake(CGRectGetMaxX(btnSelectImg.frame)+5,5,boundsWidth-40,30)
             view.addSubview(lblSupplierName)
-            
-            
-            let lblTotal=UILabel(frame:CGRectMake(CGRectGetMaxX(lblSupplierName.frame),5,boundsWidth-CGRectGetMaxX(lblSupplierName.frame)-15,30))
-            //每组小计价格
-            var sum:Double=0
-            if vo.listGoods!.count == 0{//判断当前组下面是否有商品集合
-                return nil
-            }else{
-                if vo.isSelected == 1{//如果等于1选中
-                    btnSelectImg.selected=true
-                }
-                //循环所有商品统计
-                for var i=0;i<vo.listGoods!.count;i++ {
-                    let entity=vo.listGoods![i] as! GoodDetailEntity
-                    //每个商品小计价格
-                    var sumMoney:Double=0
-                    if entity.isSelected == 1{//只计算选中的商品
-                        if entity.flag == 1{//如果是特价
-                            sumMoney=(Double(entity.carNumber!)*Double(entity.prefertialPrice!)!)
-                        }else{//普通价格
-                            sumMoney=(Double(entity.carNumber!)*Double(entity.uprice!)!)
-                        }
-                    }
-                    sum+=sumMoney
-                }
-                
+        if vo.listGoods!.count == 0{//判断当前组下面是否有商品集合
+            return nil
+        }else{
+            if vo.isSelected == 1{//如果等于1选中
+                btnSelectImg.selected=true
             }
-            if self.editBar?.title != "完成"{//如果true显示小计
-                lblTotal.text="小计:\(sum)"
-                lblTotal.font=UIFont.systemFontOfSize(14)
-                lblTotal.textAlignment = .Right
-                lblTotal.textColor=UIColor.redColor()
-                view.addSubview(lblTotal)
-            }
+        }
         return view
         
+    }
+    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let vo=arr[section] as! ShoppingCarVo
+        let view=UIView(frame:CGRectZero)
+//        view.layer.borderWidth=0.5
+//        view.layer.borderColor=UIColor.borderColor().CGColor
+        view.backgroundColor=UIColor.whiteColor()
+        //每组小计价格
+        var sum:Double=0
+        if vo.listGoods!.count == 0{//判断当前组下面是否有商品集合
+            return nil
+        }else{
+            //循环所有商品统计
+            for var i=0;i<vo.listGoods!.count;i++ {
+                let entity=vo.listGoods![i] as! GoodDetailEntity
+                //每个商品小计价格
+                var sumMoney:Double=0
+                if entity.isSelected == 1{//只计算选中的商品
+                    if entity.flag == 1{//如果是特价
+                        sumMoney=(Double(entity.carNumber!)*Double(entity.prefertialPrice!)!)
+                    }else{//普通价格
+                        sumMoney=(Double(entity.carNumber!)*Double(entity.uprice!)!)
+                    }
+                }
+                sum+=sumMoney
+            }
+            
+        }
+        let btn=ButtonControl().button(ButtonType.cornerRadiusButton, text:"去凑单", textColor:UIColor.whiteColor(), font:14, backgroundColor:UIColor.applicationMainColor(), cornerRadius:5)
+        btn.addTarget(self, action:"pushSubSuppingVC:", forControlEvents:UIControlEvents.TouchUpInside)
+        btn.tag=section
+        btn.hidden=true
+        
+        let name=buildLabel(UIColor.redColor(), font: 14, textAlignment: NSTextAlignment.Left)
+        
+        if sum < Double(vo.lowestMoney!){//如果小计小于最低起送额
+            name.text="还需\(Double(vo.lowestMoney!)!-sum)元起送"
+            btn.hidden=false
+        }else{
+            name.text="您已达到配送标准"
+            btn.hidden=true
+        }
+        
+        let size=name.text!.textSizeWithFont(UIFont.systemFontOfSize(14), constrainedToSize:CGSizeMake(300,20))
+        
+        name.frame=CGRectMake(15,10,size.width,20)
+        view.addSubview(name)
+        btn.frame=CGRectMake(CGRectGetMaxX(name.frame)+5,5,60,30)
+        view.addSubview(btn)
+        
+        let lblTotal=UILabel(frame:CGRectMake(CGRectGetMaxX(name.frame)+65,5,boundsWidth-CGRectGetMaxX(name.frame)-15-65,30))
+        if self.editBar?.title != "完成"{//如果true显示小计
+            lblTotal.text="小计:\(sum)"
+            lblTotal.font=UIFont.systemFontOfSize(14)
+            lblTotal.textAlignment = .Right
+            lblTotal.textColor=UIColor.redColor()
+            view.addSubview(lblTotal)
+        }
+        
+        let borderView=UIView(frame:CGRectMake(0,40,boundsWidth,7))
+        borderView.backgroundColor=UIColor.viewBackgroundColor()
+        view.addSubview(borderView)
+        return view
     }
     //返回头部高度
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 40
+    }
+    //返回尾部高度
+    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 47
     }
     //2.返回几组
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -685,7 +725,8 @@ extension ShoppingCarViewContorller{
             if sender.titleLabel!.text != "删除"{
                 if vo.lowestMoney != nil{
                     if Double(vo.lowestMoney!) > sumMoney{//比较最低起送额 是否大于 小计价格
-                        UIAlertController.showAlertYes(self, title:"点单即到", message:"\(vo.supplierName!)配送最低起送额是\(vo.lowestMoney!),您还需要购买\(Double(vo.lowestMoney!)! - sumMoney)元才能结算", okButtonTitle:"确定", okHandler: {  Void in
+                        UIAlertController.showAlertYesNo(self, title:"点单即到", message:"\(vo.supplierName!)配送最低起送额是\(vo.lowestMoney!),您还需要购买\(Double(vo.lowestMoney!)! - sumMoney)元才能结算", cancelButtonTitle:"知道了", okButtonTitle:"去凑单", okHandler: {   Void in
+                            self.showSubSuppingVC(vo)
                             return
                         })
                     }
@@ -727,6 +768,24 @@ extension ShoppingCarViewContorller{
                 SVProgressHUD.showInfoWithStatus("请选择要下单的商品")
             }
         }
+    }
+    
+    /**
+     跳转到配送商城
+     
+     - parameter sender:
+     */
+    func pushSubSuppingVC(sender:UIButton){
+        let entity=arr[sender.tag] as! ShoppingCarVo
+        showSubSuppingVC(entity)
+    }
+    func showSubSuppingVC(entity:ShoppingCarVo){
+        let vc=GoodCategory3ViewController()
+        vc.flag=6
+        vc.subSupplierId=entity.supplierId
+        vc.subSupplierName=entity.supplierName
+        vc.hidesBottomBarWhenPushed=true
+        self.navigationController?.pushViewController(vc, animated:true)
     }
 
 }

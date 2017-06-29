@@ -43,3 +43,61 @@ func nilTitle(str:String) ->UILabel{
     lbl.textAlignment = .Center
     return lbl
 }
+public func buildTxt(font:CGFloat,placeholder:String,tintColor:UIColor,keyboardType:UIKeyboardType) -> UITextField{
+    let txt=UITextField()
+    txt.font=UIFont.systemFontOfSize(font)
+    txt.attributedPlaceholder=NSAttributedString(string:placeholder, attributes: [NSForegroundColorAttributeName:UIColor.RGBFromHexColor("#999999")])
+    txt.backgroundColor=UIColor.whiteColor()
+    txt.clearButtonMode=UITextFieldViewMode.WhileEditing
+    txt.tintColor=tintColor
+    txt.keyboardType=keyboardType
+    return txt
+}
+/// 文本
+
+public func buildLabel(textColor:UIColor,font:CGFloat,textAlignment:NSTextAlignment) -> UILabel{
+    let lbl=UILabel()
+    lbl.textColor=textColor
+    lbl.font=UIFont.systemFontOfSize(font)
+    lbl.textAlignment=textAlignment
+    return lbl
+}
+
+/// 按钮控件属性
+public enum ButtonType {
+    case button
+    case cornerRadiusButton
+}
+
+/// 按钮
+public class ButtonControl {
+    
+    public func button(type:ButtonType,text:String,textColor:UIColor,font:CGFloat,backgroundColor:UIColor,cornerRadius:CGFloat?) -> UIButton{
+        switch type {
+        case .button:
+            return buildButton(text, textColor: textColor, font: font, backgroundColor: backgroundColor)
+        case .cornerRadiusButton:
+            return buildCornerRadiusButton(text,textColor:textColor,font:font,backgroundColor:backgroundColor,cornerRadius:cornerRadius!)
+        }
+    }
+    
+    private func buildCornerRadiusButton(text:String,textColor:UIColor,font:CGFloat,backgroundColor:UIColor,cornerRadius:CGFloat) -> UIButton{
+        let btn=UIButton()
+        btn.setTitle(text, forState: UIControlState.Normal)
+        btn.setTitleColor(textColor,forState: UIControlState.Normal)
+        btn.titleLabel!.font=UIFont.systemFontOfSize(font)
+        btn.backgroundColor=backgroundColor
+        btn.layer.cornerRadius=cornerRadius
+        return btn
+    }
+    private func buildButton(text:String,textColor:UIColor,font:CGFloat,backgroundColor:UIColor) -> UIButton{
+        let btn=UIButton()
+        btn.setTitle(text, forState: UIControlState.Normal)
+        btn.setTitleColor(textColor,forState: UIControlState.Normal)
+        btn.titleLabel!.font=UIFont.systemFontOfSize(font)
+        btn.backgroundColor=backgroundColor
+        return btn
+    }
+    
+    
+}

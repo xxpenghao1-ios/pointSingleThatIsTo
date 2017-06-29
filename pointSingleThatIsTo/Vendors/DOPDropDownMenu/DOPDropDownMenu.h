@@ -57,7 +57,4 @@
 - (instancetype)initWithOrigin:(CGPoint)origin andHeight:(CGFloat)height;
 - (NSString *)titleForRowAtIndexPath:(DOPIndexPath *)indexPath;
 
-//programmatically dismiss
-- (void)dismiss;
-
 @end

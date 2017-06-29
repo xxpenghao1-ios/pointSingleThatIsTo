@@ -36,11 +36,10 @@ class LoginViewController:BaseViewController{
     //背景图片
     var bacImgView:UIImageView?
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewWillAppear(animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated:true)
     }
-    
     override func viewDidLoad() {
         super.viewDidLoad();
         self.view.backgroundColor=UIColor.whiteColor()
@@ -255,7 +254,7 @@ class LoginViewController:BaseViewController{
                             userDefaults.setObject(entity!.storeFlagCode, forKey:"storeFlagCode")
                             //保存店铺名称
                             userDefaults.setObject(entity!.storeName, forKey:"storeName")
-                            //保存店铺号码
+                            //保存分站客服号码
                             userDefaults.setObject(entity!.subStationPhoneNumber, forKey:"subStationPhoneNumber")
                             //保存店铺二维码
                             userDefaults.setObject(entity!.qrcode, forKey:"qrcode")

@@ -11,43 +11,20 @@ import Alamofire
 import ObjectMapper
 import SVProgressHUD
 /// 个人中心
-class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITableViewDelegate{
+class PersonalCenterViewContorller:BaseViewController{
     //标题文字
-    private var titleArr0=["消息中心","进货订单","购物车","积分记录"]
-    private var titleArr1=["投诉与建议","清除缓存","搜一搜"]
-    private var titleArr2=["购买记录","客服电话","当前版本"]
+    private var titleArr=["进货订单","购物车","积分记录","点单商城","我的收藏","我的消息","搜一搜","联系客服","投诉与建议"]
     //标题图标
-    private var imgArr0=["preffont","member_orders","member_cart","member_jfjl"]
-    private var imgArr1=["exchange","member_clear","search_one_search"]
-    private var imgArr2=["purchaseRecords","member_tell2","version"]
+    private var imgArr=["img1","img2","img3","img4","img5","img6","img7","img8","img9"]
+    
     ///个人中心视图table
-    private var table:UITableView?
-    /// 图片mb
-    private var textMB=""
-    /// 电话号码
-    private var tel=""
-    /// 我的推荐人
-    private var myRecommended:String?{
-        didSet{//当值被改变刷新table
-            if oldValue != nil{
-                table?.reloadData()
-            }
-        }
-    }
-    private var codePic:UIImageView?
-    /// 二维码图片路径
-    private var qrcode:String?
-    private var headerView:UIView?
-    /// 消息提示view
-    private var messageBadgeView:UIView?
-    /// 分站信息entity
+    private var collectionView:UICollectionView!
+    private var scrollView:UIScrollView!
     private var substationEntity:SubstationEntity?
     //每次进页面都会加载
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        if myRecommended != nil{
-            querySubstationInfo()
-        }
+        querySubstationInfo()
     }
     //加载视图
     override func viewDidLoad() {
@@ -55,60 +32,146 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
         //设置页面标题
         self.title="个人中心"
         //设置页面背景色
-        self.view.backgroundColor=UIColor.whiteColor()
-        initView()
+        self.view.backgroundColor=UIColor.viewBackgroundColor()
+        buildView()
         //监听通知
         NSNotificationCenter.defaultCenter().addObserver(self, selector:"isHiddenMessageBadgeView:", name:"postIsHiddenMessageBadgeView", object:nil)
         
 
     }
-    //初始化ui控件
-    func initView(){
-        //获取手机号码
-        tel=(userDefaults.objectForKey("subStationPhoneNumber") as? String) ?? "0731-82562729"
-        UILayer()
-        querySubstationInfo()
+    
+    
+    //6.表格点击事件
+//    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+//        if indexPath.section==0{
+//            if indexPath.row==0{
+//                //消息中心   点击事件
+//                let vc=MessageCenterViewController();
+//                vc.hidesBottomBarWhenPushed=true;
+//                //点进消息中心 隐藏红色点
+//                messageBadgeView?.hidden=true
+//                //vc.memberId=memberId!
+//                //通知tab清除个人中心角标
+//                NSNotificationCenter.defaultCenter().postNotificationName("postPersonalCenter", object:2)
+//                self.navigationController?.pushViewController(vc, animated:true);
+//            }else if indexPath.row==1{
+//                //进货订单   点击事件
+//                //跳转到进货订单
+//                let actionVC=StockOrderManage()
+//                actionVC.hidesBottomBarWhenPushed=true
+//                self.navigationController?.pushViewController(actionVC, animated: true)
+//            }else if indexPath.row==2{
+//                //购物车   点击事件
+//                //跳转到购物车
+//                self.tabBarController!.selectedIndex=2;
+//            }else if indexPath.row==3{
+//                if self.substationEntity?.subStationBalanceStatu == 1{
+//                    //积分记录
+//                    let vc=IntegralRecordViewController();
+//                    vc.hidesBottomBarWhenPushed=true
+//                    self.navigationController?.pushViewController(vc, animated:true);
+//                }else{
+//                    SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
+//                }
+//            }
+//        }else if indexPath.section==1{
+//            if indexPath.row==0{
+//                pushFeedbackOnProblemsView()
+//            }else if indexPath.row==1{
+//                //清除缓存   点击事件
+//                //添加提示框
+//                let alertController = UIAlertController(title: "点单即到",
+//                    message: "您确定要清除缓存吗？", preferredStyle: UIAlertControllerStyle.Alert)
+//                let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+//                let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+//                    handler: {
+//                        action in
+//                        //清楚缓存
+//                        clearCache()
+//                        //延时0.2秒执行  不然会有几率报错_BSMachError: (os/kern) invalid name (15)
+//                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(0.2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), { () -> Void in
+//                            //更新指定行
+//                            self.table?.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
+//                        })
+//                        
+//                })
+//                alertController.addAction(cancelAction)
+//                alertController.addAction(okAction)
+//                self.presentViewController(alertController, animated: true, completion: nil)
+//            }else if indexPath.row==2{
+//                //搜一搜   点击事件
+//                let vc=SearchSSearchViewController();
+//                vc.hidesBottomBarWhenPushed=true;
+//                self.navigationController?.pushViewController(vc, animated:true);
+//                
+//            }
+//            
+//            
+//        }else if indexPath.section==2{
+//            if indexPath.row==0{
+//                SVProgressHUD.showInfoWithStatus("开发中...")
+////                //购买记录   点击事件
+////                let vc=PurchaseRecordsViewController();
+////                //vc.membrId=memberId
+////                vc.hidesBottomBarWhenPushed=true;
+////                self.navigationController?.pushViewController(vc, animated:true)
+//                
+//            }else if indexPath.row==1{
+//                //客服电话   点击事件
+//                let alertController = UIAlertController(title: "点单即到",
+//                    message: "您确定要拨打客服吗？", preferredStyle: UIAlertControllerStyle.Alert)
+//                let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+//                let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+//                    handler: {
+//                        action in
+//                        //延时0.2秒执行  不然会有几率报错_BSMachError: (os/kern) invalid name (15)
+//                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(0.2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), { () -> Void in
+//                        //拨打电话
+//                        UIApplication.sharedApplication().openURL(NSURL(string :"tel://\(self.tel)")!)
+//                    })
+//                })
+//                alertController.addAction(cancelAction)
+//                alertController.addAction(okAction)
+//                self.presentViewController(alertController, animated: true, completion: nil)
+//            }
+//        }
+//        //释放选中效果
+//        tableView.deselectRowAtIndexPath(indexPath, animated: true);
+//    }
+    deinit{
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+}
+// MARK: - 构建页面
+extension PersonalCenterViewContorller{
+    func buildView(){
         
-    }
-    /**
-     跳转到问题反馈页面
-     */
-    func pushFeedbackOnProblemsView(){
-        let vc=FeedbackOnProblemsViewController()
-        vc.hidesBottomBarWhenPushed=true
-        self.navigationController!.pushViewController(vc, animated:true)
-    }
-    //ui控件及布局
-    func UILayer(){
-        header()
-        //初始化table视图
-        table=UITableView(frame:self.view.bounds, style: UITableViewStyle.Plain)
-        table?.delegate=self
-        table?.dataSource=self
-        table?.tableHeaderView=headerView
-        table?.tableFooterView=footerView()
-        self.view.addSubview(table!)
-    }
-    /**
-     table头部视图
-     */
-    func header(){
+        let imgView=UIImageView(frame:CGRectMake(0,0,30,30))
+        imgView.image=UIImage(named:"settings")
+        imgView.userInteractionEnabled=true
+        imgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushSettings"))
+        let item=UIBarButtonItem(customView:imgView)
+        self.navigationItem.rightBarButtonItem=item
+        scrollView=UIScrollView(frame:self.view.bounds)
+        self.view.addSubview(scrollView)
         //初始化头部视图
-        headerView=UIView()
-        headerView!.frame=CGRectMake(0, 0, boundsWidth, 150)
+        let headerView=UIView()
+        headerView.frame=CGRectMake(0,0,boundsWidth,150)
+        scrollView.addSubview(headerView)
         //给头部视图添加背景图
         let Img=UIImageView(image: UIImage(named: "member_bg"));
-        Img.frame=headerView!.frame
-        headerView!.addSubview(Img)
+        Img.frame=headerView.frame
+        headerView.addSubview(Img)
         
         //二维码图片
-        codePic=UIImageView(frame: CGRectMake(0, 0, 80, 80))
-        codePic!.center=Img.center
-        qrcode=userDefaults.objectForKey("qrcode") as? String
+        let codePic=UIImageView(frame: CGRectMake(0,0,80,80))
+        codePic.center=Img.center
+        let qrcode=userDefaults.objectForKey("qrcode") as? String
         if qrcode != nil{
-            codePic!.sd_setImageWithURL(NSURL(string:URLIMG+qrcode!), placeholderImage:UIImage(named:"def_nil"))
+            codePic.sd_setImageWithURL(NSURL(string:URLIMG+qrcode!), placeholderImage:UIImage(named:"def_nil"))
         }
-        headerView!.addSubview(codePic!)
+        headerView.addSubview(codePic)
+        
         //店铺名称
         let lblstoreName=UILabel()
         lblstoreName.frame=CGRectMake(0,150-30, boundsWidth, 20)
@@ -116,221 +179,112 @@ class PersonalCenterViewContorller:UIViewController,UITableViewDataSource,UITabl
         lblstoreName.textColor=UIColor.whiteColor()
         lblstoreName.font=UIFont.systemFontOfSize(14)
         lblstoreName.textAlignment=NSTextAlignment.Center
-        headerView!.addSubview(lblstoreName)
+        headerView.addSubview(lblstoreName)
         
-    }
-    
-    /**
-     //table脚部视图
-     */
-    func footerView() ->UIView{
-        let footView=UIView(frame:CGRectMake(0, 0, boundsWidth,70));
+        let layout=UICollectionViewFlowLayout()
+        let cellWidth=boundsWidth/3
+        layout.itemSize=CGSize(width:cellWidth,height:cellWidth)
+        layout.scrollDirection = UICollectionViewScrollDirection.Vertical//设置垂直显示
+        layout.minimumLineSpacing = 0;//每个相邻layout的上下
+        layout.minimumInteritemSpacing = 0;//每个相邻layout的左右
+        collectionView=UICollectionView(frame:CGRectMake(0,CGRectGetMaxY(headerView.frame)+15,boundsWidth,boundsWidth), collectionViewLayout:layout)
+        collectionView.dataSource=self
+        collectionView.delegate=self
+        collectionView.scrollEnabled=false
+        collectionView.backgroundColor=UIColor.clearColor()
+        collectionView.registerClass(PersonalCenterCollectionViewCell.self,forCellWithReuseIdentifier:"PersonalCenterCollectionViewCell")
+        self.scrollView.addSubview(collectionView)
+
         ///初始化退出登录按钮
-        let btnExitLogin=UIButton(frame: CGRectMake(10, 15, footView.frame.width-20,40));
-        footView.addSubview(btnExitLogin);
+        let btnExitLogin=UIButton(frame: CGRectMake(0,CGRectGetMaxY(collectionView.frame)+30,boundsWidth,50));
         btnExitLogin.backgroundColor=UIColor.applicationMainColor()
         btnExitLogin.setTitle("退出当前账号", forState: UIControlState.Normal);
-        btnExitLogin.layer.cornerRadius=6;
         btnExitLogin.addTarget(self, action: "btnAction:", forControlEvents: UIControlEvents.TouchUpInside);
-        return footView
+        self.scrollView.addSubview(btnExitLogin)
         
+        self.scrollView.contentSize=CGSizeMake(boundsWidth,CGRectGetMaxY(btnExitLogin.frame)+30)
     }
-    //3.5.1返回头部组视图
-    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view=UIView(frame:CGRectZero)
-        view.backgroundColor=UIColor.viewBackgroundColor()
-        return view
-    }
-    //2.返回几组
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 3;
-    }
-    //1.4每组的头部高度
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 5
-    }
-    //3.5.1返回底部组视图
-    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let view=UIView(frame:CGRectZero)
-        view.backgroundColor=UIColor.viewBackgroundColor()
-        return view
-    }
-    //1.4每组的底部高度
-    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if section == 2{
-            return 5
-        }else{
-            return 0
-        }
-    }
-    //3.返回多少行
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0{
-            return 4
-        }else{
-           return 3
-        }
-    }
-    //4.返回行高
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 50
-        
-        
-    }
-    //5.数据源
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        //定义标示符
-        let cells:String="cells";
-        var cell=tableView.dequeueReusableCellWithIdentifier(cells);
-        if cell==nil{
-            cell=UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: cells)
-        }else{
-            cell=UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: cells)
-        }
-        cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
-        cell!.detailTextLabel!.font=UIFont.systemFontOfSize(13)
-        //图片
-        let img=UIImageView(frame:CGRectMake(14,8.5,32,33))
-        cell!.contentView.addSubview(img)
-        //文字描述
-        let name=UILabel(frame:CGRectMake(CGRectGetMaxX(img.frame)+5,15,100,20))
-        name.font=UIFont.systemFontOfSize(14)
-        cell!.contentView.addSubview(name)
-        switch indexPath.section{
+}
+// MARK: - 实现协议
+extension PersonalCenterViewContorller:UICollectionViewDelegate,UICollectionViewDataSource{
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cell=collectionView.dequeueReusableCellWithReuseIdentifier("PersonalCenterCollectionViewCell", forIndexPath:indexPath) as! PersonalCenterCollectionViewCell
+        let imgStr=imgArr[indexPath.row]
+        let str=titleArr[indexPath.row]
+        switch indexPath.item / 3 {
         case 0:
-            img.image=UIImage(named:imgArr0[indexPath.row])
-            name.text=titleArr0[indexPath.row]
-            if indexPath.row == 0{
-                messageBadgeView=UIView(frame:CGRectMake(boundsWidth-35,(50-8)/2,8,8))
-                messageBadgeView!.backgroundColor=UIColor.redColor()
-                messageBadgeView!.layer.cornerRadius=8/2
-                messageBadgeView!.hidden=true
-                cell!.contentView.addSubview(messageBadgeView!)
-            }
-            break
+            cell.linwSeparatorOptions = [.top, .right]
         case 1:
-            if indexPath.row == 1{//缓存mb
-                textMB=toFloatTwo(folderSizeAtPath())+"MB"
-                cell!.detailTextLabel!.text=textMB
-            }
-            img.image=UIImage(named:imgArr1[indexPath.row])
-            name.text=titleArr1[indexPath.row]
-            break
+            cell.linwSeparatorOptions = [.top, .right]
         case 2:
-            if indexPath.row == 1{//我的推荐人
-                cell!.detailTextLabel!.text=tel
-            }else if indexPath.row == 2{
-                cell!.detailTextLabel!.text="3.51"
-                cell!.accessoryType=UITableViewCellAccessoryType.None
-            }
-            img.image=UIImage(named:imgArr2[indexPath.row])
-            name.text=titleArr2[indexPath.row]
-            break
-        default:break
+            cell.linwSeparatorOptions = [.top, .right, .bottom]
+        default:
+            {}()
         }
-        ///取消点击效果（如QQ空间）
-        cell?.selectionStyle=UITableViewCellSelectionStyle.None;
-        return cell!
+        cell.updateCell(imgStr, str:str)
+        return cell
     }
-    //6.表格点击事件
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.section==0{
-            if indexPath.row==0{
-                //消息中心   点击事件
-                let vc=MessageCenterViewController();
-                vc.hidesBottomBarWhenPushed=true;
-                //点进消息中心 隐藏红色点
-                messageBadgeView?.hidden=true
-                //vc.memberId=memberId!
-                //通知tab清除个人中心角标
-                NSNotificationCenter.defaultCenter().postNotificationName("postPersonalCenter", object:2)
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return imgArr.count
+    }
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.row == 0{//订单
+            let actionVC=StockOrderManage()
+            actionVC.hidesBottomBarWhenPushed=true
+            self.navigationController?.pushViewController(actionVC, animated: true)
+        }else if indexPath.row == 1{
+            //跳转到购物车
+            self.tabBarController!.selectedIndex=2;
+
+        }else if indexPath.row == 2{//积分记录
+            if self.substationEntity?.subStationBalanceStatu == 1{
+                let vc=IntegralRecordViewController();
+                vc.hidesBottomBarWhenPushed=true
                 self.navigationController?.pushViewController(vc, animated:true);
-            }else if indexPath.row==1{
-                //进货订单   点击事件
-                //跳转到进货订单
-                let actionVC=StockOrderManage()
-                actionVC.hidesBottomBarWhenPushed=true
-                self.navigationController?.pushViewController(actionVC, animated: true)
-            }else if indexPath.row==2{
-                //购物车   点击事件
-                //跳转到购物车
-                self.tabBarController!.selectedIndex=2;
-            }else if indexPath.row==3{
-                if self.substationEntity?.subStationBalanceStatu == 1{
-                    //积分记录
-                    let vc=IntegralRecordViewController();
-                    vc.hidesBottomBarWhenPushed=true
-                    self.navigationController?.pushViewController(vc, animated:true);
-                }else{
-                    SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
-                }
-            }
-        }else if indexPath.section==1{
-            if indexPath.row==0{
-                pushFeedbackOnProblemsView()
-            }else if indexPath.row==1{
-                //清除缓存   点击事件
-                //添加提示框
-                let alertController = UIAlertController(title: "点单即到",
-                    message: "您确定要清除缓存吗？", preferredStyle: UIAlertControllerStyle.Alert)
-                let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
-                let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
-                    handler: {
-                        action in
-                        //清楚缓存
-                        clearCache()
-                        //延时0.2秒执行  不然会有几率报错_BSMachError: (os/kern) invalid name (15)
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(0.2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), { () -> Void in
-                            //更新指定行
-                            self.table?.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
-                        })
-                        
-                })
-                alertController.addAction(cancelAction)
-                alertController.addAction(okAction)
-                self.presentViewController(alertController, animated: true, completion: nil)
-            }else if indexPath.row==2{
-                //搜一搜   点击事件
-                let vc=SearchSSearchViewController();
-                vc.hidesBottomBarWhenPushed=true;
-                self.navigationController?.pushViewController(vc, animated:true);
-                
+            }else{
+                SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
             }
             
-            
-        }else if indexPath.section==2{
-            if indexPath.row==0{
-                SVProgressHUD.showInfoWithStatus("开发中...")
-//                //购买记录   点击事件
-//                let vc=PurchaseRecordsViewController();
-//                //vc.membrId=memberId
-//                vc.hidesBottomBarWhenPushed=true;
-//                self.navigationController?.pushViewController(vc, animated:true)
-                
-            }else if indexPath.row==1{
-                //客服电话   点击事件
-                let alertController = UIAlertController(title: "点单即到",
-                    message: "您确定要拨打客服吗？", preferredStyle: UIAlertControllerStyle.Alert)
-                let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
-                let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
-                    handler: {
-                        action in
-                        //延时0.2秒执行  不然会有几率报错_BSMachError: (os/kern) invalid name (15)
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,Int64(0.2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), { () -> Void in
-                        //拨打电话
-                        UIApplication.sharedApplication().openURL(NSURL(string :"tel://\(self.tel)")!)
-                    })
-                })
-                alertController.addAction(cancelAction)
-                alertController.addAction(okAction)
-                self.presentViewController(alertController, animated: true, completion: nil)
+        }else if indexPath.row == 3{
+            if self.substationEntity?.subStationBalanceStatu == 1{
+                /// 跳转到积分商城
+                let vc=PresentExpViewController()
+                vc.hidesBottomBarWhenPushed=true
+                self.navigationController?.pushViewController(vc, animated:true)
+            }else{
+                SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
             }
+        }else if indexPath.row == 4{
+            let vc=CollectListViewController()
+            vc.hidesBottomBarWhenPushed=true
+            self.navigationController?.pushViewController(vc, animated:true)
+        }else if indexPath.row == 5{
+            let vc=MessageCenterViewController();
+            vc.hidesBottomBarWhenPushed=true;
+            self.navigationController?.pushViewController(vc, animated:true)
+        }else if indexPath.row == 6{
+            // 搜一搜   点击事件
+            let vc=SearchSSearchViewController();
+            vc.hidesBottomBarWhenPushed=true;
+            self.navigationController?.pushViewController(vc, animated:true);
+            
+        }else if indexPath.row == 7{
+            //客服电话   点击事件
+            UIAlertController.showAlertYesNo(self, title:"点单即到", message:"您确定要拨打客服吗？", cancelButtonTitle:"取消", okButtonTitle:"确定", okHandler: {  Void in
+                    //拨打电话
+                    var tel=userDefaults.objectForKey("subStationPhoneNumber") as? String
+                    tel=tel ?? "0731-82562729"
+                    UIApplication.sharedApplication().openURL(NSURL(string :"tel://\(tel!)")!)
+            })
+        }else if indexPath.row == 8{
+            let vc=FeedbackOnProblemsViewController()
+            vc.hidesBottomBarWhenPushed=true
+            self.navigationController!.pushViewController(vc, animated:true)
         }
-        //释放选中效果
-        tableView.deselectRowAtIndexPath(indexPath, animated: true);
-    }
-    deinit{
-        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 }
 // MARK: - 网络请求
@@ -344,7 +298,6 @@ extension PersonalCenterViewContorller{
             //解析json
             let json=JSON(result)
             self.substationEntity=Mapper<SubstationEntity>().map(json["substationEntity"].object)
-            self.myRecommended=json["referralName"].stringValue
             }) { (errorMsg) -> Void in
                 SVProgressHUD.showErrorWithStatus(errorMsg)
         }
@@ -353,18 +306,10 @@ extension PersonalCenterViewContorller{
 }
 // MARK: - 页面逻辑
 extension PersonalCenterViewContorller{
-    /**
-     是否隐藏消息提示视图
-     
-     - parameter obj:NSNotification
-     */
-    func isHiddenMessageBadgeView(obj:NSNotification){
-        let count=obj.object as! Int
-        if count == 0{
-            messageBadgeView?.hidden=true
-        }else{
-            messageBadgeView?.hidden=false
-        }
+    func pushSettings(){
+        let vc=SettingsViewController()
+        vc.hidesBottomBarWhenPushed=true
+        self.navigationController?.pushViewController(vc, animated:true)
     }
     /**
      退出当前账号按钮
@@ -378,15 +323,10 @@ extension PersonalCenterViewContorller{
             //设置极光推送 别名为空
             JPUSHService.setAlias("",callbackSelector:nil, object:nil)
             JPUSHService.setTags([], callbackSelector:nil, object:nil)
-//            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.outLoginForStore(memberId: IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
-//                
-//                }, failClosure: { (errorMsg) -> Void in
-//                    
-//            })
             request(.GET,URL+"outLoginForStore.xhtml,", parameters:["memebrId":IS_NIL_MEMBERID()!])
             //清除缓存中会员id
-            NSUserDefaults.standardUserDefaults().removeObjectForKey("memberId")
-            NSUserDefaults.standardUserDefaults().synchronize();
+            userDefaults.removeObjectForKey("memberId")
+            userDefaults.synchronize();
             //切换根视图
             let app=UIApplication.sharedApplication().delegate as! AppDelegate
             app.window?.rootViewController=UINavigationController(rootViewController:LoginViewController());

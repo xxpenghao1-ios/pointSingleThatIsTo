@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
-
 /// 商品详情(传入商品GoodDetailEntity,接收storeId)
 class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UITableViewDelegate{
     /// 接收传入商品Entity
@@ -259,7 +258,11 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
      */
     func buildTable(){
         //table
-        table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,350), style: UITableViewStyle.Plain)
+        if  self.goodDeatilEntity?.returnGoodsFlag == 3{
+            table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,350), style: UITableViewStyle.Plain)
+        }else{
+            table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,400), style: UITableViewStyle.Plain)
+        }
         table!.dataSource=self
         table!.delegate=self
         table!.scrollEnabled=false
@@ -318,7 +321,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         btnPushSupplier.backgroundColor=UIColor.applicationMainColor()
         btnPushSupplier.layer.cornerRadius=10
         btnPushSupplier.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
-//        btnPushSupplier.addTarget(self, action:"pushSupplierView:", forControlEvents: UIControlEvents.TouchUpInside)
+        btnPushSupplier.addTarget(self, action:"showSubSuppingVC", forControlEvents: UIControlEvents.TouchUpInside)
         btnPushSupplier.titleLabel!.font=UIFont.systemFontOfSize(13)
         
         switch indexPath.row{
@@ -351,8 +354,8 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
                 }else{
                     nameValue.text="\(self.goodDeatilEntity!.goodsStock!)"
                 }
-                cell!.contentView.addSubview(nameValue)
             }
+            cell!.contentView.addSubview(nameValue)
             break
         case 3:
             name.text="最低配送 : "
@@ -399,6 +402,17 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
             }
             cell!.contentView.addSubview(nameValue)
             break
+        case 7:
+            name.text="是否可退 : "
+            if self.goodDeatilEntity?.returnGoodsFlag != nil{
+                if self.goodDeatilEntity?.returnGoodsFlag == 1{
+                    nameValue.text="该商品可退换"
+                }else if self.goodDeatilEntity?.returnGoodsFlag == 2{
+                    nameValue.text="该商品不可退换"
+                }
+            }
+            cell!.contentView.addSubview(nameValue)
+            break
         default:
             break
         }
@@ -407,7 +421,11 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
     }
     //返回tabview的行数
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        return 7
+        if self.goodDeatilEntity?.returnGoodsFlag == 3{
+            return 7
+        }else{
+            return 8
+        }
     }
     //返回tabview的高度
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
@@ -682,5 +700,13 @@ extension GoodDetailViewController{
         let vc=ShoppingCarViewContorller()
         vc.hidesBottomBarWhenPushed=true
         self.navigationController!.pushViewController(vc, animated:true)
+    }
+    func showSubSuppingVC(){
+        let vc=GoodCategory3ViewController()
+        vc.flag=6
+        vc.subSupplierId=self.goodDeatilEntity!.subSupplier
+        vc.subSupplierName=self.goodDeatilEntity!.supplierName
+        vc.hidesBottomBarWhenPushed=true
+        self.navigationController?.pushViewController(vc, animated:true)
     }
 }

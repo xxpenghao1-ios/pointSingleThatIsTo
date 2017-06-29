@@ -32,6 +32,8 @@ class StockOrderDetailsCell:UITableViewCell{
     //商品数量
     var goodsCount:UILabel?
     
+    var lblReturnGoodsFlag:UILabel?
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         //当前cell的高度
@@ -50,6 +52,8 @@ class StockOrderDetailsCell:UITableViewCell{
         
         //初始化商品数量
         goodsCount=UILabel()
+        
+        lblReturnGoodsFlag=UILabel()
         
         //初始化左边文字
         lblLeftText=UILabel()
@@ -88,6 +92,20 @@ class StockOrderDetailsCell:UITableViewCell{
             goodsTitle?.font=UIFont.systemFontOfSize(14)
             goodsTitle?.numberOfLines=1
             self.contentView.addSubview(goodsTitle!)
+            
+            //商品可不可退
+            lblReturnGoodsFlag?.frame=CGRectMake(CGRectGetMaxX(goodsPic!.frame)+5, CGRectGetMaxY(goodsPic!.frame)-40, 200, 20)
+            lblReturnGoodsFlag?.font=UIFont.systemFontOfSize(13)
+            lblReturnGoodsFlag?.textColor=UIColor.textColor()
+            if goodsEntity.returnGoodsFlag != nil{
+                if goodsEntity.returnGoodsFlag == 1{
+                    lblReturnGoodsFlag?.text="该商品可以退换"
+                }else if goodsEntity.returnGoodsFlag == 2{
+                    lblReturnGoodsFlag?.text="该商品不可退换"
+                }
+                self.contentView.addSubview(lblReturnGoodsFlag!)
+            }
+
             
             //实例化商品价格frame
             goodsPrice?.frame=CGRectMake(CGRectGetMaxX(goodsPic!.frame)+5, CGRectGetMaxY(goodsPic!.frame)-20, 200, 20)

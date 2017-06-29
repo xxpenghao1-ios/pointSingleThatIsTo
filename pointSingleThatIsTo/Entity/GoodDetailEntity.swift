@@ -92,7 +92,10 @@ class GoodDetailEntity:Mappable {
     var isSelected:Int?
     //默认为null；如果=1，此商品被用户收藏
     var goodsCollectionStatu:Int?
-    
+    //商品是否可退；1可退；2不可退
+    var returnGoodsFlag:Int?
+    //促销活动结束时间
+    var promotionEndTime:String?
     
     init(){}
     required init?(_ map: Map) {
@@ -143,5 +146,7 @@ class GoodDetailEntity:Mappable {
         salesCount <- map["salesCount"]
         endTime <- map["endTime"]
         goodsCollectionStatu <- map["goodsCollectionStatu"]
+        returnGoodsFlag <- map["returnGoodsFlag"]
+        promotionEndTime <- map["promotionEndTime"]
     }
 }

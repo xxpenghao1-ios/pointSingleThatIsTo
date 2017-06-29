@@ -147,8 +147,6 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UITextField
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
     
 }
 // MARK: - 页面布局
@@ -490,12 +488,12 @@ extension IndexViewController:UICollectionViewDataSource,UICollectionViewDelegat
             let entity=specialAndPromotionsArr[indexPath.row] as! SpecialAndPromotionsEntity
             if entity.mobileOrPc == 3{
                 let vc=GoodSpecialPriceViewController()
-                vc.arr=classifyArr
+                vc.flag=1
                 vc.hidesBottomBarWhenPushed=true
                 self.navigationController!.pushViewController(vc, animated:true)
             }else if entity.mobileOrPc == 2{
-                let vc=GoodCategory3ViewController()
-                vc.flag=4
+                let vc=GoodSpecialPriceViewController()
+                vc.flag=2
                 vc.hidesBottomBarWhenPushed=true
                 self.navigationController?.pushViewController(vc, animated:true)
             }
@@ -559,6 +557,14 @@ extension IndexViewController{
      - parameter index:          Int
      */
     func cycleScrollView(cycleScrollView: SDCycleScrollView!, didSelectItemAtIndex index: Int) {
+        let entity=zwadImgArr[index] as! AdvertisingEntity
+        if entity.searchStatu == 2{
+            let vc=GoodCategory3ViewController()
+            vc.flag=1
+            vc.searchName=entity.advertisingDescription
+            vc.hidesBottomBarWhenPushed=true
+            self.navigationController?.pushViewController(vc, animated:true)
+        }
          
     }
 
@@ -691,7 +697,7 @@ extension IndexViewController{
      - parameter storeId:  这里storeId
      */
     func httpNewProduct(countyId:String,storeId:String){
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsForAndroidIndexForStoreNew(countyId: countyId, storeId: storeId, isDisplayFlag: 2, currentPage: 1, pageSize:18, order:""), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsForAndroidIndexForStoreNew(countyId: countyId, storeId: storeId, isDisplayFlag: 2, currentPage: 1, pageSize:30, order:""), successClosure: { (result) -> Void in
             let json=JSON(result)
             for(_,value) in json{
                 let entity=Mapper<GoodDetailEntity>().map(value.object)
@@ -738,11 +744,14 @@ extension IndexViewController{
     func httpSlide(countyId:String){
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.mobileAdvertising(countyId: countyId), successClosure: { (result) -> Void in
             let json=JSON(result)
+            
+            let imgArr=NSMutableArray()
             for(_,value) in json{
                 let entity=Mapper<AdvertisingEntity>().map(value.object)
-                self.zwadImgArr.addObject(URLIMG+entity!.advertisingURL!)
+                imgArr.addObject(URLIMG+entity!.advertisingURL!)
+                self.zwadImgArr.addObject(entity!)
             }
-            self.netWorkBanner?.imageURLStringsGroup=self.zwadImgArr as [AnyObject]
+            self.netWorkBanner?.imageURLStringsGroup=imgArr as [AnyObject]
             }) { (errorMsg) -> Void in
                 SVProgressHUD.showErrorWithStatus(errorMsg)
         }
@@ -763,17 +772,6 @@ extension IndexViewController{
 }
 // MARK: - 跳转页面
 extension IndexViewController{
-    /**
-     跳转到促销区
-     
-     - parameter sender:UIButton
-     */
-    func pushPromotionView(sender:UIButton){
-        let vc=GoodCategory3ViewController()
-        vc.flag=4
-        vc.hidesBottomBarWhenPushed=true
-        self.navigationController!.pushViewController(vc, animated:true)
-    }
     //实现导航控制器文本框的协议
     func textFieldDidBeginEditing(textField: UITextField) {
         //点击文本框不让键盘弹出来

@@ -242,11 +242,17 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
      */
     func buildTable(){
         //table
-        table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,350), style: UITableViewStyle.Plain)
+        if self.goodDeatilEntity?.returnGoodsFlag == 3{
+            table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,350), style: UITableViewStyle.Plain)
+        }
+        else{
+            table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,400), style: UITableViewStyle.Plain)
+        }
         table!.dataSource=self
         table!.delegate=self
         table!.scrollEnabled=false
         self.scrollView!.addSubview(table!)
+            
         
         if CGRectGetMaxY(table!.frame) > boundsHeight-64-50{//如果结束边线的最大Y值大于屏幕高度-64-加入购车层的高度  设置可滑动容器的范围为结束边线最大Y值
             
@@ -298,12 +304,12 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
         promotionsValue.textColor=UIColor.applicationMainColor()
         promotionsValue.font=UIFont.systemFontOfSize(14)
         
-        //查看供应商
+        //查看配送商
         let btnPushSupplier=UIButton(frame:CGRectMake(CGRectGetMaxX(name.frame),10,100,30))
         btnPushSupplier.backgroundColor=UIColor.applicationMainColor()
         btnPushSupplier.layer.cornerRadius=10
         btnPushSupplier.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
-        //        btnPushSupplier.addTarget(self, action:"pushSupplierView:", forControlEvents: UIControlEvents.TouchUpInside)
+        btnPushSupplier.addTarget(self, action:"showSubSuppingVC", forControlEvents: UIControlEvents.TouchUpInside)
         btnPushSupplier.titleLabel!.font=UIFont.systemFontOfSize(13)
         
         switch indexPath.row{
@@ -350,13 +356,13 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
             cell!.contentView.addSubview(nameValue)
             break
         case 4:
-            name.text="供应商 :"
+            name.text="配送商 :"
             //根据供应商名称长度设置按钮宽度
             let lblSupplierName=UILabel()
             if self.goodDeatilEntity?.supplierName != nil{
                 lblSupplierName.text=self.goodDeatilEntity!.supplierName
             }else{
-                lblSupplierName.text="该商品无供应商"
+                lblSupplierName.text="该商品无配送商"
             }
             lblSupplierName.font=UIFont.systemFontOfSize(13)
             let size=lblSupplierName.text!.textSizeWithFont(lblSupplierName.font, constrainedToSize:CGSizeMake(boundsWidth-CGRectGetMaxX(name.frame)-15,20))
@@ -383,6 +389,17 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
             }
             cell!.contentView.addSubview(nameValue)
             break
+        case 7:
+            name.text="是否可退 : "
+            if self.goodDeatilEntity?.returnGoodsFlag != nil{
+                if self.goodDeatilEntity?.returnGoodsFlag == 1{
+                    nameValue.text="该商品可退换"
+                }else if self.goodDeatilEntity?.returnGoodsFlag == 2{
+                    nameValue.text="该商品不可退换"
+                }
+            }
+            cell!.contentView.addSubview(nameValue)
+            break
         default:
             break
         }
@@ -391,7 +408,11 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
     }
     //返回tabview的行数
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        return 7
+        if self.goodDeatilEntity?.returnGoodsFlag == 3{
+            return 7
+        }else{
+            return 8
+        }
     }
     //返回tabview的高度
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
@@ -659,5 +680,13 @@ extension GoodSpecialPriceDetailViewController{
         let vc=ShoppingCarViewContorller()
         vc.hidesBottomBarWhenPushed=true
         self.navigationController!.pushViewController(vc, animated:true)
+    }
+    func showSubSuppingVC(){
+        let vc=GoodCategory3ViewController()
+        vc.flag=6
+        vc.subSupplierId=self.goodDeatilEntity!.subSupplier
+        vc.subSupplierName=self.goodDeatilEntity!.supplierName
+        vc.hidesBottomBarWhenPushed=true
+        self.navigationController?.pushViewController(vc, animated:true)
     }
 }
