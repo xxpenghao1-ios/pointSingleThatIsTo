@@ -104,9 +104,17 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
                 return (orderList?.list?.count)!
             }else{//第3组
                 if(orderList!.robflag == 2 || orderList!.robflag == 3){//若是已抢订单，则显示卖家留言
-                    return 6
+                    if orderList!.cashCouponId > 0{//如果有代金券
+                        return 10
+                    }else{
+                        return 9
+                    }
                 }else{
-                    return 5
+                    if orderList!.cashCouponId > 0{//如果有代金券
+                        return 8
+                    }else{
+                        return 7
+                    }
                 }
             }
         }else{
@@ -204,16 +212,37 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
                 case 0:
                     cell?.lblLeftText?.text="下单时间: "+(orderList?.add_time)!
                 case 1:
-                    cell?.lblLeftText?.text="送货经销商: "+orderList!.supplierName!
+                    if (orderList?.add_time != nil){
+                        let dateFormatter=NSDateFormatter()
+                        dateFormatter.dateFormat="yyyy-MM-dd HH:mm:ss"
+                        let orderTime=dateFormatter.dateFromString((orderList?.add_time!)!)
+                        //把订单时间转换成秒
+                        var orderTimeSS=orderTime!.timeIntervalSinceDate(orderTime!)
+                        orderTimeSS += 60*60*23
+                        let time=NSDate(timeIntervalSinceNow:orderTimeSS)
+                        let date=dateFormatter.stringFromDate(time)
+                        cell?.lblLeftText?.text="到货时间: "+(date)
+                    }
                 case 2:
+                    cell?.lblLeftText?.text="送货经销商: "+orderList!.supplierName!
+                case 3:
                     let sellering=orderList?.postscript ?? "无卖家附言"
                     cell?.lblLeftText?.text="卖家附言: "+sellering
-                case 3:
+                case 4:
                     //若附言为空，默认字符串
                     let pay_message=orderList?.pay_message ?? "无买家附言"
                     cell?.lblLeftText?.text="买家附言: "+pay_message
-                case 4:
+                case 5:
                     cell?.lblLeftText?.text="支付方式: " + "货到付款"
+                case 6:
+                    cell?.lblLeftText?.text="配送方式: " + "人工送货"
+                case 7:
+                    if orderList!.cashCouponId > 0{
+                        if orderList!.cashCouponAmountOfMoney != nil{
+                            cell?.lblLeftText?.text="已使用\(orderList!.cashCouponAmountOfMoney!)元代金券"
+                            cell?.lblLeftText?.textColor=UIColor.redColor()
+                        }
+                    }
                 default:break
                 }
                 cell!.contentView.addSubview(cell!.lblLeftText!)
@@ -230,11 +259,11 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
         //取消选中效果颜色
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         if indexPath.section == 2{
-            if indexPath.row == 2{
+            if indexPath.row == 3{
                 if orderList?.postscript != nil{
                     UIAlertController.showAlertYes(self, title:"卖家留言", message: orderList?.postscript, okButtonTitle:"确定")
                 }
-            }else if indexPath.row == 3{
+            }else if indexPath.row == 4{
                 if orderList?.pay_message != nil{
                     UIAlertController.showAlertYes(self, title:"买家留言", message: orderList?.pay_message, okButtonTitle:"确定")
                 }
@@ -250,6 +279,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
         if(IJReachability.isConnectedToNetwork()){
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryOrderInfo4AndroidByorderId(orderinfoId:orderList!.orderinfoId!), successClosure: { (result) -> Void in
                 let jsonResult=JSON(result)
+                print(jsonResult)
                 //保存商品entity
                 let list=jsonResult["listAndroid"]
                 for(_,GoodsDetailsValue)in list{//取出商品entity

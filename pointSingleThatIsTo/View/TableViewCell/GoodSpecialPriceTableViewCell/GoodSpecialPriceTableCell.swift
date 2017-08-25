@@ -55,6 +55,7 @@ protocol GoodSpecialPriceTableCellAddShoppingCartsDelegate:NSObjectProtocol{
 }
 /// 特价cell
 class GoodSpecialPriceTableCell: UITableViewCell {
+    
     /// 定义协议
     var delegate:GoodSpecialPriceTableCellAddShoppingCartsDelegate?
     //促销展示图片
@@ -81,6 +82,10 @@ class GoodSpecialPriceTableCell: UITableViewCell {
     
     /// 价钱view
     @IBOutlet weak var upriceView: UIView!
+    //促销信息
+    @IBOutlet weak var lblPromotionText: UILabel!
+    //加入购物车按钮
+    @IBOutlet weak var addCarView: UIView!
     
     /// 已卖完图片
     var img:UIImageView?
@@ -138,9 +143,16 @@ class GoodSpecialPriceTableCell: UITableViewCell {
         goodImgView.userInteractionEnabled=true
         goodImgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushGoodSpecialPriceDetail"))
         
-       
+        lblPromotionText.textColor=UIColor.applicationMainColor()
+        
         lblUcode.textColor=UIColor.textColor()
         lblGoodStock.textColor=UIColor.textColor()
+        //设置加入购物车view背景颜色
+        addCarView.backgroundColor=UIColor.applicationMainColor()
+        addCarView.layer.masksToBounds=true
+        addCarView.layer.cornerRadius=3
+        addCarView.userInteractionEnabled=true
+        addCarView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"addShoppingCarts"))
         
         
         //去掉选中背景
@@ -166,25 +178,27 @@ class GoodSpecialPriceTableCell: UITableViewCell {
         
         //商品图片
         goodImg.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
-        
+        lblSalesCount!.text="销量\(entity.salesCount!)"
+        let salesCountSize=lblSalesCount!.text!.textSizeWithFont(lblSalesCount!.font, constrainedToSize:CGSizeMake(100,20))
         if flag == 1{//如果是特价
             lblUprice!.text="￥\(entity.preferentialPrice!)"
             lblOldPrice!.text="￥\(entity.oldPrice!)"
-            lblSalesCount!.text="销量\(entity.salesCount!)"
-        
+            
             let upriceSize=lblUprice!.text!.textSizeWithFont(lblUprice!.font, constrainedToSize:CGSizeMake(200,20))
             let oldPriceSize=lblOldPrice!.text!.textSizeWithFont(lblOldPrice!.font, constrainedToSize:CGSizeMake(100,20))
         
             lblUprice!.frame=CGRectMake(0,0,upriceSize.width,20)
             lblOldPrice!.frame=CGRectMake(CGRectGetMaxX(lblUprice!.frame)+5,0,oldPriceSize.width,20)
             oldPriceView!.frame=CGRectMake(CGRectGetMaxX(lblUprice!.frame)+2,9.75,oldPriceSize.width+6,0.5)
-            lblSalesCount!.frame=CGRectMake(CGRectGetMaxX(lblOldPrice!.frame)+5,0,upriceView.frame.width-(CGRectGetMaxX(lblOldPrice!.frame)+5),20)
+            lblSalesCount!.frame=CGRectMake(CGRectGetMaxX(lblOldPrice!.frame)+5,0,salesCountSize.width,20)
+            //隐藏加入购物车按钮
+            addCarView.hidden=true
         }else{//如果是促销
             lblUprice!.text="￥\(entity.uprice!)"
-            lblSalesCount!.text="销量\(entity.salesCount!)"
             let upriceSize=lblUprice!.text!.textSizeWithFont(lblUprice!.font, constrainedToSize:CGSizeMake(200,20))
             lblUprice!.frame=CGRectMake(0,0,upriceSize.width,20)
-            lblSalesCount!.frame=CGRectMake(CGRectGetMaxX(lblUprice!.frame)+5,0,upriceView.frame.width-(CGRectGetMaxX(lblUprice!.frame)+5),20)
+            lblSalesCount!.frame=CGRectMake(CGRectGetMaxX(lblUprice!.frame)+5,0,salesCountSize.width,20)
+            lblPromotionText.text=entity.goodsDes
         }
         //商品单位
         if entity.goodUnit != nil{

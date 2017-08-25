@@ -10,6 +10,8 @@
 		63452A0B1E8273080039E6A1 /* CollectListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63452A0A1E8273080039E6A1 /* CollectListViewController.swift */; };
 		63452A0D1E8275B60039E6A1 /* CollectionEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63452A0C1E8275B60039E6A1 /* CollectionEntity.swift */; };
 		63C5CDF21E77955600BAAFF4 /* IndexSpecialAndPromotions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C5CDF11E77955600BAAFF4 /* IndexSpecialAndPromotions.swift */; };
+		63D0633C1F3C402300FE515E /* VouchersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D0633B1F3C402300FE515E /* VouchersViewController.swift */; };
+		63D0633E1F3C4BBB00FE515E /* VouchersEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D0633D1F3C4BBB00FE515E /* VouchersEntity.swift */; };
 		63D720891E7F894800424993 /* SpecialAndPromotionsEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D720881E7F894800424993 /* SpecialAndPromotionsEntity.swift */; };
 		63E99A211E83BA9600A6C018 /* BrandCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E99A201E83BA9600A6C018 /* BrandCollectionCell.swift */; };
 		63F360E81EEB729400F72A0D /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F360E71EEB729400F72A0D /* BaseCollectionViewCell.swift */; };
@@ -207,6 +209,8 @@
 		63452A0A1E8273080039E6A1 /* CollectListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectListViewController.swift; sourceTree = "<group>"; };
 		63452A0C1E8275B60039E6A1 /* CollectionEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionEntity.swift; sourceTree = "<group>"; };
 		63C5CDF11E77955600BAAFF4 /* IndexSpecialAndPromotions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexSpecialAndPromotions.swift; sourceTree = "<group>"; };
+		63D0633B1F3C402300FE515E /* VouchersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VouchersViewController.swift; sourceTree = "<group>"; };
+		63D0633D1F3C4BBB00FE515E /* VouchersEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VouchersEntity.swift; sourceTree = "<group>"; };
 		63D720881E7F894800424993 /* SpecialAndPromotionsEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecialAndPromotionsEntity.swift; sourceTree = "<group>"; };
 		63E99A201E83BA9600A6C018 /* BrandCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrandCollectionCell.swift; sourceTree = "<group>"; };
 		63F360E71EEB729400F72A0D /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -455,6 +459,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		63D0633A1F3C401000FE515E /* vouchers  */ = {
+			isa = PBXGroup;
+			children = (
+				63D0633B1F3C402300FE515E /* VouchersViewController.swift */,
+			);
+			path = "vouchers ";
+			sourceTree = "<group>";
+		};
 		88ACAF44E824F6CCF11FE1CE /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -576,6 +588,7 @@
 		EF455E8D1D33847500E9539F /* PersonalCenter */ = {
 			isa = PBXGroup;
 			children = (
+				63D0633A1F3C401000FE515E /* vouchers  */,
 				63F360EB1EEB93B700F72A0D /* SettingsViewController.swift */,
 				EF455E8F1D33847500E9539F /* CanBeTicketViewController.swift */,
 				EF455E931D33847500E9539F /* MessageCenterViewController.swift */,
@@ -699,6 +712,7 @@
 				EFED436A1D5967740041B0BE /* ShoppingCarVo.swift */,
 				63D720881E7F894800424993 /* SpecialAndPromotionsEntity.swift */,
 				63452A0C1E8275B60039E6A1 /* CollectionEntity.swift */,
+				63D0633D1F3C4BBB00FE515E /* VouchersEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -1433,6 +1447,7 @@
 				EF455FC31D33847500E9539F /* NilView.swift in Sources */,
 				EF455F901D33847500E9539F /* EntityTurnJson.swift in Sources */,
 				EF455F831D33847500E9539F /* CanBeTicketViewControllerEntity.swift in Sources */,
+				63D0633E1F3C4BBB00FE515E /* VouchersEntity.swift in Sources */,
 				EFE459411C477EE900B8B24C /* ViewController.swift in Sources */,
 				EF455F961D33847500E9539F /* UITextView+Placeholder.m in Sources */,
 				EF455FC81D33847500E9539F /* ShowAddressViewController.swift in Sources */,
@@ -1480,6 +1495,7 @@
 				EF455F781D33847500E9539F /* SweepersViewController.swift in Sources */,
 				EF455F711D33847500E9539F /* StockOrderManage.swift in Sources */,
 				EF455F741D33847500E9539F /* RegisterMember.swift in Sources */,
+				63D0633C1F3C402300FE515E /* VouchersViewController.swift in Sources */,
 				EF455F801D33847500E9539F /* AddressEntity.swift in Sources */,
 				EF455FAF1D33847500E9539F /* SKScNavViewController.swift in Sources */,
 				EF455F7D1D33847500E9539F /* OrderGoodViewController.swift in Sources */,

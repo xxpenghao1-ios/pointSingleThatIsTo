@@ -339,6 +339,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
         }else{//如果不是 显示普通价格
             lblGoodPirce.text="￥\(entity.uprice!)";
             lblGoodName.text=entity.goodInfoName!;
+            
             //隐藏特价小图标
             specialOfferImgView.hidden=true;
             countView.hidden=false

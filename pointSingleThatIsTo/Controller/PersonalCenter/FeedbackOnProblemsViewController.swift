@@ -71,7 +71,7 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
             SVProgressHUD.showInfoWithStatus("内容为空")
         }else{
             SVProgressHUD.showWithStatus("正在提交",maskType: SVProgressHUDMaskType.Gradient)
-            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.complaintsAndSuggestions(complaint:textLbl.check(), storeId:storeId), successClosure: { (result) -> Void in
+            PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.complaintsAndSuggestions(complaint:textLbl.pregReplace(), storeId:storeId), successClosure: { (result) -> Void in
                 let json=JSON(result)
                 let success=json["success"].stringValue
                 if success == "success"{

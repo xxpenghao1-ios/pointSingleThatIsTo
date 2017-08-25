@@ -352,6 +352,7 @@ extension ShoppingCarViewContorller{
                 goodArr.addObject(entity)
             }
         }
+        print(toJSONString(goodArr))
         request(.POST,URL+"updateCarAllGoodsNumForMember.xhtml", parameters:["memberId":IS_NIL_MEMBERID()!,"goodsList":toJSONString(goodArr),"tag":2])
     }
     /**

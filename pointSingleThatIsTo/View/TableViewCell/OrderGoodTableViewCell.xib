@@ -33,15 +33,6 @@
                             <constraint firstItem="Xtn-vf-np6" firstAttribute="leading" secondItem="rT3-Up-lGo" secondAttribute="leading" constant="5" id="hpm-B7-Chw"/>
                         </constraints>
                     </view>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="TopLeft" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="我擦擦擦擦我擦啊C" textAlignment="justified" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vpc-k3-mNu">
-                        <rect key="frame" x="103" y="10" width="209" height="35"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="35" id="Cgr-7p-65U"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="￥23.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w4G-kM-Hks">
                         <rect key="frame" x="103" y="69" width="136" height="20"/>
                         <constraints>
@@ -59,6 +50,15 @@
                             <constraint firstAttribute="width" constant="62" id="yIr-4Q-03z"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="TopLeft" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="我擦擦擦擦我擦啊C" textAlignment="justified" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vpc-k3-mNu">
+                        <rect key="frame" x="103" y="10" width="209" height="35"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="35" id="Cgr-7p-65U"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>

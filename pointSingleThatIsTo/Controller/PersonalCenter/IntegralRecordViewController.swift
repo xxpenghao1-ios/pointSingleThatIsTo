@@ -106,6 +106,7 @@ extension IntegralRecordViewController{
         var count=0
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeQueryMemberIntegralV1(memberId: IS_NIL_MEMBERID()!, currentPage: currentPage, pageSize: 10), successClosure: { (result) -> Void in
             let json=JSON(result)
+            print(json)
             if isRefresh{//如果是刷新先删除数据
                 self.arr.removeAllObjects()
             }

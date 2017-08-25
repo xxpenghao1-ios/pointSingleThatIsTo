@@ -22,6 +22,7 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
     
     /// 数据源
     private var arr=NSMutableArray()
+    private var cellArr=[GoodSpecialPriceTableCell]()
     
     /// table
     private var table:UITableView?
@@ -51,6 +52,7 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
         table=UITableView(frame:CGRectMake(0,0,boundsWidth,boundsHeight-64-40), style: UITableViewStyle.Plain)
         table!.dataSource=self
         table!.delegate=self
+        table!.registerNib(UINib(nibName:"GoodSpecialPriceTableCell", bundle:nil), forCellReuseIdentifier:"GoodSpecialPriceTableCellId")
         self.view.addSubview(table!)
         //移除空单元格
         table!.tableFooterView = UIView(frame:CGRectZero)
@@ -122,7 +124,18 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
     }
     //返回tabview的高度
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
-        return 120;
+        let entity=arr[indexPath.row] as! GoodDetailEntity
+        if entity.isPromotionFlag == 1{//如果是促销动态计算高度
+            let cell=cellArr[indexPath.row]
+            cell.updateCell(entity,flag:flag!)
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
+            let height=cell.contentView.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height
+            return height
+        }else{
+            return 120;
+        }
+
     }
     //tableview开始载入的动画
     func tableView(tableView: UITableView, willDisplayCell cell:UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath){
@@ -292,7 +305,7 @@ extension GoodSpecialPriceSalesViewController{
                 if entity!.goodsBaseCount == nil{
                     entity!.goodsBaseCount=1
                 }
-                
+                self.cellArr.append(self.table!.dequeueReusableCellWithIdentifier("GoodSpecialPriceTableCellId") as! GoodSpecialPriceTableCell)
                 self.arr.addObject(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态

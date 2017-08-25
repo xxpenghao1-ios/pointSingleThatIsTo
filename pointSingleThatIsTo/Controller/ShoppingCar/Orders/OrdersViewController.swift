@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
+import Alamofire
 
 /// 下单页面(传入Dictionary<String,GoodDetailEntity>,totalPirce)
 class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewDelegate{
@@ -37,9 +38,18 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
     /// 保存收获地址
     private var addressEntity:AddressEntity?
     
+    //保存代金券使用下限
+    private var cashcouponLowerLimitOfUse=0
+    //保存是否开启可以使用代金券 默认2关闭,1开启
+    private var cashcouponStatu=2
+    //保存代金券信息
+    private var vouchersEntity:VouchersEntity?
+    
     private let storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as! String
     
     private let memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as! String
+    private let substationId=userDefaults.objectForKey("substationId") as! String
+    
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
@@ -69,14 +79,32 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
             if(table!.respondsToSelector("setSeparatorInset:")){
                 table?.separatorInset=UIEdgeInsetsZero;
             }
-            
             buildOrderingView()
             //请求地址信息
             httpAddress()
+            //请求代金券是否可以使用
+            requestSubStationCC()
             //监听附言通知
             NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateRemark:", name: "remarkNotification", object: nil)
         }else{
             SVProgressHUD.showErrorWithStatus("无网络连接")
+        }
+    }
+    
+    /**
+     请代金券是否可以使用
+     */
+    func requestSubStationCC(){
+        request(.GET,URLIMG+"/cc/querySubStationCC", parameters:["substationId":substationId]).responseJSON{ response in
+            if response.result.error != nil{
+                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+            }
+            if response.result.value != nil{
+                let json=JSON(response.result.value!)
+                self.cashcouponLowerLimitOfUse=json["cashcouponLowerLimitOfUse"].intValue
+                self.cashcouponStatu=json["cashcouponStatu"].intValue
+                self.table?.reloadData()
+            }
         }
     }
     /**
@@ -118,7 +146,11 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 /// 把字典中的entity转换成json格式的字符串
                 let goodsList=toJSONString(arr)
                 SVProgressHUD.showWithStatus("数据加载中", maskType: .Clear)
-                PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeOrderForAndroid(goodsList: goodsList, detailAddress: detailAddress, phoneNumber: addressEntity!.phoneNumber!, shippName: addressEntity!.shippName!, storeId: storeId, pay_message: self.buyerRemark!, tag: 2), successClosure: { (result) -> Void in
+                var cashCouponId:Int?
+                if self.vouchersEntity != nil{
+                   cashCouponId=self.vouchersEntity!.cashCouponId
+                }
+                PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeOrderForAndroid(goodsList: goodsList, detailAddress: detailAddress, phoneNumber: addressEntity!.phoneNumber!, shippName: addressEntity!.shippName!, storeId: storeId, pay_message: self.buyerRemark!, tag: 2,cashCouponId:cashCouponId), successClosure: { (result) -> Void in
                     let json=JSON(result)
                     let success=json["success"].stringValue
                     if success == "success"{
@@ -131,8 +163,8 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                         //发送通知更新角标
                         NSNotificationCenter.defaultCenter().postNotificationName("postBadgeValue",object:3, userInfo:["carCount":badgeCount])
                         
-                        let alert=UIAlertController(title:"点单即到", message:"下单成功,查看订单状态吗?", preferredStyle: UIAlertControllerStyle.Alert)
-                        let ok=UIAlertAction(title:"确定", style: UIAlertActionStyle.Default, handler:{ Void in
+                        let alert=UIAlertController(title:"点单即到", message:"下单成功,您的货物会在24小时内送货上门,请注意查收。", preferredStyle: UIAlertControllerStyle.Alert)
+                        let ok=UIAlertAction(title:"查看订单", style: UIAlertActionStyle.Default, handler:{ Void in
                             //弹出订单页面
                             let vc=StockOrderManage()
                             vc.flag=2
@@ -303,10 +335,20 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 if self.buyerRemark == nil{
                     nameValue.text="+点击添加附言"
                 }else{
-                    nameValue.text=self.buyerRemark
-                    nameValue.textColor=UIColor.textColor()
+                    cell!.detailTextLabel!.font=UIFont.systemFontOfSize(14)
+                    cell!.detailTextLabel!.text=self.buyerRemark
                 }
                 cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
+                break
+            case 3:
+                name.text="代金券:"
+                cell!.detailTextLabel!.font=UIFont.systemFontOfSize(14)
+                cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
+                if vouchersEntity == nil{
+                    cell!.detailTextLabel!.text="满\(cashcouponLowerLimitOfUse)元可以使用代金券"
+                }else{
+                    cell!.detailTextLabel!.text="满\(cashcouponLowerLimitOfUse)立减\(vouchersEntity!.cashCouponAmountOfMoney!)元"
+                }
                 break
             default:
                 break
@@ -328,7 +370,11 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
             case 1:
                 return 1
             case 2:
-                return 3
+                if cashcouponStatu == 1{
+                    return 4
+                }else{
+                    return 3
+                }
             default:
                 break
         }
@@ -377,6 +423,20 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 let vc=BuyerRemark()
                 vc.textLbl=self.buyerRemark
                 self.navigationController!.pushViewController(vc,animated:true)
+                break
+            case 3:
+                if self.totalPirce! >= Double(cashcouponLowerLimitOfUse){
+                    let vc=VouchersViewController()
+                    vc.flag=1
+                    vc.vouchersEntity={ (entity) in
+                        self.vouchersEntity=entity
+                        let price=self.totalPirce!-Double(entity.cashCouponAmountOfMoney!)
+                        self.lblTotalPrice!.text="总价 : ￥\(price)(立省\(entity.cashCouponAmountOfMoney!)元)"
+                    }
+                    self.navigationController?.pushViewController(vc, animated:true)
+                }else{
+                   SVProgressHUD.showInfoWithStatus("订单金额要满\(cashcouponLowerLimitOfUse)元才能使用代金券")
+                }
                 break
             default:
                 break

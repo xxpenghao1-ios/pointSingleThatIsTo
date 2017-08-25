@@ -33,7 +33,7 @@ class BuyerRemark:UIViewController,UITextViewDelegate {
         textViews.layer.borderWidth=0.5
         textViews.layer.cornerRadius=5
         textViews.layer.borderColor=UIColor.borderColor().CGColor
-        textViews.placeholder="输入你想说的话..."
+        textViews.placeholder="重要提示! 不能输入表情,有可能导致订单提交失败"
         textViews.text=textLbl
         //textView响应弹出键盘
         textViews.resignFirstResponder();
@@ -64,7 +64,7 @@ class BuyerRemark:UIViewController,UITextViewDelegate {
     func actionRemark(sender:UIButton){
         if textLbl != nil{
             //发送通知
-        NSNotificationCenter.defaultCenter().postNotificationName("remarkNotification", object:textLbl!.check())
+        NSNotificationCenter.defaultCenter().postNotificationName("remarkNotification", object:textLbl!.pregReplace())
         }
         self.navigationController?.popViewControllerAnimated(true)
         
@@ -79,6 +79,19 @@ class BuyerRemark:UIViewController,UITextViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+}
+extension String {
+    //返回字数
+    var count: Int {
+        let string_NS = self as NSString
+        return string_NS.length
+    }
+    
+    //使用正则表达式替换
+    func pregReplace(options: NSRegularExpressionOptions = []) -> String {
+            let regex = try! NSRegularExpression(pattern:"[\\ud83c\\udc00-\\ud83c\\udfff]|[\\ud83d\\udc00-\\ud83d\\udfff]|[\\u2600-\\u27ff]", options: options)
+            return regex.stringByReplacingMatchesInString(self, options:[],range:NSMakeRange(0, self.count), withTemplate:"")
+    }
 }
 extension String{
     func check() -> String {

@@ -222,6 +222,7 @@ class LoginViewController:BaseViewController{
                     NSLog("开始验证发送网络请求验证用户信息")
                     PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.login(memberName:name!, password:password!, deviceToken:str!, deviceName:UIDevice().name,flag:1), successClosure: { (result) -> Void in
                         let json=JSON(result)
+                        print(json)
                         let success=json["success"].stringValue
                         if success == "failds"{
                             SVProgressHUD.showErrorWithStatus("店铺信息不存在")

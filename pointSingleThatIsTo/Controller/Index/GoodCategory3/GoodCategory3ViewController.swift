@@ -778,7 +778,7 @@ extension GoodCategory3ViewController{
      */
     func queryShoppingCarMoreGoodsForSubSupplier(currentPage:Int,isRefresh:Bool,order:String,tag:Int){
         var count=0
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryShoppingCarMoreGoodsForSubSupplier(storeId:Int(storeId!)!, subSupplierId: subSupplierId!, pageSize:10, currentPage:currentPage, order:order, seachLetterValue:"", tag:tag), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryShoppingCarMoreGoodsForSubSupplier(storeId:Int(storeId!)!, subSupplierId: subSupplierId!, pageSize:10, currentPage:currentPage, order:order,seachLetterValue:"", tag:tag), successClosure: { (result) -> Void in
             let json=JSON(result)
             if isRefresh{//如果是刷新先删除数据
                 self.goodArr.removeAllObjects()

@@ -118,6 +118,8 @@ extension PresentExpViewController{
                     self.lblIntegral!.text="\(self.integral!)"
                     let alert=UIAlertController(title:"点单即到", message:"兑换\(entity.goodsName!)成功", preferredStyle: UIAlertControllerStyle.Alert)
                     let ok=UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
+                        //查看剩余积分
+                        self.httpQueryMemberIntegral()
                         self.table!.headerBeginRefreshing()
                     })
                     alert.addAction(ok)

@@ -23,6 +23,9 @@ class GoodSpecialPriceUpriceViewController:AddShoppingCartAnimation,UITableViewD
     /// 数据源
     private var arr=NSMutableArray()
     
+    
+    private var cellArr=[GoodSpecialPriceTableCell]()
+    
     /// table
     private var table:UITableView?
     
@@ -51,6 +54,7 @@ class GoodSpecialPriceUpriceViewController:AddShoppingCartAnimation,UITableViewD
         table!.dataSource=self
         table!.delegate=self
         self.view.addSubview(table!)
+        table!.registerNib(UINib(nibName:"GoodSpecialPriceTableCell", bundle:nil), forCellReuseIdentifier:"GoodSpecialPriceTableCellId")
         //移除空单元格
         table!.tableFooterView = UIView(frame:CGRectZero)
         //设置cell下边线全屏
@@ -123,7 +127,18 @@ class GoodSpecialPriceUpriceViewController:AddShoppingCartAnimation,UITableViewD
     }
     //返回tabview的高度
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
-        return 120;
+        let entity=arr[indexPath.row] as! GoodDetailEntity
+        
+        if entity.isPromotionFlag == 1{//如果是促销动态计算高度
+            let cell=cellArr[indexPath.row]
+            cell.updateCell(entity,flag:flag!)
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
+            let height=cell.contentView.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height
+            return height
+        }else{
+            return 120;
+        }
     }
     //tableview开始载入的动画
     func tableView(tableView: UITableView, willDisplayCell cell:UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath){
@@ -325,7 +340,7 @@ extension GoodSpecialPriceUpriceViewController{
                 if entity!.goodsBaseCount == nil{
                     entity!.goodsBaseCount=1
                 }
-                
+                self.cellArr.append(self.table!.dequeueReusableCellWithIdentifier("GoodSpecialPriceTableCellId") as! GoodSpecialPriceTableCell)
                 self.arr.addObject(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态

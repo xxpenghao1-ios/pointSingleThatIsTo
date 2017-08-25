@@ -56,7 +56,10 @@ class OrderListEntity:Mappable{
     /**卖家附言*/
     var postscript:String?;
     var returnGoodsFlag:Int?
-    
+    /**代金券金额*/
+    var cashCouponAmountOfMoney:Double?
+    /*代金券id*/
+    var cashCouponId:Int?
     init(){}
     required init?(_ map: Map) {
         mapping(map)
@@ -86,6 +89,8 @@ class OrderListEntity:Mappable{
         finished_time <- map["finished_time"]
         postscript <- map["postscript"]
         returnGoodsFlag <- map["returnGoodsFlag"]
+        cashCouponAmountOfMoney <- map["cashCouponAmountOfMoney"]
+        cashCouponId <- map["cashCouponId"]
         
     }
 }

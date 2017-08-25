@@ -13,7 +13,7 @@ import SVProgressHUD
 /// 个人中心
 class PersonalCenterViewContorller:BaseViewController{
     //标题文字
-    private var titleArr=["进货订单","购物车","积分记录","点单商城","我的收藏","我的消息","搜一搜","联系客服","投诉与建议"]
+    private var titleArr=["进货订单","购物车","积分记录","点单商城","我的收藏","我的消息","代金券","联系客服","投诉与建议"]
     //标题图标
     private var imgArr=["img1","img2","img3","img4","img5","img6","img7","img8","img9"]
     
@@ -268,7 +268,7 @@ extension PersonalCenterViewContorller:UICollectionViewDelegate,UICollectionView
             self.navigationController?.pushViewController(vc, animated:true)
         }else if indexPath.row == 6{
             // 搜一搜   点击事件
-            let vc=SearchSSearchViewController();
+            let vc=VouchersViewController();
             vc.hidesBottomBarWhenPushed=true;
             self.navigationController?.pushViewController(vc, animated:true);
             

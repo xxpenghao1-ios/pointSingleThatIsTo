@@ -168,7 +168,7 @@ public enum RequestAPI {
     //添加收货地址
     case addStoreShippAddressforAndroid(flag:Int,storeId:String,county:String,city:String,province:String,shippName:String,detailAddress:String,phoneNumber:String,IPhonePenghao:Int)
     //下单
-    case storeOrderForAndroid(goodsList:String,detailAddress:String,phoneNumber:String,shippName:String,storeId:String,pay_message:String,tag:Int)
+    case storeOrderForAndroid(goodsList:String,detailAddress:String,phoneNumber:String,shippName:String,storeId:String,pay_message:String,tag:Int,cashCouponId:Int?)
     //问题反馈
     case complaintsAndSuggestions(complaint:String,storeId:String)
     //查询所有的2,3级分类
@@ -284,7 +284,7 @@ extension RequestAPI:TargetType{
             return "updateStoreShippAddressforAndroid"+InterfaceSuffix.XHTML.rawValue
         case .addStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_):
             return "addStoreShippAddressforAndroid"+InterfaceSuffix.XHTML.rawValue
-        case .storeOrderForAndroid(_,_,_,_,_,_,_):
+        case .storeOrderForAndroid(_,_,_,_,_,_,_,_):
             return "storeOrderForAndroid"+InterfaceSuffix.XHTML.rawValue
         case .complaintsAndSuggestions(_,_):
             return "complaintsAndSuggestions"+InterfaceSuffix.XHTML.rawValue
@@ -305,7 +305,7 @@ extension RequestAPI:TargetType{
     }
     public var method:Moya.Method{
         switch self{
-        case .login(_,_,_,_,_),.register(_,_,_,_),.doRegest(_,_,_,_),.storeConfirmDelivergoods(_,_),.nmoreGlobalPosiUploadStoreLogin(_,_),.nmoreGlobalPosiUploadStore(_,_,_,_,_,_,_,_),.storeOrderForAndroid(_,_,_,_,_,_,_),.complaintsAndSuggestions(_,_):
+        case .login(_,_,_,_,_),.register(_,_,_,_),.doRegest(_,_,_,_),.storeConfirmDelivergoods(_,_),.nmoreGlobalPosiUploadStoreLogin(_,_),.nmoreGlobalPosiUploadStore(_,_,_,_,_,_,_,_),.storeOrderForAndroid(_,_,_,_,_,_,_,_),.complaintsAndSuggestions(_,_):
             return .POST
         case .returnRandCode(_,_),.updatePassWord(_,_),.doMemberTheOnly(_),.queryCategory4AndroidAll(_),.queryCategory4Android(_),.queryBrandList4Android(_,_),.queryStoreAllRobOrderForList(_,_,_,_),.queryRobFor1OrderForList(_),.queryOrderInfo4AndroidByorderId(_),.robOrderByStore4Android(_,_),.insertShoppingCar(_,_,_,_,_,_,_),.queryGoodsForAndroidIndexForStoreNew(_,_,_,_,_,_),.queryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_,_),.searchGoodsInterfaceForStore(_,_,_,_,_,_,_,_,_),.queryStorePromotionGoodsList(_,_,_,_),.queryGoodsDetailsForAndroid(_,_,_,_,_,_,_),.queryPreferentialAndGoods4Store(_,_,_,_,_,_),.mobileAdvertisingPromotion(),.queryAdMessgInfo(_),.queryGoodsForAndroidIndexForStore(_,_,_),.queryOneCategory(_),.mobileAdvertising(_),.storeQueryMyNews(_,_,_,_),.queryRecommended(_),.queryMessageToStore(_,_,_),.queryStoreMember(_,_),.outLoginForStore(_),.SuoYuan(_,_),.queryOrderInfo4AndroidStoreByOrderStatus(_,_,_,_),.storeCancelOrder(_),.updataOrderStatus4Store(_),.bindingRecommended4Store(_,_),.integralMallExchange(_,_,_),.queryMemberIntegral(_),.queryIntegralMallForSubStation(_,_,_),.storeQueryMemberIntegralV1(_,_,_),.queryIntegralMallExchangeRecord(_,_,_),.queryStoreShippAddressforAndroid(_),.deleteStoreShippAddressforAndroid(_),.updateStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_,_),.addStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_),.letterQueryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_,_),.queryTwoCategoryForMob(_,_),goodsAddCollection(_,_,_,_),.queryStoreCollectionList(_,_,_),.goodsCancelCollection(_,_),.mobileAdvertisingPromotionAndPreferential(),.queryShoppingCarMoreGoodsForSubSupplier(_,_,_,_,_,_,_):
             return .GET
@@ -409,8 +409,12 @@ extension RequestAPI:TargetType{
             return ["flag":flag,"storeId":storeId,"county":county,"city":city,"province":province,"shippName":shippName,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"IPhonePenghao":IPhonePenghao,"shippAddressId":shippAddressId]
         case let .addStoreShippAddressforAndroid(flag, storeId, county, city, province, shippName, detailAddress, phoneNumber, IPhonePenghao):
             return ["flag":flag,"storeId":storeId,"county":county,"city":city,"province":province,"shippName":shippName,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"IPhonePenghao":IPhonePenghao]
-        case let .storeOrderForAndroid(goodsList, detailAddress, phoneNumber, shippName, storeId, pay_message, tag):
+        case let .storeOrderForAndroid(goodsList, detailAddress, phoneNumber, shippName, storeId, pay_message, tag,cashCouponId):
+            if cashCouponId == nil{
             return ["goodsList":goodsList,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"shippName":shippName,"storeId":storeId,"pay_message":pay_message,"tag":tag]
+            }else{
+                return ["goodsList":goodsList,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"shippName":shippName,"storeId":storeId,"pay_message":pay_message,"tag":tag,"cashCouponId":cashCouponId!]
+            }
         case let .complaintsAndSuggestions(complaint, storeId):
             return ["complaint":complaint,"storeId":storeId]
         case let .queryTwoCategoryForMob(goodsCategoryId,substationId):
