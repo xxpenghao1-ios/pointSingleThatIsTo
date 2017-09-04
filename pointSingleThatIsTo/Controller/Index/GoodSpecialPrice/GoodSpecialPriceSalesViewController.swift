@@ -22,8 +22,6 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
     
     /// 数据源
     private var arr=NSMutableArray()
-    private var cellArr=[GoodSpecialPriceTableCell]()
-    
     /// table
     private var table:UITableView?
     
@@ -52,7 +50,9 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
         table=UITableView(frame:CGRectMake(0,0,boundsWidth,boundsHeight-64-40), style: UITableViewStyle.Plain)
         table!.dataSource=self
         table!.delegate=self
-        table!.registerNib(UINib(nibName:"GoodSpecialPriceTableCell", bundle:nil), forCellReuseIdentifier:"GoodSpecialPriceTableCellId")
+        table!.rowHeight = UITableViewAutomaticDimension;
+        // 设置tableView的估算高度
+        table!.estimatedRowHeight = 120;
         self.view.addSubview(table!)
         //移除空单元格
         table!.tableFooterView = UIView(frame:CGRectZero)
@@ -100,13 +100,6 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
             //加载xib
             cell=NSBundle.mainBundle().loadNibNamed("GoodSpecialPriceTableCell", owner:self, options: nil).last as? GoodSpecialPriceTableCell
         }
-        //设置cell下边线全屏
-        if(cell!.respondsToSelector("setLayoutMargins:")){
-            cell?.layoutMargins=UIEdgeInsetsZero
-        }
-        if(cell!.respondsToSelector("setSeparatorInset:")){
-            cell?.separatorInset=UIEdgeInsetsZero;
-        }
         if arr.count > 0{//进行判断  防止没有数据 程序崩溃
             let entity=arr[indexPath.row] as! GoodDetailEntity
             //关联协议
@@ -122,21 +115,21 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return arr.count
     }
-    //返回tabview的高度
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
-        let entity=arr[indexPath.row] as! GoodDetailEntity
-        if entity.isPromotionFlag == 1{//如果是促销动态计算高度
-            let cell=cellArr[indexPath.row]
-            cell.updateCell(entity,flag:flag!)
-            cell.setNeedsUpdateConstraints()
-            cell.updateConstraintsIfNeeded()
-            let height=cell.contentView.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height
-            return height
-        }else{
-            return 120;
-        }
-
-    }
+//    //返回tabview的高度
+//    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
+//        let entity=arr[indexPath.row] as! GoodDetailEntity
+//        if entity.isPromotionFlag == 1{//如果是促销动态计算高度
+//            let cell=cellArr[indexPath.row]
+//            cell.updateCell(entity,flag:flag!)
+//            cell.setNeedsUpdateConstraints()
+//            cell.updateConstraintsIfNeeded()
+//            let height=cell.contentView.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize).height
+//            return height
+//        }else{
+//            return 120;
+//        }
+//
+//    }
     //tableview开始载入的动画
     func tableView(tableView: UITableView, willDisplayCell cell:UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath){
         
@@ -276,7 +269,7 @@ extension GoodSpecialPriceSalesViewController{
     func httpQueryStorePromotionGoodsList(currentPage:Int,isRefresh:Bool,order:String,storeId:String){
         /// 定义一个int类型的值 用于判断是否还有数据加载
         var count=0
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStorePromotionGoodsList(storeId:storeId, order:order, pageSize: 10, currentPage: currentPage), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStorePromotionGoodsList(storeId:storeId, order:order, pageSize:7, currentPage: currentPage), successClosure: { (result) -> Void in
             let json=JSON(result)
             if isRefresh{//如果是刷新先删除数据
                 self.arr.removeAllObjects()
@@ -293,9 +286,14 @@ extension GoodSpecialPriceSalesViewController{
                 if entity!.promotionEndTime == nil{
                     entity!.promotionEndTime="0"
                 }
-                //如果库存为空
-                if entity!.goodsStock == nil{
+                //如果促销商品还可以购买的数量 不等于空设为库存数
+                if entity!.promotionEachCount != nil{
+                    entity!.goodsStock = entity!.promotionEachCount
+                }else{
                     entity!.goodsStock = -1
+                }
+                if entity!.promotionStoreEachCount != nil{
+                    entity!.eachCount=entity!.promotionStoreEachCount
                 }
                 //如果最低起送量为空
                 if entity!.miniCount == nil{
@@ -305,10 +303,9 @@ extension GoodSpecialPriceSalesViewController{
                 if entity!.goodsBaseCount == nil{
                     entity!.goodsBaseCount=1
                 }
-                self.cellArr.append(self.table!.dequeueReusableCellWithIdentifier("GoodSpecialPriceTableCellId") as! GoodSpecialPriceTableCell)
                 self.arr.addObject(entity!)
             }
-            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
+            if count < 7{//判断count是否小于5  如果小于表示没有可以加载了 隐藏加载状态
                 self.table!.setFooterHidden(true)
             }else{//否则显示
                 self.table!.setFooterHidden(false)
@@ -355,24 +352,56 @@ extension GoodSpecialPriceSalesViewController{
         self.navigationController!.pushViewController(vc, animated:true)
     }
     /**
+     加入购物车
+     
+     - parameter entity:商品entity
+     */
+    func addCar(entity: GoodDetailEntity) {
+        //拿到会员id
+        let memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as! String
+        let storeId=userDefaults.objectForKey("storeId") as! String
+        var promotionNumber:Int?=nil
+        if flag == 3{//如果是促销
+            promotionNumber=entity.promotionNumber
+        }
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId: memberId, goodId: entity.goodsbasicinfoId!, supplierId: entity.supplierId!, subSupplierId: entity.subSupplier!, goodsCount:1,flag:flag!, goodsStock:entity.goodsStock!,storeId:storeId,promotionNumber: promotionNumber), successClosure: { (result) -> Void in
+            let json=JSON(result)
+            let success=json["success"].stringValue
+            if success == "success"{
+                SVProgressHUD.showSuccessWithStatus("成功加入购物车")
+            }else if success == "tjxgbz"{
+                SVProgressHUD.showInfoWithStatus("已超过该商品限购数")
+            }else if success == "tjbz"{
+                SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+            }else if success == "zcbz"{
+                SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+            }else if success == "grxgbz"{
+                SVProgressHUD.showInfoWithStatus("个人限购不足")
+            }else if success == "xgysq"{
+                SVProgressHUD.showInfoWithStatus("促销限购已售罄")
+            }else{
+                SVProgressHUD.showErrorWithStatus("加入失败")
+            }
+            
+            }) { (errorMsg) -> Void in
+                SVProgressHUD.showErrorWithStatus(errorMsg)
+        }
+
+    }
+    /**
      跳转到特价商品详情
      
      - parameter entity: 商品entity
      */
     func pushGoodSpecialPriceDetail(entity: GoodDetailEntity) {
-        if flag == 1{
-            let vc=GoodSpecialPriceDetailViewController()
-            vc.hidesBottomBarWhenPushed=true
-            vc.goodEntity=entity
-            vc.storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as? String
-            self.navigationController!.pushViewController(vc, animated:true)
-        }else{
-            let vc=GoodDetailViewController()
-            vc.hidesBottomBarWhenPushed=true
-            vc.goodEntity=entity
-            vc.storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as? String
-            self.navigationController!.pushViewController(vc, animated:true)
-        }
+        
+        let vc=GoodSpecialPriceDetailViewController()
+        vc.hidesBottomBarWhenPushed=true
+        vc.goodEntity=entity
+        vc.flag=flag
+        vc.storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as? String
+        self.navigationController!.pushViewController(vc, animated:true)
+       
     }
 }
 // MARK: - 倒计时
@@ -432,8 +461,6 @@ extension GoodSpecialPriceSalesViewController{
                     cell.contentView.addSubview(cell.img!)
                     //禁止进入商品详情
                     cell.goodImgView.userInteractionEnabled=false
-                }else{
-                    cell.goodImgView.userInteractionEnabled=true
                 }
                 cell.lblTime.hidden=false
             }

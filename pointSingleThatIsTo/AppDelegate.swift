@@ -45,6 +45,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
     //程序入口
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         mapManager = BMKMapManager()
+        BaiduMobStat.defaultStat().startWithAppId("ec2fbe36a3")
+        BaiduMobStat.defaultStat().enableDebugOn=true
+        print(BaiduMobStat.defaultStat().getDeviceCuid())
+        BaiduMobStat.defaultStat().getDeviceCuid()
         // 如果要关注网络及授权验证事件，请设定generalDelegate参数
         let ret = mapManager?.start("zUKLMiVbDlWfOj7o5vcY3m4XG2E9u3XN", generalDelegate:self)
         if ret == true {

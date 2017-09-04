@@ -25,6 +25,8 @@ class SubstationEntity:Mappable {
     /// 分站id
     var substationId:Int?
     var stateType:Int?
+    ///是否开启店铺可以签到；1开启。2不开启；默认不开启
+    var  storeSignStatu:Int?
     required init?(_ map: Map) {
         mapping(map)
     }
@@ -37,6 +39,7 @@ class SubstationEntity:Mappable {
         subStationDiscountStatu <- map["subStationDiscountStatu"]
         substationId <- map["substationId"]
         stateType <- map["stateType"]
+        storeSignStatu <- map["storeSignStatu"]
         
     }
 }

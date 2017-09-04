@@ -34,7 +34,7 @@ class IntegralRecordTableViewCell: UITableViewCell {
         case 2:
             break
         case 3:
-            lblTitle.text="购物返还积分"
+            lblTitle.text="购物返还点单币"
             break
         default:
             lblTitle.text="异常数据"

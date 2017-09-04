@@ -50,6 +50,10 @@ SOFTWARE.
 
 
 
+## BaiduMobStat
+
+Copyright 2017 Baidu. All rights reserved.
+
 ## EAIntroView
 
 Copyright (c) 2013-2015 Evgeny Aleksandrov

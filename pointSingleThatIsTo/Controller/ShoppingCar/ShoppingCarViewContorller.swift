@@ -40,7 +40,7 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
     
     /// 编辑按钮
     var editBar:UIBarButtonItem?
-    
+    let storeId=userDefaults.objectForKey("storeId") as! String
     /// 保存总价格
     var totalPirce:Double=0.00{
         didSet{
@@ -365,7 +365,7 @@ extension ShoppingCarViewContorller{
         //获取对应的entity
         let vo=arr[indexPath.section] as! ShoppingCarVo
         let entity=vo.listGoods![indexPath.row] as! GoodDetailEntity
-        request(.POST,URL+"deleteShoppingCar.xhtml", parameters:["memberId":IS_NIL_MEMBERID()!,"goodsList":toJSONString(entity)]).responseJSON{ response in
+        request(.POST,URL+"deleteShoppingCar.xhtml", parameters:["memberId":memberId!,"goodsList":toJSONString(entity)]).responseJSON{ response in
             if response.result.error != nil{
                 SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
             }
@@ -401,7 +401,7 @@ extension ShoppingCarViewContorller{
      */
     func http(){
         SVProgressHUD.showWithStatus("正在加载...", maskType: SVProgressHUDMaskType.Clear)
-        request(.GET,URL+"queryShoppingCarNew.xhtml", parameters:["memberId":IS_NIL_MEMBERID()!]).responseJSON{ response in
+        request(.GET,URL+"queryShoppingCarNew.xhtml", parameters:["memberId":IS_NIL_MEMBERID()!,"storeId":storeId]).responseJSON{ response in
             if response.result.error != nil{
                 SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
             }
@@ -430,6 +430,21 @@ extension ShoppingCarViewContorller{
                                 if Int(entity!.endTime!) <= 0{//判断如果时间小于等于0
                                     entity!.carNumber=0//购物车单个商品数量等于0
                                 }
+                            }
+                        }else if entity!.isPromotionFlag == 1{//如果是促销
+                            entity!.flag=3
+                            if entity!.promotionEndTime == nil {
+                                entity!.promotionEndTime="0"
+                            }
+                            entity!.endTime=entity!.promotionEndTime
+                            entity!.eachCount=entity!.promotionStoreEachCount
+                            if Int(entity!.endTime!) <= 0{//判断如果时间小于等于0
+                                entity!.carNumber=0//购物车单个商品数量等于0
+                            }
+                            if entity!.promotionEachCount == nil{//如果促销商品还可以购买的数量等于空
+                                entity!.stock = -1
+                            }else{
+                                entity!.stock=entity!.promotionEachCount
                             }
                         }else{
                             entity!.flag=2 //非特价
@@ -545,6 +560,15 @@ extension ShoppingCarViewContorller{
                                     selectSumCount+=entity.carNumber!
                                 }
                             }
+                        }else if entity.flag == 3{
+                            if entity.endTime != nil{
+                                if Int(entity.endTime!) > 0{
+                                    //计算总价格
+                                    totalPirce+=Double(entity.uprice!)!*Double(entity.carNumber!)
+                                    //计算总数量
+                                    selectSumCount+=entity.carNumber!
+                                }
+                            }
                         }else{
                             //计算总价格
                             totalPirce+=Double(entity.uprice!)!*Double(entity.carNumber!)
@@ -644,7 +668,7 @@ extension ShoppingCarViewContorller{
      - parameter inventory: 库存数量
      - parameter eachCount: 限购数量
      - parameter count:     商品数量
-     - parameter flag:      是否特价 1no 2yes
+     - parameter flag:      是否特价或者促销 1no 2yes
      */
     func reachALimitPrompt(inventory: Int, eachCount: Int?,count:Int,flag:Int) {
         if flag == 2{
@@ -667,7 +691,7 @@ extension ShoppingCarViewContorller{
      */
     func calculationSelectTotalPrice(index: NSIndexPath) {
         isSection(index)
-        self.table!.reloadSections(NSIndexSet(index:index.section), withRowAnimation: UITableViewRowAnimation.None)
+        self.table?.reloadData()
         
     }
     /**

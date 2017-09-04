@@ -1,6 +1,7 @@
 PODS:
   - Alamofire (3.1.4)
   - BaiduMapKit (3.2.1)
+  - BaiduMobStat (4.4.0)
   - EAIntroView (2.8.1):
     - EARestrictedScrollView (~> 0.2.0)
   - EARestrictedScrollView (0.2.0)
@@ -26,6 +27,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire (= 3.1.4)
   - BaiduMapKit
+  - BaiduMobStat
   - EAIntroView (= 2.8.1)
   - IQKeyboardManagerSwift (= 4.0.0)
   - Moya (= 6.3.1)
@@ -42,6 +44,7 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   Alamofire: fbc829692f351fa1d8a31dd75fd7f7f56fea31fb
   BaiduMapKit: 9c748785aa3dddfc41dcb70c14b21ce32f680930
+  BaiduMobStat: 268afdc731de49142e3e2ed794f8ed65002139b9
   EAIntroView: 73abfa89caa311f450af876421d950b96679e845
   EARestrictedScrollView: f86d61e16c61d3e93c84f8e96e83122a2a3b7631
   IQKeyboardManagerSwift: ede2a27b4e1ce053d03073b9c7fa439322f5e405
@@ -56,6 +59,6 @@ SPEC CHECKSUMS:
   SVProgressHUD: 748080e4f36e603f6c02aec292664239df5279c1
   XCGLogger: da1f341f4bb8979db6e1df64232f04d9698402d4
 
-PODFILE CHECKSUM: 870898a0378452232e04ef297bc73e617334381f
+PODFILE CHECKSUM: 04afa2590071eed7d5548658a3847f9937e906e8
 
 COCOAPODS: 1.2.1.beta.1

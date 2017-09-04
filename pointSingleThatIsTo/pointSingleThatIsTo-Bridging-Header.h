@@ -22,6 +22,8 @@
 
 /// 橡皮擦效果
 #import "HYScratchCardView.h"
+//百度移动统计
+#import "BaiduMobStat.h"
 
 #import "DOPDropDownMenu.h"
 

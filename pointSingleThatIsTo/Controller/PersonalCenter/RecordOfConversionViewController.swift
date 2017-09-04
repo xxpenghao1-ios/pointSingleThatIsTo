@@ -92,7 +92,7 @@ extension RecordOfConversionViewController{
             }
             if self.arr.count < 1{//表示没有数据加载空
                 self.lblNilTitle?.removeFromSuperview()
-                self.lblNilTitle=nilTitle("还没有积分商品")
+                self.lblNilTitle=nilTitle("还没有点单币商品")
                 self.lblNilTitle!.center=self.table!.center
                 self.view.addSubview(self.lblNilTitle!)
             }else{//如果有数据清除

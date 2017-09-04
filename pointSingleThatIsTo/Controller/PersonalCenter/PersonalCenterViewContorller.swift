@@ -13,7 +13,7 @@ import SVProgressHUD
 /// 个人中心
 class PersonalCenterViewContorller:BaseViewController{
     //标题文字
-    private var titleArr=["进货订单","购物车","积分记录","点单商城","我的收藏","我的消息","代金券","联系客服","投诉与建议"]
+    private var titleArr=["进货订单","购物车","点单币记录","点单商城","我的收藏","我的消息","代金券","联系客服","投诉与建议"]
     //标题图标
     private var imgArr=["img1","img2","img3","img4","img5","img6","img7","img8","img9"]
     
@@ -29,6 +29,7 @@ class PersonalCenterViewContorller:BaseViewController{
     //加载视图
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         //设置页面标题
         self.title="个人中心"
         //设置页面背景色
@@ -36,8 +37,6 @@ class PersonalCenterViewContorller:BaseViewController{
         buildView()
         //监听通知
         NSNotificationCenter.defaultCenter().addObserver(self, selector:"isHiddenMessageBadgeView:", name:"postIsHiddenMessageBadgeView", object:nil)
-        
-
     }
     
     
@@ -146,12 +145,18 @@ class PersonalCenterViewContorller:BaseViewController{
 extension PersonalCenterViewContorller{
     func buildView(){
         
-        let imgView=UIImageView(frame:CGRectMake(0,0,30,30))
+        let imgView=UIImageView(frame:CGRectMake(0,0,25,25))
         imgView.image=UIImage(named:"settings")
         imgView.userInteractionEnabled=true
         imgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushSettings"))
         let item=UIBarButtonItem(customView:imgView)
         self.navigationItem.rightBarButtonItem=item
+//        let signImg=UIImageView(frame:CGRectMake(0,0,25,25))
+//        signImg.image=UIImage(named: "sign")
+//        signImg.userInteractionEnabled=true
+//        signImg.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushSign"))
+//        
+//        self.navigationItem.leftBarButtonItem=UIBarButtonItem(customView:signImg)
         scrollView=UIScrollView(frame:self.view.bounds)
         self.view.addSubview(scrollView)
         //初始化头部视图
@@ -306,11 +311,6 @@ extension PersonalCenterViewContorller{
 }
 // MARK: - 页面逻辑
 extension PersonalCenterViewContorller{
-    func pushSettings(){
-        let vc=SettingsViewController()
-        vc.hidesBottomBarWhenPushed=true
-        self.navigationController?.pushViewController(vc, animated:true)
-    }
     /**
      退出当前账号按钮
      
@@ -341,6 +341,22 @@ extension PersonalCenterViewContorller{
 }
 // MARK: - 跳转页面
 extension PersonalCenterViewContorller{
-    
+    func pushSettings(){
+        let vc=SettingsViewController()
+        vc.hidesBottomBarWhenPushed=true
+        self.navigationController?.pushViewController(vc, animated:true)
+    }
+    /**
+     跳转到签到页面
+     */
+    func pushSign(){
+        if self.substationEntity?.storeSignStatu == 1{
+            let vc=SignViewController()
+            vc.hidesBottomBarWhenPushed=true
+            self.navigationController?.pushViewController(vc, animated:true)
+        }else{
+            SVProgressHUD.showInfoWithStatus("当前区域暂未开通签到功能")
+        }
+    }
 }
 

@@ -90,12 +90,22 @@ class GoodDetailEntity:Mappable {
     var endTime:String?
     /// 是否选中(1选中2未选中)
     var isSelected:Int?
-    //默认为null；如果=1，此商品被用户收藏
+    ///默认为null；如果=1，此商品被用户收藏
     var goodsCollectionStatu:Int?
-    //商品是否可退；1可退；2不可退
+    ///商品是否可退；1可退；2不可退
     var returnGoodsFlag:Int?
-    //促销活动结束时间
+    ///促销活动结束时间
     var promotionEndTime:String?
+    ///促销商品单店的限购量
+    var storeBuyCount:Int?
+    ///促销商品所有的限购量
+    var sumBuyCount:Int?
+    ///促销商品还可以购买的数量
+    var promotionEachCount:Int?
+    ///促销商品店铺还可以购买的数量
+    var promotionStoreEachCount:Int?
+    ///促销期号
+    var promotionNumber:Int?
     
     init(){}
     required init?(_ map: Map) {
@@ -148,5 +158,10 @@ class GoodDetailEntity:Mappable {
         goodsCollectionStatu <- map["goodsCollectionStatu"]
         returnGoodsFlag <- map["returnGoodsFlag"]
         promotionEndTime <- map["promotionEndTime"]
+        storeBuyCount <- map["storeBuyCount"]
+        sumBuyCount <- map["sumBuyCount"]
+        promotionEachCount <- map["promotionEachCount"]
+        promotionStoreEachCount <- map["promotionStoreEachCount"]
+        promotionNumber <- map["promotionNumber"]
     }
 }

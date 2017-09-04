@@ -200,9 +200,10 @@ extension LetterViewController{
     func goodCategory3TableViewCellAddShoppingCarts(imgView: UIImageView,indexPath:NSIndexPath,count:Int) {
         //拿到会员id
         let memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as! String
+        let storeId=userDefaults.objectForKey("storeId") as! String
         //拿到对应的entity
         let entity=goodArr[indexPath.row] as! GoodDetailEntity
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId:memberId, goodId: entity.goodsbasicinfoId!, supplierId: entity.supplierId!, subSupplierId: entity.subSupplier!, goodsCount: count, flag: 2, goodsStock: entity.goodsStock!), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId:memberId, goodId: entity.goodsbasicinfoId!, supplierId: entity.supplierId!, subSupplierId: entity.subSupplier!, goodsCount: count, flag: 2, goodsStock: entity.goodsStock!,storeId:storeId,promotionNumber:nil), successClosure: { (result) -> Void in
             let json=JSON(result)
             let success=json["success"].stringValue
             if success == "success"{

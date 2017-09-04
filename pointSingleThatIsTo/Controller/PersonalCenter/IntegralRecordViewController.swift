@@ -26,7 +26,7 @@ class IntegralRecordViewController:BaseViewController{
     private var currentPage=0
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title="积分记录"
+        self.title="点单币记录"
         self.view.backgroundColor=UIColor.whiteColor()
         tableHeaderView=UIView(frame:CGRectMake(0,64,boundsWidth,120))
         self.view.addSubview(tableHeaderView!)
@@ -36,7 +36,7 @@ class IntegralRecordViewController:BaseViewController{
         tableHeaderView!.addSubview(imgView)
         
         let lblSurplusIntegral=UILabel(frame:CGRectMake(0,50,boundsWidth/2,20))
-        lblSurplusIntegral.text="剩余积分"
+        lblSurplusIntegral.text="剩余点单币"
         lblSurplusIntegral.textColor=UIColor.whiteColor()
         lblSurplusIntegral.font=UIFont.boldSystemFontOfSize(18)
         lblSurplusIntegral.textAlignment = .Center
@@ -122,7 +122,7 @@ extension IntegralRecordViewController{
             }
             if self.arr.count < 1{//表示没有数据加载空
                 self.lblNilTitle?.removeFromSuperview()
-                self.lblNilTitle=nilTitle("还没有积分记录")
+                self.lblNilTitle=nilTitle("还没有点单币记录")
                 self.lblNilTitle!.center=self.table!.center
                 self.view.addSubview(self.lblNilTitle!)
             }else{//如果有数据清除

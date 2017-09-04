@@ -17,5 +17,6 @@ target ‘pointSingleThatIsTo’ do
     pod 'Result', '1.0.2'
     pod 'EAIntroView', '2.8.1'#引导页
 	pod 'Moya','6.3.1' #对Alamofire的封装
+    pod 'BaiduMobStat'
 end
 

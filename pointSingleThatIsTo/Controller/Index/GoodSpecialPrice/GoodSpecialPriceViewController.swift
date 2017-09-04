@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 /// 商品特价
 class  GoodSpecialPriceViewController:BaseViewController{
+    //1特价 3促销
     var flag:Int?
     /// 销量
     var salesVC=GoodSpecialPriceSalesViewController()

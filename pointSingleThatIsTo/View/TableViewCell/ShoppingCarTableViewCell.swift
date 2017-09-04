@@ -76,6 +76,9 @@ class ShoppingCarTableViewCell:UITableViewCell {
     /// 活动已结束
     var img:UIImageView?
     
+    /// 促销图片
+    var CXImg:UIImageView!
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -93,16 +96,23 @@ class ShoppingCarTableViewCell:UITableViewCell {
         btnSelectImg.addTarget(self, action:"selectImgSwitch:", forControlEvents: UIControlEvents.TouchUpInside);
         self.contentView.addSubview(btnSelectImg);
         
+        
         //放商品图片的view
         goodView=UIView(frame:CGRectMake(CGRectGetMaxX(btnSelectImg.frame)+15,(120-90)/2,90,90))
         goodView.layer.borderColor=color.CGColor;
         goodView.layer.borderWidth=0.5;
+        
         
         //商品图片
         goodImgView=UIImageView(frame:CGRectMake(0,0,goodView.frame.width,goodView.frame.height))
         goodImgView.image=nil;
         goodView.addSubview(goodImgView);
         self.contentView.addSubview(goodView)
+        
+        CXImg=UIImageView(frame:CGRectMake(goodView.frame.width-44,0,44,46))
+        CXImg.image=UIImage(named:"sales_promotion")
+        CXImg.hidden=true
+        goodView.addSubview(CXImg)
         
         //特价图片
         specialOfferImgView=UIImageView(frame:CGRectMake(50,50,30, 30))
@@ -196,7 +206,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
      - parameter sender: UIButton
      */
     func addCount(sender:UIButton){
-        if good!.flag! == 1{//如果是特价商品计算特价价格
+        if good!.flag! == 1 || good!.flag == 3{//如果是特价商品 或者促销商品
             if good!.stock != -1{//特价库存是否充足
                 if good!.eachCount > good!.stock{//如果特价限定数量 大于 库存数量
                     if good!.carNumber > good!.stock!-good!.goodsBaseCount!{//特价商品只能购买库存数量以内的商品数量
@@ -275,7 +285,6 @@ class ShoppingCarTableViewCell:UITableViewCell {
     func noReachALimitCount(){
         
         delelgate?.calculationSelectTotalPrice(index!)
-        
         //改变文字数量
         lblCountLeb.text="\(good!.carNumber!)"
         //发送通知更新角标
@@ -314,13 +323,14 @@ class ShoppingCarTableViewCell:UITableViewCell {
         goodImgView.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
         if entity.flag == 1{//如果是特价
             //设置提示信息
-            let str:NSMutableAttributedString=NSMutableAttributedString(string:"(特价商品)"+entity.goodInfoName!+"~~限购\(good!.eachCount!)");
+            let str:NSMutableAttributedString=NSMutableAttributedString(string:"(特价商品)"+entity.goodInfoName!+"~~限购\(good!.eachCount!)\(entity.goodUnit!)");
             str.addAttribute(NSForegroundColorAttributeName, value:UIColor.redColor(), range:NSMakeRange(0,6));
             lblGoodName.attributedText=str
             //显示特价价格
-            lblGoodPirce.text="￥\(entity.prefertialPrice!)"
+            lblGoodPirce.text="￥\(entity.prefertialPrice!)/\(entity.goodUnit!)"
             //显示特价小图标
             specialOfferImgView.hidden=false;
+            CXImg.hidden=true
             if entity.endTime != nil{//判断活动时间是否已经结束
                 if Int(entity.endTime!) <= 0{ //如果结束
                     img!.hidden=false//显示活动已结束图片
@@ -336,10 +346,35 @@ class ShoppingCarTableViewCell:UITableViewCell {
                 img!.hidden=true
                 btnSelectImg.hidden=false
             }
+        }else if entity.flag == 3{//如果为促销商品
+            //设置提示信息
+            let str:NSMutableAttributedString=NSMutableAttributedString(string:"(促销商品)"+entity.goodInfoName!+"~~限购\(good!.eachCount!)\(entity.goodUnit!)");
+            str.addAttribute(NSForegroundColorAttributeName, value:UIColor.redColor(), range:NSMakeRange(0,6));
+            lblGoodName.attributedText=str
+            lblGoodPirce.text="￥\(entity.uprice!)/\(entity.goodUnit!)";
+            CXImg.hidden=false
+            specialOfferImgView.hidden=true
+            if entity.endTime != nil{//判断活动时间是否已经结束
+                if Int(entity.endTime!) <= 0{ //如果结束
+                    img!.hidden=false//显示活动已结束图片
+                    countView.hidden=true//隐藏数量加减视图
+                    btnSelectImg.hidden=true//隐藏商品选择视图
+                }else{
+                    img!.hidden=true
+                    countView.hidden=false
+                    btnSelectImg.hidden=false
+                }
+            }else{
+                countView.hidden=false
+                img!.hidden=true
+                btnSelectImg.hidden=false
+            }
+
         }else{//如果不是 显示普通价格
-            lblGoodPirce.text="￥\(entity.uprice!)";
+            lblGoodPirce.text="￥\(entity.uprice!)/\(entity.goodUnit!)";
             lblGoodName.text=entity.goodInfoName!;
-            
+            //隐藏促销小图标
+            CXImg.hidden=true
             //隐藏特价小图标
             specialOfferImgView.hidden=true;
             countView.hidden=false
@@ -354,7 +389,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
         lblGoodName.frame=CGRectMake(CGRectGetMaxX(goodView.frame)+10,goodView.frame.origin.y ,size.width,size.height);
         
         if entity.stock != -1{//表示有库存限制
-            if entity.flag == 1{//表示特价
+            if entity.flag == 1 || entity.flag == 3{//表示特价 或者促销
                 if entity.eachCount > good!.stock{//表示 当前库存没有这么多特价商品
                     if entity.carNumber == good!.stock{//如果商品数量等于库存数量 禁用增加按钮 改变文字颜色
                         btnAddCount.enabled=false
@@ -384,7 +419,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
                 }
             }
         }else{//库存充足
-            if entity.flag == 1{//表示特价
+            if entity.flag == 1 || entity.flag == 3{//表示特价或者促销
                 if entity.carNumber == entity.eachCount{//如果商品数量 等于特价商品限定数量 禁用增加按钮 改变文字颜色
                     btnAddCount.enabled=false
                     lblCountLeb.textColor=UIColor.textColor()

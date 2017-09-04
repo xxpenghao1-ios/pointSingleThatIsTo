@@ -218,7 +218,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
                         let orderTime=dateFormatter.dateFromString((orderList?.add_time!)!)
                         //把订单时间转换成秒
                         var orderTimeSS=orderTime!.timeIntervalSinceDate(orderTime!)
-                        orderTimeSS += 60*60*23
+                        orderTimeSS += 60*60*24
                         let time=NSDate(timeIntervalSinceNow:orderTimeSS)
                         let date=dateFormatter.stringFromDate(time)
                         cell?.lblLeftText?.text="到货时间: "+(date)

@@ -42,7 +42,7 @@ class PresentExpViewController:BaseViewController{
         tableHeaderView!.addSubview(imgView)
         
         let lblSurplusIntegral=UILabel(frame:CGRectMake(0,50,boundsWidth/2,20))
-        lblSurplusIntegral.text="剩余积分"
+        lblSurplusIntegral.text="剩余点单币"
         lblSurplusIntegral.textColor=UIColor.whiteColor()
         lblSurplusIntegral.font=UIFont.boldSystemFontOfSize(18)
         lblSurplusIntegral.textAlignment = .Center
@@ -129,11 +129,11 @@ extension PresentExpViewController{
                 }else if megInfo == "2"{
                     SVProgressHUD.showInfoWithStatus("商品数量不足")
                 }else if megInfo == "3"{
-                    SVProgressHUD.showInfoWithStatus("积分余额不足")
+                    SVProgressHUD.showInfoWithStatus("点单币余额不足")
                 }
                 break
             case "memberBalance":
-                SVProgressHUD.showInfoWithStatus("积分余额不足")
+                SVProgressHUD.showInfoWithStatus("点单币余额不足")
                 break
             case "memberNull":
                 SVProgressHUD.showInfoWithStatus("会员不存在")
@@ -145,7 +145,7 @@ extension PresentExpViewController{
                 SVProgressHUD.showInfoWithStatus("商品已经下架,不能兑换")
                 break
             case "integralMallIdNull":
-                SVProgressHUD.showInfoWithStatus("积分商城商品已经不存在了")
+                SVProgressHUD.showInfoWithStatus("点单币商城商品已经不存在了")
                 break
             default:
                 SVProgressHUD.showInfoWithStatus("发生未知错误")
@@ -194,7 +194,7 @@ extension PresentExpViewController{
             }
             if self.arr.count < 1{//表示没有数据加载空
                 self.lblNilTitle?.removeFromSuperview()
-                self.lblNilTitle=nilTitle("还没有积分商品")
+                self.lblNilTitle=nilTitle("还没有点单币商品")
                 self.lblNilTitle!.center=self.table!.center
                 self.view.addSubview(self.lblNilTitle!)
             }else{//如果有数据清除

@@ -50,8 +50,6 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UITextField
     private var updateViewFlag=false
     /// 定时器
     private var timer:NSTimer?
-    //保存索引(用于新品推荐滚动)
-    private var index=0
     //分站信息
     private var substationEntity:SubstationEntity?
     override func viewWillAppear(animated: Bool) {
@@ -127,11 +125,6 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UITextField
     //当前用户结束滑动的时候
     func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if scrollView.tag == 200{
-            //拿到当前展示的cell中的第一个
-            let indexPath=newProductCollectionView!.indexPathsForVisibleItems().last
-            if indexPath != nil{//判断是否为空
-                index=indexPath!.row
-            }
             addTimer()
         }
     }
@@ -442,9 +435,14 @@ extension IndexViewController:UICollectionViewDataSource,UICollectionViewDelegat
         }
         return count
     }
-    //定义展示的Section的个数
+    //定义展示的Section的个数 
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 1;
+        if collectionView.tag == 200{
+            return 10
+        }else{
+            return 1;
+        }
+        
     }
     //每个collectionViewCell点击事件
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
@@ -493,7 +491,7 @@ extension IndexViewController:UICollectionViewDataSource,UICollectionViewDelegat
                 self.navigationController!.pushViewController(vc, animated:true)
             }else if entity.mobileOrPc == 2{
                 let vc=GoodSpecialPriceViewController()
-                vc.flag=2
+                vc.flag=3
                 vc.hidesBottomBarWhenPushed=true
                 self.navigationController?.pushViewController(vc, animated:true)
             }
@@ -509,18 +507,19 @@ extension IndexViewController{
      - parameter sender: NSTimer
      */
     func newProductSwitch(sender:NSTimer){
-        self.index+=2
-            if self.newProductArr.count > 0{//判断新品是否有数据
-                if self.newProductArr.count > 2{
-                    if self.index < self.newProductArr.count{//如果当前索引小于数组长度
-                        self.newProductCollectionView!.scrollToItemAtIndexPath(NSIndexPath(forItem:self.index, inSection:0), atScrollPosition: UICollectionViewScrollPosition.Left, animated:true)
-                    }else{
-                        self.index=0
-                        self.newProductCollectionView!.scrollToItemAtIndexPath(NSIndexPath(forItem:self.index, inSection:0), atScrollPosition: UICollectionViewScrollPosition.Left, animated:true)
-                        
-                    }
-                }
-            }
+        let currentIndexPath=self.newProductCollectionView!.indexPathsForVisibleItems().last!
+        let currentIndexPathReset=NSIndexPath(forItem: currentIndexPath.item, inSection:10/2)
+        self.newProductCollectionView!.scrollToItemAtIndexPath(currentIndexPathReset, atScrollPosition: UICollectionViewScrollPosition.Left,animated:false)
+        var nextItem=currentIndexPathReset.item+2;
+        var nextSection = currentIndexPathReset.section;
+        if (nextItem>=self.newProductArr.count){
+            nextItem=0
+            nextSection++
+        }
+        let nextIndexPath=NSIndexPath(forItem:nextItem, inSection:nextSection)
+        self.newProductCollectionView!.scrollToItemAtIndexPath(nextIndexPath, atScrollPosition: UICollectionViewScrollPosition.Left,animated:true)
+        
+        
     }
     /**
      添加定时器

@@ -556,7 +556,8 @@ extension GoodDetailViewController{
     func addShoppingCar(sender:UIButton){
         //拿到会员id
         let memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as! String
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId: memberId, goodId: self.goodDeatilEntity!.goodsbasicinfoId!, supplierId: self.goodDeatilEntity!.supplierId!, subSupplierId: self.goodDeatilEntity!.subSupplier!, goodsCount: count, flag: 2, goodsStock: self.goodDeatilEntity!.goodsStock!), successClosure: { (result) -> Void in
+        let storeId=userDefaults.objectForKey("storeId") as! String
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId: memberId, goodId: self.goodDeatilEntity!.goodsbasicinfoId!, supplierId: self.goodDeatilEntity!.supplierId!, subSupplierId: self.goodDeatilEntity!.subSupplier!, goodsCount: count, flag:2, goodsStock: self.goodDeatilEntity!.goodsStock!,storeId:storeId,promotionNumber:nil), successClosure: { (result) -> Void in
             let json=JSON(result)
             let success=json["success"].stringValue
             if success == "success"{
@@ -568,6 +569,10 @@ extension GoodDetailViewController{
                 SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
             }else if success == "zcbz"{
                 SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+            }else if success == "xgysq"{
+                SVProgressHUD.showInfoWithStatus("个人限购不足")
+            }else if success == "grxgbz"{
+                SVProgressHUD.showInfoWithStatus("促销限购已售罄")
             }else{
                 SVProgressHUD.showErrorWithStatus("加入失败")
             }
@@ -600,7 +605,7 @@ extension GoodDetailViewController{
      */
     func httpGoodDetail(){
         SVProgressHUD.showWithStatus("数据加载中")
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!, flag: 2, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!,memberId:IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!,flag:nil, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!,memberId:IS_NIL_MEMBERID()!,promotionFlag:nil), successClosure: { (result) -> Void in
             SVProgressHUD.dismiss()
             let json=JSON(result)
             print(json)

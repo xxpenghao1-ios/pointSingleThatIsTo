@@ -10,15 +10,17 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
-/// 特价商品详情
+/// 特价/促销商品详情
 class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UITableViewDelegate {
     
-    /// 接收传入商品名称
+    /// 接收传入entity
     var goodEntity:GoodDetailEntity?
     ///店铺id
     var storeId:String?
     /// 接收商品详情信息
     var goodDeatilEntity:GoodDetailEntity?
+    //1特价,3促销
+    var flag:Int?
     ///可滑动容器
     private var scrollView:UIScrollView?
     /// 商品图片
@@ -243,10 +245,10 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
     func buildTable(){
         //table
         if self.goodDeatilEntity?.returnGoodsFlag == 3{
-            table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,350), style: UITableViewStyle.Plain)
+            table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,400), style: UITableViewStyle.Plain)
         }
         else{
-            table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,400), style: UITableViewStyle.Plain)
+            table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(goodView!.frame),boundsWidth,450), style: UITableViewStyle.Plain)
         }
         table!.dataSource=self
         table!.delegate=self
@@ -314,12 +316,18 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
         
         switch indexPath.row{
         case 0:
-            name.text="促销活动 : "
-            if self.goodDeatilEntity?.goodsDes != nil{
-                promotionsValue.text=self.goodDeatilEntity!.goodsDes
-                cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
+            if flag == 1{
+                name.text="该商品正在打特价!"
+                name.frame=CGRectMake(15,15,200,20)
+                name.textColor=UIColor.applicationMainColor()
             }else{
-                promotionsValue.text="无"
+                name.text="促销活动 : "
+                if self.goodDeatilEntity?.goodsDes != nil{
+                    promotionsValue.text=self.goodDeatilEntity!.goodsDes
+                    cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
+                }else{
+                    promotionsValue.text="无"
+                }
             }
             
             cell!.contentView.addSubview(promotionsValue)
@@ -336,6 +344,13 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
             }
             break
         case 2:
+            name.text="限购 : "
+            if self.goodDeatilEntity?.eachCount != nil{
+                nameValue.text="\(self.goodDeatilEntity!.eachCount!)"+(self.goodDeatilEntity?.goodUnit!)!
+            }
+            cell!.contentView.addSubview(nameValue)
+            break
+        case 3:
             name.text="最低配送 : "
             if self.goodDeatilEntity?.miniCount != nil && self.goodDeatilEntity?.goodsBaseCount != nil{
                 
@@ -346,7 +361,7 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
             }
             cell!.contentView.addSubview(nameValue)
             break
-        case 3:
+        case 4:
             name.text="服务说明 :"
             if self.goodDeatilEntity?.goodService != nil{
                 nameValue.text=self.goodDeatilEntity!.goodService
@@ -355,7 +370,7 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
             }
             cell!.contentView.addSubview(nameValue)
             break
-        case 4:
+        case 5:
             name.text="配送商 :"
             //根据供应商名称长度设置按钮宽度
             let lblSupplierName=UILabel()
@@ -371,7 +386,7 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
             cell!.contentView.addSubview(btnPushSupplier)
             
             break
-        case 5:
+        case 6:
             name.text="条码 :"
             if self.goodDeatilEntity?.goodInfoCode != nil{
                 nameValue.text=self.goodDeatilEntity!.goodInfoCode
@@ -380,7 +395,7 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
             }
             cell!.contentView.addSubview(nameValue)
             break
-        case 6:
+        case 7:
             name.text="保质期 :"
             if self.goodDeatilEntity?.goodLife != nil{
                 nameValue.text=self.goodDeatilEntity!.goodLife
@@ -389,7 +404,7 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
             }
             cell!.contentView.addSubview(nameValue)
             break
-        case 7:
+        case 8:
             name.text="是否可退 : "
             if self.goodDeatilEntity?.returnGoodsFlag != nil{
                 if self.goodDeatilEntity?.returnGoodsFlag == 1{
@@ -409,9 +424,9 @@ class GoodSpecialPriceDetailViewController:AddShoppingCartAnimation,UITableViewD
     //返回tabview的行数
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         if self.goodDeatilEntity?.returnGoodsFlag == 3{
-            return 7
-        }else{
             return 8
+        }else{
+            return 9
         }
     }
     //返回tabview的高度
@@ -552,9 +567,15 @@ extension GoodSpecialPriceDetailViewController{
     func addShoppingCar(sender:UIButton){
         //拿到会员id
         let memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as! String
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId: memberId, goodId: self.goodDeatilEntity!.goodsbasicinfoId!, supplierId: self.goodDeatilEntity!.supplierId!, subSupplierId: self.goodDeatilEntity!.subSupplier!, goodsCount: count, flag: 1, goodsStock:self.goodDeatilEntity!.goodsStock!), successClosure: { (result) -> Void in
+        let storeId=userDefaults.objectForKey("storeId") as! String
+        var promotionNumber:Int?=nil
+        if flag == 3{//如果是促销
+            promotionNumber=self.goodDeatilEntity!.promotionNumber
+        }
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId: memberId, goodId: self.goodDeatilEntity!.goodsbasicinfoId!, supplierId: self.goodDeatilEntity!.supplierId!, subSupplierId: self.goodDeatilEntity!.subSupplier!, goodsCount: count, flag:flag!, goodsStock:self.goodDeatilEntity!.goodsStock!,storeId:storeId,promotionNumber: promotionNumber), successClosure: { (result) -> Void in
             let json=JSON(result)
             let success=json["success"].stringValue
+            print(json)
             if success == "success"{
                 //执行加入购车动画效果
                 self.shoppingCharAnimation()
@@ -564,6 +585,10 @@ extension GoodSpecialPriceDetailViewController{
                 SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
             }else if success == "zcbz"{
                 SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+            }else if success == "grxgbz"{
+                SVProgressHUD.showInfoWithStatus("个人限购不足")
+            }else if success == "xgysq"{
+                SVProgressHUD.showInfoWithStatus("促销限购已售罄")
             }else{
                 SVProgressHUD.showErrorWithStatus("加入失败")
             }
@@ -599,15 +624,19 @@ extension GoodSpecialPriceDetailViewController{
      */
     func httpGoodDetail(){
         SVProgressHUD.showWithStatus("数据加载中")
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!, flag: 1, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!,memberId:IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
+        var promotionFlag:Int?=nil
+        var prefertialFlag:Int?=nil
+        if goodEntity!.isPromotionFlag == 1{//查询促销详情
+            promotionFlag=1
+        }
+        if goodEntity!.preferentialPrice != nil{//查询特价详情
+            prefertialFlag=1
+        }
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryGoodsDetailsForAndroid(goodsbasicinfoId: goodEntity!.goodsbasicinfoId!, supplierId: goodEntity!.supplierId!, flag:prefertialFlag, storeId: storeId!, aaaa: 11, subSupplier: goodEntity!.subSupplier!,memberId:IS_NIL_MEMBERID()!,promotionFlag:promotionFlag), successClosure: { (result) -> Void in
             SVProgressHUD.dismiss()
             let json=JSON(result)
             self.goodDeatilEntity=Mapper<GoodDetailEntity>().map(json.object)
             self.goodDeatilEntity!.preferentialPrice=json["prefertialPrice"].stringValue
-            // 如果库存为空 默认给-1 表示库存充足
-            if self.goodDeatilEntity!.goodsStock == nil{
-                self.goodDeatilEntity!.goodsStock = -1
-            }
             //最低配送量
             if self.goodDeatilEntity!.miniCount == nil{
                 self.goodDeatilEntity!.miniCount = 1
@@ -625,16 +654,38 @@ extension GoodSpecialPriceDetailViewController{
             //商品名称
             self.lblGoodName!.text=self.goodDeatilEntity!.goodInfoName
             
-            //商品现价
-            if self.goodDeatilEntity!.preferentialPrice != nil{
-                self.lblUprice!.text="进价 : ￥\(self.goodDeatilEntity!.preferentialPrice!)"
+            if self.flag == 1{
+                //商品现价
+                if self.goodDeatilEntity!.preferentialPrice != nil{
+                    self.lblUprice!.text="批价 : ￥\(self.goodDeatilEntity!.preferentialPrice!)"
+                }
+                // 如果库存为空 默认给-1 表示库存充足
+                
+                if self.goodDeatilEntity!.goodsStock == nil{
+                    self.goodDeatilEntity!.goodsStock = -1
+                }
+            }else{//如果为促销
+                //商品现价
+                if self.goodDeatilEntity!.uprice != nil{
+                    self.lblUprice!.text="批价 : ￥\(self.goodDeatilEntity!.uprice!)"
+                }
+                if self.goodDeatilEntity!.promotionEachCount != nil{//如果促销商品还可以购买的数量不为空
+                    //把促销商品还可以购买的数量设置为库存数
+                    self.goodDeatilEntity!.goodsStock=self.goodDeatilEntity!.promotionEachCount
+                }else{
+                    self.goodDeatilEntity!.goodsStock=0
+                }
+                if self.goodDeatilEntity!.promotionStoreEachCount == nil{
+                    self.goodDeatilEntity!.promotionStoreEachCount=0
+                }
+                self.goodDeatilEntity!.eachCount=self.goodDeatilEntity!.promotionStoreEachCount
             }
             
             //商品零售价
             if self.goodDeatilEntity!.uitemPrice != nil{
-                self.lblUitemPrice!.text="零售价 : \(self.goodDeatilEntity!.uitemPrice!)"
+                self.lblUitemPrice!.text="建议零售价 : \(self.goodDeatilEntity!.uitemPrice!)"
             }else{
-                self.lblUitemPrice!.text="零售价 : 无"
+                self.lblUitemPrice!.text="建议零售价 : 无"
             }
             
             if self.goodDeatilEntity!.goodUnit != nil{
