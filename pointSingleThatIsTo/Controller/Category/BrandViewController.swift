@@ -157,7 +157,7 @@ class BrandViewController:BaseViewController,UICollectionViewDelegate,UICollecti
         let GoodCategory3VC=GoodCategory3ViewController()
         GoodCategory3VC.hidesBottomBarWhenPushed=true
         GoodCategory3VC.flag=1
-        GoodCategory3VC.goodsCategoryId=entity.goodscategoryId
+        GoodCategory3VC.goodsCategoryId=pid
         GoodCategory3VC.searchName=entity.brandname
         self.navigationController!.pushViewController(GoodCategory3VC, animated:true)
     }

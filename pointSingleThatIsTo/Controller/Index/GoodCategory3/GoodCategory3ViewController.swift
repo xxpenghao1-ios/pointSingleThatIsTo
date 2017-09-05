@@ -11,7 +11,7 @@ import UIKit
 import ObjectMapper
 import SVProgressHUD
 import Alamofire
-/// 商品3级分类(搜索条件) 3级分类传入flag=2,titleCategoryName,goodsCategoryId,搜索传入flag=1,searchName 促销传入flag=4  5查询1元区商品
+/// 商品3级分类(搜索条件) 3级分类传入flag=2,titleCategoryName,goodsCategoryId,搜索传入flag=1,searchName,goodsCategoryId 促销传入flag=4  5查询1元区商品
 class  GoodCategory3ViewController:AddShoppingCartAnimation{
     
     /// 接收传入的状态 1表示搜索 2表示查询3级分类 3表示查询新品推荐 4表示促销 5查询1元区商品 6查询配送商商城
@@ -445,7 +445,7 @@ extension GoodCategory3ViewController{
     func httpSearchGoodList(currentPage:Int,isRefresh:Bool,order:String,tag:Int){
         /// 定义一个int类型的值 用于判断是否还有数据加载
         var count=0
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.searchGoodsInterfaceForStore(searchCondition: searchName!, countyId:countyId!, IPhonePenghao: 520, isDisplayFlag: 2, pageSize: 10, currentPage: currentPage, storeId: storeId!, order:order,tag:tag), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.searchGoodsInterfaceForStore(searchCondition: searchName!, countyId:countyId!, IPhonePenghao: 520, isDisplayFlag: 2, pageSize: 10, currentPage: currentPage, storeId: storeId!, order:order,tag:tag,goodsCategoryId:goodsCategoryId), successClosure: { (result) -> Void in
             let json=JSON(result)
             if isRefresh{//如果是刷新先删除数据
                 self.goodArr.removeAllObjects()
