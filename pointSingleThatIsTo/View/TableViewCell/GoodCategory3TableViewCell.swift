@@ -220,14 +220,17 @@ class GoodCategory3TableViewCell:UITableViewCell {
         }else{
             lblGoodPrice.text="无"
         }
-        
         //商品单位
         if entity.goodUnit != nil{
-            lblGoodUcode.text="单位 : \(entity.goodUnit!)"
+            if entity.ucode != nil{
+                lblGoodUcode.text="单位 : \(entity.goodUnit!)/\(entity.ucode!)"
+            }else{
+                lblGoodUcode.text="单位 : \(entity.goodUnit!)"
+            }
+            
         }else{
             lblGoodUcode.text="单位 : 无"
         }
-        
         //商品库存
         if entity.goodsStock != nil{
             if entity.goodsStock == -1{
@@ -238,12 +241,12 @@ class GoodCategory3TableViewCell:UITableViewCell {
         }
         //是否促销标识
         if entity.isPromotionFlag != nil{
-            if entity.isPromotionFlag == 1{
-                //显示促销标识
-                salesPromotionImgView.hidden=false
-            }else{
-                salesPromotionImgView.hidden=true
-            }
+//            if entity.isPromotionFlag == 1{
+//                //显示促销标识
+//                salesPromotionImgView.hidden=false
+//            }else{
+//                salesPromotionImgView.hidden=true
+//            }
         }else if entity.isNewGoodFlag != nil{
             if entity.isNewGoodFlag == 1{
                 //显示新品标识

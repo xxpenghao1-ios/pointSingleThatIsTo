@@ -364,7 +364,7 @@ extension GoodSpecialPriceSalesViewController{
         if flag == 3{//如果是促销
             promotionNumber=entity.promotionNumber
         }
-        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId: memberId, goodId: entity.goodsbasicinfoId!, supplierId: entity.supplierId!, subSupplierId: entity.subSupplier!, goodsCount:1,flag:flag!, goodsStock:entity.goodsStock!,storeId:storeId,promotionNumber: promotionNumber), successClosure: { (result) -> Void in
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.insertShoppingCar(memberId: memberId, goodId: entity.goodsbasicinfoId!, supplierId: entity.supplierId!, subSupplierId: entity.subSupplier!, goodsCount:entity.miniCount!,flag:flag!, goodsStock:entity.goodsStock!,storeId:storeId,promotionNumber: promotionNumber), successClosure: { (result) -> Void in
             let json=JSON(result)
             let success=json["success"].stringValue
             if success == "success"{

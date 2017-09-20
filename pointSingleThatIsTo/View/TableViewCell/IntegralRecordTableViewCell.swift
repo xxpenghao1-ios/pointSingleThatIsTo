@@ -29,13 +29,16 @@ class IntegralRecordTableViewCell: UITableViewCell {
         lblIntegral.text=entity.integral
         switch entity.integralType!{
         case 1:
-            lblTitle.text="兑换商品扣除"
+            lblTitle.text="发货扣除"
             break
         case 2:
+            lblTitle.text="充值"
             break
         case 3:
-            lblTitle.text="购物返还点单币"
+            lblTitle.text="购物获得"
             break
+        case 4:
+            lblTitle.text="兑换积分商城商品扣除"
         default:
             lblTitle.text="异常数据"
             break

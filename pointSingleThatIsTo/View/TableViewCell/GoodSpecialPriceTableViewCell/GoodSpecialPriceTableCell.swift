@@ -185,6 +185,7 @@ class GoodSpecialPriceTableCell: UITableViewCell {
         if entity.eachCount <= 0{
             lblGoodName.text=entity.goodInfoName
         }else{
+            
             lblGoodName.text=entity.goodInfoName!+"(限购~~\(entity.eachCount!)\(entity.goodUnit!))"
         }
         
@@ -212,11 +213,15 @@ class GoodSpecialPriceTableCell: UITableViewCell {
         }
         //商品单位
         if entity.goodUnit != nil{
-            lblUcode.text="单位 : \(entity.goodUnit!)"
+            if entity.ucode != nil{
+                lblUcode.text="单位 : \(entity.goodUnit!)/\(entity.ucode!)"
+            }else{
+                lblUcode.text="单位 : \(entity.goodUnit!)"
+            }
+            
         }else{
             lblUcode.text="单位 : 无"
         }
-        
         //商品库存
         if entity.goodsStock != nil{
             if entity.goodsStock == -1{

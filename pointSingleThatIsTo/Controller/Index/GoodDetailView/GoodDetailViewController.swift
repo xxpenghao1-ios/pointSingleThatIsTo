@@ -327,17 +327,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         switch indexPath.row{
         case 0:
             name.text="促销活动 : "
-            if self.goodDeatilEntity?.isPromotionFlag == 1{
-                if self.goodDeatilEntity?.goodsDes != nil{
-                    promotionsValue.text=self.goodDeatilEntity!.goodsDes
-                    cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
-                }else{
-                    promotionsValue.text="无"
-                }
-            }else{
-                promotionsValue.text="无"
-            }
-            
+            promotionsValue.text="无"
             cell!.contentView.addSubview(promotionsValue)
             break
         case 1:

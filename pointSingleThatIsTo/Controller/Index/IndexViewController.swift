@@ -507,17 +507,19 @@ extension IndexViewController{
      - parameter sender: NSTimer
      */
     func newProductSwitch(sender:NSTimer){
-        let currentIndexPath=self.newProductCollectionView!.indexPathsForVisibleItems().last!
-        let currentIndexPathReset=NSIndexPath(forItem: currentIndexPath.item, inSection:10/2)
-        self.newProductCollectionView!.scrollToItemAtIndexPath(currentIndexPathReset, atScrollPosition: UICollectionViewScrollPosition.Left,animated:false)
-        var nextItem=currentIndexPathReset.item+2;
-        var nextSection = currentIndexPathReset.section;
-        if (nextItem>=self.newProductArr.count){
-            nextItem=0
-            nextSection++
+        if self.newProductCollectionView!.indexPathsForVisibleItems().last != nil{
+            let currentIndexPath=self.newProductCollectionView!.indexPathsForVisibleItems().last!
+            let currentIndexPathReset=NSIndexPath(forItem: currentIndexPath.item, inSection:10/2)
+            self.newProductCollectionView!.scrollToItemAtIndexPath(currentIndexPathReset, atScrollPosition: UICollectionViewScrollPosition.Left,animated:false)
+            var nextItem=currentIndexPathReset.item+2;
+            var nextSection = currentIndexPathReset.section;
+            if (nextItem>=self.newProductArr.count){
+                nextItem=0
+                nextSection++
+            }
+            let nextIndexPath=NSIndexPath(forItem:nextItem, inSection:nextSection)
+            self.newProductCollectionView!.scrollToItemAtIndexPath(nextIndexPath, atScrollPosition: UICollectionViewScrollPosition.Left,animated:true)
         }
-        let nextIndexPath=NSIndexPath(forItem:nextItem, inSection:nextSection)
-        self.newProductCollectionView!.scrollToItemAtIndexPath(nextIndexPath, atScrollPosition: UICollectionViewScrollPosition.Left,animated:true)
         
         
     }

@@ -420,8 +420,7 @@ extension ShoppingCarViewContorller{
                         let entity=Mapper<GoodDetailEntity>().map(list.object)
                         //默认选中
                         entity!.isSelected=1
-                        if entity!.prefertialPrice != nil{//如果特价价格不等于空(表示是特价)
-                            entity!.flag=1 //特价
+                        if entity!.flag == 1{//如果特价
                             if entity!.endTime == nil{
                                 entity!.endTime="0"
                             }else{
@@ -431,8 +430,7 @@ extension ShoppingCarViewContorller{
                                     entity!.carNumber=0//购物车单个商品数量等于0
                                 }
                             }
-                        }else if entity!.isPromotionFlag == 1{//如果是促销
-                            entity!.flag=3
+                        }else if entity!.flag == 3{//如果是促销
                             if entity!.promotionEndTime == nil {
                                 entity!.promotionEndTime="0"
                             }
@@ -446,8 +444,6 @@ extension ShoppingCarViewContorller{
                             }else{
                                 entity!.stock=entity!.promotionEachCount
                             }
-                        }else{
-                            entity!.flag=2 //非特价
                         }
                         if entity!.stock == nil{//如果库存等于空
                             entity!.stock = -1//默认给-1
@@ -731,7 +727,7 @@ extension ShoppingCarViewContorller{
             for(var j=0;j<vo.listGoods!.count;j++){
                 let entity=vo.listGoods![j] as! GoodDetailEntity
                 if entity.isSelected == 1{//如果有 添加进新集合
-                    if entity.flag == 1{//如果是特价商品
+                    if entity.flag == 1 {//如果是特价商品
                         if entity.endTime != nil{ //如果剩余时间不等于空
                             if Int(entity.endTime!) > 0{//如果剩余时间大于0
                                 orderArr.addObject(entity)
@@ -741,9 +737,16 @@ extension ShoppingCarViewContorller{
                             orderArr.addObject(entity)
                             sumMoney+=(Double(entity.carNumber!)*Double(entity.prefertialPrice!)!)
                         }
-                    }else{
-                        orderArr.addObject(entity)
-                        sumMoney+=(Double(entity.carNumber!)*Double(entity.uprice!)!)
+                    }else{//如果不是特价
+                        if entity.flag == 3{//如果是促销
+                            if Int(entity.endTime!) > 0{//如果剩余时间大于0
+                                orderArr.addObject(entity)
+                                sumMoney+=(Double(entity.carNumber!)*Double(entity.uprice!)!)
+                            }
+                        }else{
+                            orderArr.addObject(entity)
+                            sumMoney+=(Double(entity.carNumber!)*Double(entity.uprice!)!)
+                        }
                     }
                 }
             }

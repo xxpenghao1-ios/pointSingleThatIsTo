@@ -45,7 +45,7 @@ class GoodDetailEntity:Mappable {
     /// 特价商品限定数量
     var eachCount:Int?
     var carNumber:Int?
-    /// 是否是特价 1表示是特价 2不是
+    /// 是否是特价 1表示是特价 2不是 3促销
     var flag:Int?
     /// 会员id
     var memberId:String?
@@ -106,6 +106,8 @@ class GoodDetailEntity:Mappable {
     var promotionStoreEachCount:Int?
     ///促销期号
     var promotionNumber:Int?
+    /// 促销的达标数量
+    var promotionStandardCount:Int?
     
     init(){}
     required init?(_ map: Map) {
@@ -163,5 +165,6 @@ class GoodDetailEntity:Mappable {
         promotionEachCount <- map["promotionEachCount"]
         promotionStoreEachCount <- map["promotionStoreEachCount"]
         promotionNumber <- map["promotionNumber"]
+        promotionStandardCount <- map["promotionStandardCount"]
     }
 }
