@@ -47,8 +47,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         mapManager = BMKMapManager()
         BaiduMobStat.defaultStat().startWithAppId("ec2fbe36a3")
         BaiduMobStat.defaultStat().enableDebugOn=true
-        print(BaiduMobStat.defaultStat().getDeviceCuid())
-        BaiduMobStat.defaultStat().getDeviceCuid()
         // 如果要关注网络及授权验证事件，请设定generalDelegate参数
         let ret = mapManager?.start("zUKLMiVbDlWfOj7o5vcY3m4XG2E9u3XN", generalDelegate:self)
         if ret == true {
@@ -90,6 +88,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
                 //初始化主页面
                 tab=TabBarViewController()
                 self.window?.rootViewController=tab
+                login()
             }
         }
         //设置菊花图默认前景色和背景色
@@ -290,6 +289,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
                         }
                     }
             }
+        }
+    }
+    /**
+     登录(后台要求这么做)
+     */
+    func login(){
+        let memberName=userDefaults.objectForKey("memberName") as! String
+        let password=userDefaults.objectForKey("password") as! String
+        /// 获取缓存中的唯一表示
+        var str=NSUserDefaults.standardUserDefaults().objectForKey("deviceToken") as? String
+        if str == nil{//如果为空 直接付默认值
+            str="penghao"
+        }
+        PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.login(memberName: memberName, password: password, deviceToken:str!, deviceName:UIDevice().name, flag: 1), successClosure: { (result) -> Void in
+            print(result)
+            }) { (errorMsg) -> Void in
+                
         }
     }
     deinit{

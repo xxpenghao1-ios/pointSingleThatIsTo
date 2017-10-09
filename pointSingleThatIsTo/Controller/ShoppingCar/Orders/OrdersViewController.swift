@@ -302,7 +302,9 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                     }
                 }
                 //给各个控件赋值
-                lblNameAndPhone.text=addressEntity!.shippName!+"  "+addressEntity!.phoneNumber!
+                if addressEntity!.phoneNumber != nil{
+                    lblNameAndPhone.text=addressEntity!.shippName!+"  "+addressEntity!.phoneNumber!
+                }
                 lblAddress.text=addressEntity!.province!+addressEntity!.city!+addressEntity!.county!
                 lblDetailAddress.text=addressEntity!.detailAddress
             }else{

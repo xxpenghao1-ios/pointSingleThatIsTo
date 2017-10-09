@@ -28,6 +28,8 @@ class IntegralGoodExchangeEntity:Mappable{
     var goodsSurplusCount:Int?;
     ///商品状态； 1可以兑换，2已下架
     var goodsStatu:Int?;
+    /// 供应商名称
+    var subSupplierName:String?
     required init?(_ map: Map) {
         mapping(map)
     }
@@ -41,5 +43,6 @@ class IntegralGoodExchangeEntity:Mappable{
         exchangeIntegral <- map["exchangeIntegral"]
         goodsSurplusCount <- map["goodsSurplusCount"]
         goodsStatu <- map["goodsStatu"]
+        subSupplierName <- map["subSupplierName"]
     }
 }

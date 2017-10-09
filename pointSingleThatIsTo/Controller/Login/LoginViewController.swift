@@ -251,6 +251,8 @@ class LoginViewController:BaseViewController{
                             userDefaults.setObject(entity!.substationId, forKey:"substationId")
                             //保存用户名
                             userDefaults.setObject(name, forKey:"memberName")
+                            //保存密码
+                            userDefaults.setObject(password,forKey:"password")
                             //保存店铺唯一标识码
                             userDefaults.setObject(entity!.storeFlagCode, forKey:"storeFlagCode")
                             //保存店铺名称

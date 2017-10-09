@@ -31,10 +31,15 @@ class PresentExpTableViewCell: UITableViewCell {
     @IBOutlet weak private var lblRemainingExchangeNumber: UILabel!
     /// 消耗积分
     @IBOutlet weak private var lblConsumptionIntegral: UILabel!
+    //供应商名称
+    @IBOutlet weak var lblSubSupplierName: UILabel!
+    
     /// 用于保存传入的实体对象
     private var cellEntity:IntegralGoodExchangeEntity?
     /// 记录行索引
     internal var index:NSIndexPath?
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         lblRemainingExchangeNumber.textColor=UIColor.textColor()
@@ -67,6 +72,11 @@ class PresentExpTableViewCell: UITableViewCell {
             lblConsumptionIntegral.text="消耗积分:\(entity.exchangeIntegral!)"
         }else{
             lblConsumptionIntegral.text="消耗积分:0"
+        }
+        if entity.subSupplierName != nil{
+            lblSubSupplierName.text="商品所属:"+entity.subSupplierName!
+        }else{
+            lblSubSupplierName.text="商品所属:无"
         }
         
     }

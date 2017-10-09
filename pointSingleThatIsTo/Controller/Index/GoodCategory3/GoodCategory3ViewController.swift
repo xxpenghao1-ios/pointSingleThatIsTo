@@ -196,25 +196,6 @@ extension GoodCategory3ViewController:UITableViewDelegate,UITableViewDataSource,
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
         return 120;
     }
-    
-    //tableview开始载入的动画
-    func tableView(tableView: UITableView, willDisplayCell cell:UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath){
-        
-        //设置cell的显示动画为3D缩放
-        
-        //xy方向缩放的初始值为0.1
-        
-        cell.layer.transform = CATransform3DMakeScale(0.1, 0.1, 1)
-        
-        //设置动画时间为0.25秒,xy方向缩放的最终值为1
-        
-        UIView.animateWithDuration(0.25, animations: { () -> Void in
-            
-            cell.layer.transform = CATransform3DMakeScale(1, 1, 1)
-            
-        })
-        
-    }
     func sectionIndexTitlesForTableView(tableView: UITableView) -> [String]? {
         if flag == 2 {//当是3级分类查询的时候显示右侧字母
             if self.goodArr.count > 0{

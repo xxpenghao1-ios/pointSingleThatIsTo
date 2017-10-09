@@ -116,7 +116,7 @@ extension PresentExpViewController{
                     SVProgressHUD.dismiss()
                     self.integral!-=entity.exchangeIntegral!
                     self.lblIntegral!.text="\(self.integral!)"
-                    let alert=UIAlertController(title:"点单即到", message:"兑换\(entity.goodsName!)成功", preferredStyle: UIAlertControllerStyle.Alert)
+                    let alert=UIAlertController(title:"点单即到", message:"兑换\(entity.goodsName!)成功,商品将在您下次购买此配送商的商品下单成功后，自动加入订单中", preferredStyle: UIAlertControllerStyle.Alert)
                     let ok=UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
                         //查看剩余积分
                         self.httpQueryMemberIntegral()
