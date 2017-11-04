@@ -413,11 +413,13 @@ extension ShoppingCarViewContorller{
                     if vo!.lowestMoney == nil{//如果最低起送等于空
                         vo!.lowestMoney="0"
                     }
+                    
                     //默认选中
                     vo?.isSelected=1
                     let goodList=NSMutableArray()
                     for(_,list) in value["listGoods"]{
                         let entity=Mapper<GoodDetailEntity>().map(list.object)
+                        entity!.goodUnit=entity!.goodUnit ?? " "
                         //默认选中
                         entity!.isSelected=1
                         if entity!.flag == 1{//如果特价
@@ -430,6 +432,7 @@ extension ShoppingCarViewContorller{
                                     entity!.carNumber=0//购物车单个商品数量等于0
                                 }
                             }
+                            
                         }else if entity!.flag == 3{//如果是促销
                             if entity!.promotionEndTime == nil {
                                 entity!.promotionEndTime="0"
@@ -448,8 +451,10 @@ extension ShoppingCarViewContorller{
                         if entity!.stock == nil{//如果库存等于空
                             entity!.stock = -1//默认给-1
                         }
+                        entity!.eachCount=entity!.eachCount ?? 0
                         goodList.addObject(entity!)
                     }
+                    
                     vo!.listGoods=goodList
                     self.arr.addObject(vo!)
                 }

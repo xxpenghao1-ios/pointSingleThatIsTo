@@ -10,7 +10,6 @@ import UIKit
 import Alamofire
 import IQKeyboardManagerSwift
 import SVProgressHUD
-import Siren
 import XCGLogger
 import RealReachability
 let log: XCGLogger = {
@@ -58,8 +57,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         //开启网络状况的监听
         RealReachability.sharedInstance().startNotifier()
         NSNotificationCenter.defaultCenter().addObserver(self, selector:"reachabilityChanged:", name:kRealReachabilityChangedNotification, object:nil)
-        //检查版本更新
-        setupSiren()
         //开启键盘框架
         IQKeyboardManager.sharedManager().enable = true
         //设置导航栏的各种状态
@@ -98,37 +95,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         //self.window?.rootViewController=navLogin
         return true
     }
-    /**
-     版本更新
-     */
-    func setupSiren() {
-        let siren = Siren.sharedInstance
-        
-        // Required
-        siren.appID="1078070211" // For this example, we're using the iTunes Connect App (https://itunes.apple.com/us/app/itunes-connect/id1078070211?mt=8)
-        // Optional
-        siren.delegate = self
-        
-        // Optional
-        siren.debugEnabled = false
-        
-        siren.appName="点单即到"
-        
-        // Optional - Defaults to .Option
-        //        siren.alertType = .Option // or .Force, .Skip, .None
-        
-        // Optional - Can set differentiated Alerts for Major, Minor, Patch, and Revision Updates (Must be called AFTER siren.alertType, if you are using siren.alertType)
-        siren.majorUpdateAlertType = .Option
-        siren.minorUpdateAlertType = .Option
-        siren.patchUpdateAlertType = .Option
-        siren.revisionUpdateAlertType = .Option
-        
-        // Optional - Sets all messages to appear in Spanish. Siren supports many other languages, not just English and Spanish.
-        //        siren.forceLanguageLocalization = .Spanish
-        
-        // Required
-        siren.checkVersion(.Immediately)
-    }
+//    /**
+//     版本更新
+//     */
+//    func setupSiren() {
+//        
+//        
+//        
+//        // Required
+//        siren.appID="1078070211" // For this example, we're using the iTunes Connect App (https://itunes.apple.com/us/app/itunes-connect/id1078070211?mt=8)
+//        // Optional
+//        siren.debugEnabled = false
+//        
+//        siren.appName="点单即到店铺版"
+//        
+//        // Optional - Defaults to .Option
+//        //        siren.alertType = .Option // or .Force, .Skip, .None
+//        
+//        // Optional - Can set differentiated Alerts for Major, Minor, Patch, and Revision Updates (Must be called AFTER siren.alertType, if you are using siren.alertType)
+//        siren.majorUpdateAlertType = .Option
+//        siren.minorUpdateAlertType = .Option
+//        siren.patchUpdateAlertType = .Option
+//        siren.revisionUpdateAlertType = .Option
+//        
+//        // Optional - Sets all messages to appear in Spanish. Siren supports many other languages, not just English and Spanish.
+//        //        siren.forceLanguageLocalization = .Spanish
+//        
+//        // Required
+//        siren.checkVersion(.Immediately)
+//    }
     
 
 
@@ -221,13 +216,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-        /**
-            版本检查每次启动应用程序执行Immediately
-            版本检查每天执行一次 Daily
-            版本检查每周执行一次Weekly
-        */
-        Siren.sharedInstance.checkVersion(.Immediately)
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
@@ -237,13 +225,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         }
         JPUSHService.resetBadge();
         application.applicationIconBadgeNumber=0;
-        /**
-        版本检查每次启动应用程序执行Immediately
-        版本检查每天执行一次 Daily
-        版本检查每周执行一次Weekly
-        */
-        Siren.sharedInstance.checkVersion(.Daily)
-        
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
 
@@ -312,31 +293,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
-}
-/// MARK: - 版本更新
-extension AppDelegate: SirenDelegate
-{
-    func sirenDidShowUpdateDialog() {
-        print("sirenDidShowUpdateDialog")
-    }
-    
-    func sirenUserDidCancel() {
-        print("sirenUserDidCancel")
-    }
-    func sirenUserDidSkipVersion() {
-        print("sirenUserDidSkipVersion")
-    }
-    
-    func sirenUserDidLaunchAppStore() {
-        print("sirenUserDidLaunchAppStore")
-    }
-    
-    /**
-     This delegate method is only hit when alertType is initialized to .None
-     */
-    func sirenDidDetectNewVersionWithoutAlert(message: String) {
-        print("\(message)")
-    }
 }
 // MARK: - 网络实时监控
 extension AppDelegate{

@@ -206,7 +206,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
      - parameter sender: UIButton
      */
     func addCount(sender:UIButton){
-        if good!.flag! == 1 || good!.flag == 3{//如果是特价商品 或者促销商品
+        if good!.flag == 1 || good!.flag == 3{//如果是特价商品 或者促销商品
             if good!.stock != -1{//特价库存是否充足
                 if good!.eachCount > good!.stock{//如果特价限定数量 大于 库存数量
                     if good!.carNumber > good!.stock!-good!.goodsBaseCount!{//特价商品只能购买库存数量以内的商品数量
@@ -372,7 +372,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
 
         }else{//如果不是 显示普通价格
             lblGoodPirce.text="￥\(entity.uprice!)/\(entity.goodUnit!)";
-            lblGoodName.text=entity.goodInfoName!;
+            lblGoodName.text=entity.goodInfoName
             //隐藏促销小图标
             CXImg.hidden=true
             //隐藏特价小图标

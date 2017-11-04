@@ -421,6 +421,7 @@ extension IndexViewController:UICollectionViewDataSource,UICollectionViewDelegat
         
         return cells
     }
+    
     //定义展示的UICollectionViewCell的个数
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var count=0

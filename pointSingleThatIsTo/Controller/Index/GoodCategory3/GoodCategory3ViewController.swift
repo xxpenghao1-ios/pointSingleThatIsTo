@@ -424,6 +424,7 @@ extension GoodCategory3ViewController{
      - parameter isRefresh:   是否刷新true是
      */
     func httpSearchGoodList(currentPage:Int,isRefresh:Bool,order:String,tag:Int){
+        searchName=searchName ?? ""
         /// 定义一个int类型的值 用于判断是否还有数据加载
         var count=0
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.searchGoodsInterfaceForStore(searchCondition: searchName!, countyId:countyId!, IPhonePenghao: 520, isDisplayFlag: 2, pageSize: 10, currentPage: currentPage, storeId: storeId!, order:order,tag:tag,goodsCategoryId:goodsCategoryId), successClosure: { (result) -> Void in

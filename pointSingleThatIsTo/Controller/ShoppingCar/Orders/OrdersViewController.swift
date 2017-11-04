@@ -209,6 +209,9 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
             let json=JSON(result)
             for(_,value) in json{
                 let entity=Mapper<AddressEntity>().map(value.object)
+                entity?.detailAddress=entity?.detailAddress ?? ""
+                entity?.phoneNumber=entity?.phoneNumber ?? ""
+                entity?.shippName=entity?.shippName ?? ""
                 self.addressArr.addObject(entity!)
             }
             self.table?.reloadData()

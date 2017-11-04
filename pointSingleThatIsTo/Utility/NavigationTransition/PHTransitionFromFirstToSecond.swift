@@ -7,17 +7,17 @@
 //
 
 import Foundation
-///// 定义闭包接收传入的UIViewController返回UIView
-//typealias transitionClosure=(viewcontroller:UIViewController) -> UIView?
-//
-///// 保存页面(主页面,跳转页面)
-//let transitionDic=NSMutableDictionary()
-///// 保存跳转页面(图片)
-//var toViewTransitionClosure:transitionClosure!
-///// 保存主页面(图片)
-//var fromViewTransitionClosure:transitionClosure!
-//
-///// 用于判断动画是否执行(默认不执行)
+/// 定义闭包接收传入的UIViewController返回UIView
+typealias transitionClosure=(viewcontroller:UIViewController) -> UIView?
+
+/// 保存页面(主页面,跳转页面)
+let transitionDic=NSMutableDictionary()
+/// 保存跳转页面(图片)
+var toViewTransitionClosure:transitionClosure!
+/// 保存主页面(图片)
+var fromViewTransitionClosure:transitionClosure!
+
+/// 用于判断动画是否执行(默认不执行)
 //var isExecution = TransitionState.Inexecution
 /// 一个默认的基于百分比的动画实现
 var interactivePopTransition:UIPercentDrivenInteractiveTransition!
@@ -67,13 +67,13 @@ extension UINavigationController:UINavigationControllerDelegate{
 //        }
 //    }
     
-//    /**
-//     扩展导航控制器 方法
-//     
-//     - parameter toViewController: 跳转页面
-//     - parameter fromView:         主页面闭包参数
-//     - parameter toView:           跳转页面闭包参数
-//     */
+    /**
+     扩展导航控制器 方法
+     
+     - parameter toViewController: 跳转页面
+     - parameter fromView:         主页面闭包参数
+     - parameter toView:           跳转页面闭包参数
+     */
 //    func pushViewController(toViewController:UIViewController,fromView:transitionClosure,toView:transitionClosure){
 //        //页面调用这个方法 表示需要执行自定义动画(设置枚举类型为Execution)
 //        isExecution = .Execution
@@ -89,16 +89,16 @@ extension UINavigationController:UINavigationControllerDelegate{
 //        
 //        
 //    }
-//    /**
-//     导航控制处理界面交互提供的API
-//     
-//     - parameter navigationController: 导航控制器
-//     - parameter operation:            导航控制器状态(push/pop)
-//     - parameter fromVC:               主页面
-//     - parameter toVC:                 跳转页面
-//     
-//     - returns: UIViewControllerAnimatedTransitioning 自定义界面交互动画
-//     */
+    /**
+     导航控制处理界面交互提供的API
+     
+     - parameter navigationController: 导航控制器
+     - parameter operation:            导航控制器状态(push/pop)
+     - parameter fromVC:               主页面
+     - parameter toVC:                 跳转页面
+     
+     - returns: UIViewControllerAnimatedTransitioning 自定义界面交互动画
+     */
 //    public func navigationController(navigationController: UINavigationController, animationControllerForOperation operation: UINavigationControllerOperation, fromViewController fromVC: UIViewController, toViewController toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
 //        
 //        if isExecution == .Execution{//判断是否执行
@@ -120,27 +120,26 @@ extension UINavigationController:UINavigationControllerDelegate{
      
      - parameter recognizer:UIScreenEdgePanGestureRecognizer屏幕滑动手势对象
      */
-    func handlePopRecognizer(recognizer:UIScreenEdgePanGestureRecognizer){
-        //得到pop过程中的x坐标
-        var progress=recognizer.translationInView(self.view).x / (self.view.bounds.size.width * 1.0)
-        //返回较小的“x”和“y”。
-        progress = min(1.0,max(0.0,progress))
-        if recognizer.state == .Began{
-            interactivePopTransition = UIPercentDrivenInteractiveTransition()
-            self.popToRootViewControllerAnimated(true)
-        }else if recognizer.state == .Changed{
-            interactivePopTransition.updateInteractiveTransition(progress)
-        }else if recognizer.state == .Ended || recognizer.state == .Cancelled{
-            if progress > 0.5{
-                interactivePopTransition.finishInteractiveTransition()
-            }else{
-                interactivePopTransition.cancelInteractiveTransition()
-            }
-            interactivePopTransition=nil
-        }
-        
-    }
-
+//    func handlePopRecognizer(recognizer:UIScreenEdgePanGestureRecognizer){
+//        //得到pop过程中的x坐标
+//        var progress=recognizer.translationInView(self.view).x / (self.view.bounds.size.width * 1.0)
+//        //返回较小的“x”和“y”。
+//        progress = min(1.0,max(0.0,progress))
+//        if recognizer.state == .Began{
+//            interactivePopTransition = UIPercentDrivenInteractiveTransition()
+//            self.popToRootViewControllerAnimated(true)
+//        }else if recognizer.state == .Changed{
+//            interactivePopTransition.updateInteractiveTransition(progress)
+//        }else if recognizer.state == .Ended || recognizer.state == .Cancelled{
+//            if progress > 0.5{
+//                interactivePopTransition.finishInteractiveTransition()
+//            }else{
+//                interactivePopTransition.cancelInteractiveTransition()
+//            }
+//            interactivePopTransition=nil
+//        }
+//        
+//    }
 
 }
 
@@ -296,7 +295,7 @@ extension UINavigationController:UINavigationControllerDelegate{
 //        }
 //        
 //    }
-//    
+ 
 //    //页面过度 持续时间
 //    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
 //        return 0.3
