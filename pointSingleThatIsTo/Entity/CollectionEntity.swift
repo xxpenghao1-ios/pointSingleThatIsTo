@@ -22,8 +22,8 @@ class CollectionEntity:Mappable{
     var miniCount:Int?//最低起送量
     var collectionSupplierId:Int?//供应商ID
     var collectionId:Int?
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         goodInfoName <- map["goodInfoName"]

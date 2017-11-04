@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
-
+import SwiftyJSON
 /// 收货地址管理
 class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UITableViewDelegate{
     /// 数据源
@@ -22,37 +22,37 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="收货地址管理"
-        self.view.backgroundColor=UIColor.whiteColor()
-        table=UITableView(frame:CGRectMake(0,0,boundsWidth,boundsHeight-80), style: UITableViewStyle.Plain)
+        self.view.backgroundColor=UIColor.white
+        table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-80), style: UITableViewStyle.plain)
         table!.delegate=self
         table!.dataSource=self
         self.view.addSubview(table!)
         //设置cell下边线全屏
-        table?.layoutMargins=UIEdgeInsetsZero
-        table?.separatorInset=UIEdgeInsetsZero;
+        table?.layoutMargins=UIEdgeInsets.zero
+        table?.separatorInset=UIEdgeInsets.zero;
         //移除空单元格
-        table!.tableFooterView = UIView(frame:CGRectZero)
+        table!.tableFooterView = UIView(frame:CGRect.zero)
         
-        let btnSubmit=UIButton(frame:CGRectMake(30,boundsHeight-60,boundsWidth-60,40))
+        let btnSubmit=UIButton(frame:CGRect(x: 30,y: boundsHeight-60,width: boundsWidth-60,height: 40))
         btnSubmit.backgroundColor=UIColor.applicationMainColor()
         btnSubmit.layer.cornerRadius=20
-        btnSubmit.setTitle("添加收货地址", forState: UIControlState.Normal)
-        btnSubmit.addTarget(self, action:"addShippingAddress:", forControlEvents: UIControlEvents.TouchUpInside)
-        btnSubmit.titleLabel!.font=UIFont.systemFontOfSize(16)
-        btnSubmit.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        btnSubmit.setTitle("添加收货地址", for: UIControlState())
+        btnSubmit.addTarget(self, action:Selector("addShippingAddress:"), for: UIControlEvents.touchUpInside)
+        btnSubmit.titleLabel!.font=UIFont.systemFont(ofSize: 16)
+        btnSubmit.setTitleColor(UIColor.white, for: UIControlState())
         self.view.addSubview(btnSubmit)
         //发送网络请求
         httpAddress()
         
         //监听通知刷新页面
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:"updateTable:", name:"updateViewNotification", object:nil)
+        NotificationCenter.default.addObserver(self, selector:"updateTable:", name:NSNotification.Name(rawValue: "updateViewNotification"), object:nil)
     }
     /**
      跳转添加地址页面
      
      - parameter sender: UIButton
      */
-    func addShippingAddress(sender:UIButton){
+    func addShippingAddress(_ sender:UIButton){
         let vc=UpdateAndAddShippingAddressViewController()
         vc.addressFlag=2
         self.navigationController!.pushViewController(vc, animated:true)
@@ -62,7 +62,7 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
      
      - parameter obj:NSNotification
      */
-    func updateTable(obj:NSNotification){
+    func updateTable(_ obj:Notification){
         arr.removeAllObjects()
         //发送网络请求
         httpAddress()
@@ -71,14 +71,14 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
      请求地址信息
      */
     func httpAddress(){
-        SVProgressHUD.showWithStatus("数据加载中")
-        let storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as! String
+        SVProgressHUD.show(withStatus: "数据加载中")
+        let storeId=UserDefaults.standard.object(forKey: "storeId") as! String
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStoreShippAddressforAndroid(storeId: storeId), successClosure: { (result) -> Void in
             SVProgressHUD.dismiss()
             let json=JSON(result)
             for(_,value) in json{
-                let entity=Mapper<AddressEntity>().map(value.object)
-                self.arr.addObject(entity!)
+                let entity=Mapper<AddressEntity>().map(JSONObject:value.object)
+                self.arr.add(entity!)
             }
             if self.arr.count > 0{
                 self.lblNilNewProduct?.removeFromSuperview()
@@ -91,21 +91,21 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
                 self.view.addSubview(self.lblNilNewProduct!)
             }
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
 
     //展示每个cell
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        var cell=tableView.dequeueReusableCellWithIdentifier("ShippingAddressTableViewCellId") as? ShippingAddressTableViewCell
+        var cell=tableView.dequeueReusableCell(withIdentifier: "ShippingAddressTableViewCellId") as? ShippingAddressTableViewCell
         if cell == nil{
             //加载xib
-            cell=NSBundle.mainBundle().loadNibNamed("ShippingAddressTableViewCell", owner:self, options: nil).last as? ShippingAddressTableViewCell
+            cell=Bundle.main.loadNibNamed("ShippingAddressTableViewCell", owner:self, options: nil)?.last as? ShippingAddressTableViewCell
         }
         //设置cell下边线全屏
-        cell?.layoutMargins=UIEdgeInsetsZero
-        cell?.separatorInset=UIEdgeInsetsZero;
+        cell?.layoutMargins=UIEdgeInsets.zero
+        cell?.separatorInset=UIEdgeInsets.zero;
         if arr.count > 0{
             let entity=arr[indexPath.row] as! AddressEntity
             cell!.updateCell(entity)
@@ -114,21 +114,21 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
         return cell!
     }
     //把delete 该成中文
-    func tableView(tableView: UITableView, titleForDeleteConfirmationButtonForRowAtIndexPath indexPath: NSIndexPath) -> String? {
+    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
         
         return "删除"
     }
 
     //删除操作
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath){
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath){
         let entity=arr[indexPath.row] as! AddressEntity
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.deleteStoreShippAddressforAndroid(shippAddressId:entity.shippAddressId!), successClosure: { (result) -> Void in
             let json=JSON(result)
             let success=json["success"].stringValue
             if success == "success"{
-                self.arr.removeObjectAtIndex(indexPath.row);
+                self.arr.removeObject(at: indexPath.row);
                 //删除对应的cell
-                self.table?.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Top)
+                self.table?.deleteRows(at: [indexPath], with: UITableViewRowAnimation.top)
                 if self.arr.count < 1{
                     //不管加没有加载直接先删除视图
                     self.lblNilNewProduct?.removeFromSuperview()
@@ -137,24 +137,24 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
                     self.view.addSubview(self.lblNilNewProduct!)
                 }
             }else{
-                SVProgressHUD.showErrorWithStatus("删除失败")
+                SVProgressHUD.showError(withStatus: "删除失败")
             }
 
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
     //返回tabview的行数
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return arr.count
     }
     //返回tabview的高度
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
         return 100
     }
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //取消选中的样式
-        tableView.deselectRowAtIndexPath(indexPath, animated: true);
+        tableView.deselectRow(at: indexPath, animated: true);
         let entity=arr[indexPath.row] as! AddressEntity
         let vc=UpdateAndAddShippingAddressViewController()
         vc.addressFlag=1

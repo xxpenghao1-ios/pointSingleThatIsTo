@@ -14,8 +14,8 @@ class SpecialAndPromotionsEntity:Mappable{
     var mobileOrPc:Int?
     //图片路径
     var advertisingURL:String?
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         mobileOrPc <- map["mobileOrPc"]

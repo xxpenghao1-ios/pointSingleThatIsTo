@@ -10,6 +10,31 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
+import SwiftyJSON
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 ///品项
 class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewDataSource,UICollectionViewDelegate,UICollectionViewDataSource{
     //接收分类名称
@@ -44,12 +69,12 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
     // 没有数据加载该视图
     var nilView:UIView?
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         creatLeftView()
         creatRightCollection()
         //queryChildCategory()
@@ -59,7 +84,7 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
             queryChildCategoryBottom()
         }
         if self.itemsTitle == "休闲零食"{
-            self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"1元区", style: UIBarButtonItemStyle.Done, target:self, action:"push1yuanqu")
+            self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"1元区", style: UIBarButtonItemStyle.done, target:self, action:Selector("push1yuanqu"))
         }
     }
     //跳转1元区
@@ -78,21 +103,21 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
         }else{
             flyHeight=boundsHeight - CGFloat(153)
         }
-        leftTable=UITableView(frame: CGRectMake(0, 0, 100,flyHeight), style: UITableViewStyle.Plain)
+        leftTable=UITableView(frame: CGRect(x: 0, y: 0, width: 100,height: flyHeight), style: UITableViewStyle.plain)
         leftTable?.dataSource=self
         leftTable?.delegate=self
         leftTable?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
         self.view.addSubview(leftTable!)
         //去掉15px空白
-        if(leftTable!.respondsToSelector("setLayoutMargins:")){
-            leftTable?.layoutMargins=UIEdgeInsetsZero
+        if(leftTable!.responds(to: #selector(setter: UIView.layoutMargins))){
+            leftTable?.layoutMargins=UIEdgeInsets.zero
         }
-        if(leftTable!.respondsToSelector("setSeparatorInset:")){
-            leftTable!.separatorInset=UIEdgeInsetsZero;
+        if(leftTable!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
+            leftTable!.separatorInset=UIEdgeInsets.zero;
         }
         leftTable?.separatorColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
         //去除多余的单元格
-        leftTable?.tableFooterView = UIView(frame:CGRectZero)
+        leftTable?.tableFooterView = UIView(frame:CGRect.zero)
     }
     
     //右边UICollectionView视图
@@ -101,12 +126,12 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
         cellPicW=boundsWidth-leftTable!.frame.width
         flowLayout.minimumInteritemSpacing=0//左右间隔
         flowLayout.minimumLineSpacing=0
-        flowLayout.itemSize=CGSizeMake(cellPicW/3, cellPicW/3+20)
-        rightCollection=UICollectionView(frame: CGRectMake(leftTable!.frame.width-1, 0, cellPicW, flyHeight), collectionViewLayout: flowLayout)
+        flowLayout.itemSize=CGSize(width: cellPicW/3, height: cellPicW/3+20)
+        rightCollection=UICollectionView(frame: CGRect(x: leftTable!.frame.width-1, y: 0, width: cellPicW, height: flyHeight), collectionViewLayout: flowLayout)
         rightCollection?.dataSource=self
         rightCollection?.delegate=self
-        rightCollection?.backgroundColor=UIColor.whiteColor()
-        rightCollection?.registerClass(categoryListCell.self, forCellWithReuseIdentifier: "rightCollection");
+        rightCollection?.backgroundColor=UIColor.white
+        rightCollection?.register(categoryListCell.self, forCellWithReuseIdentifier: "rightCollection");
         self.view.addSubview(rightCollection!)
     }
     /**
@@ -114,7 +139,7 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
      
      - parameter key:String
      */
-    func pushIndexpushIndex3Category(key:String){
+    func pushIndexpushIndex3Category(_ key:String){
         self.threeCategory.removeAll()
         //拿到对应分类的值
         let obj=categoryMap[key]
@@ -138,28 +163,28 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
 // MARK: - 协议实现
 extension ItemsViewController{
     //MARK -------Table的代理-----------------------
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if pushState == 1{
             return pushIndexChildCategory.count
         }else{
             return childCategory.count
         }
     }
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 44
     }
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let Identifier="MultilevelTableViewCell"+"\(indexPath.row)"
-        var cell=tableView.dequeueReusableCellWithIdentifier(Identifier);
+        var cell=tableView.dequeueReusableCell(withIdentifier: Identifier);
         if(cell == nil){
-            cell=UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier:Identifier)
+            cell=UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier:Identifier)
         }
         //创建分割线
-        rightLine=UILabel(frame: CGRectMake(leftTable!.frame.width-0.5, 0, 0.5, cell!.contentView.frame.height))
+        rightLine=UILabel(frame: CGRect(x: leftTable!.frame.width-0.5, y: 0, width: 0.5, height: cell!.contentView.frame.height))
         rightLine.backgroundColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
         cell!.contentView.addSubview(rightLine)
         if pushState == 1{
@@ -171,27 +196,27 @@ extension ItemsViewController{
                 cell?.textLabel?.text=childCategory[indexPath.row].goodsCategoryName
             }
         }
-        cell?.textLabel?.font=UIFont.systemFontOfSize(14)
+        cell?.textLabel?.font=UIFont.systemFont(ofSize: 14)
         cell?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
-        if(cell!.respondsToSelector("setLayoutMargins:")){
-            cell!.layoutMargins=UIEdgeInsetsZero
+        if(cell!.responds(to: #selector(setter: UIView.layoutMargins))){
+            cell!.layoutMargins=UIEdgeInsets.zero
         }
-        if(cell!.respondsToSelector("setSeparatorInset:")){
-            cell!.separatorInset=UIEdgeInsetsZero;
+        if(cell!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
+            cell!.separatorInset=UIEdgeInsets.zero;
         }
-        cell!.selectionStyle = UITableViewCellSelectionStyle.None
+        cell!.selectionStyle = UITableViewCellSelectionStyle.none
         //默认选中的视图背景颜色
-        cell?.selectedBackgroundView?.backgroundColor=UIColor.whiteColor()
+        cell?.selectedBackgroundView?.backgroundColor=UIColor.white
         //设置默认的字体颜色
-        cell?.textLabel?.textColor=UIColor.blackColor()
+        cell?.textLabel?.textColor=UIColor.black
         return cell!
     }
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell=tableView.cellForRowAtIndexPath(indexPath)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cell=tableView.cellForRow(at: indexPath)
         //自动滚动顶部
-        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
-        rightLine.backgroundColor=UIColor.whiteColor()
-        cell?.backgroundColor=UIColor.whiteColor()
+        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+        rightLine.backgroundColor=UIColor.white
+        cell?.backgroundColor=UIColor.white
         cell?.textLabel?.textColor=UIColor.applicationMainColor()
         if pushState == 1{
             let key=pushIndexChildCategory[indexPath.row]
@@ -202,30 +227,30 @@ extension ItemsViewController{
         }
 
     }
-    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell=tableView.cellForRowAtIndexPath(indexPath)
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        let cell=tableView.cellForRow(at: indexPath)
         cell?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
-        cell?.textLabel?.textColor=UIColor.blackColor()
+        cell?.textLabel?.textColor=UIColor.black
     }
     
     //MARK ----------UICollectionView的代理--------------------
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return threeCategory.count;
     }
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        var cell=collectionView.dequeueReusableCellWithReuseIdentifier("rightCollection", forIndexPath: indexPath) as? categoryListCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        var cell=collectionView.dequeueReusableCell(withReuseIdentifier: "rightCollection", for: indexPath) as? categoryListCell
         if(cell == nil){
-            cell=collectionView.dequeueReusableCellWithReuseIdentifier("rightCollection", forIndexPath: indexPath) as? categoryListCell
+            cell=collectionView.dequeueReusableCell(withReuseIdentifier: "rightCollection", for: indexPath) as? categoryListCell
         }
         //图片和文字
         if(threeCategory.count > 0){
             cell!.loadItemsData(threeCategory[indexPath.row])
         }
-        cell!.backgroundColor=UIColor.whiteColor()
+        cell!.backgroundColor=UIColor.white
         return cell!;
     }
     //点击事件
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         /// 获取对应分类entity
         let entity=threeCategory[indexPath.row]
         let GoodCategory3VC=GoodCategory3ViewController()
@@ -246,11 +271,11 @@ extension ItemsViewController{
      */
     func queryChildCategory(){
         //判断网络状态
-        if(IJReachability.isConnectedToNetwork()){
-            SVProgressHUD.showWithStatus("数据加载中")
+        
+        SVProgressHUD.show(withStatus: "数据加载中")
             let currPid=pid ?? 1
             //获取分站ID
-            let substationId=userDefaults.objectForKey("substationId") as! String
+            let substationId=userDefaults.object(forKey: "substationId") as! String
             
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryTwoCategoryForMob(goodsCategoryId:currPid,substationId:substationId), successClosure: { (result) -> Void in
                 let json=JSON(result)
@@ -268,33 +293,31 @@ extension ItemsViewController{
                             var map=Dictionary<String,[GoodsCategoryEntity]>()
                             var entityArr=[GoodsCategoryEntity]()
                             for(_,entityValue) in value1{
-                                let entity=Mapper<GoodsCategoryEntity>().map(entityValue.object)
+                                let entity=Mapper<GoodsCategoryEntity>().map(JSONObject:entityValue.object)
                                 entityArr.append(entity!)
                             }
                             map[titleKey]=entityArr
-                            arr.addObject(map)
+                            arr.add(map)
                         }
                         self.categoryMap[key]=arr
                     }
                     SVProgressHUD.dismiss()
                     self.leftTable?.reloadData()
-                    let first=NSIndexPath(forRow: 0, inSection: 0)
-                    self.leftTable?.selectRowAtIndexPath(first, animated: true, scrollPosition: UITableViewScrollPosition.None)
-                    if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
-                        self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
+                    let first=IndexPath(row:0, section:0)
+                    self.leftTable?.selectRow(at: first, animated:true, scrollPosition: UITableViewScrollPosition.none)
+                    if self.leftTable!.delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:didSelectRowAt:))){
+                        self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAt: first)
                     }
                     
                 }else{
-                    SVProgressHUD.showErrorWithStatus("数据解析出错")
+                    SVProgressHUD.showError(withStatus: "数据解析出错")
                 }
                 
                 }) { (errorMsg) -> Void in
-                    SVProgressHUD.showErrorWithStatus(errorMsg)
+                    SVProgressHUD.showError(withStatus: errorMsg)
             }
             
-        }else{
-            SVProgressHUD.showErrorWithStatus("无网络连接")
-        }
+        
         
         
     }
@@ -303,46 +326,43 @@ extension ItemsViewController{
      从底部点击分类
      */
     func queryChildCategoryBottom(){
-        //判断网络状态
-        if(IJReachability.isConnectedToNetwork()){
+        
             let currPid=pid ?? 1
-            SVProgressHUD.showWithStatus("数据加载中")
+        SVProgressHUD.show(withStatus: "数据加载中")
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryCategory4AndroidAll(goodsCategoryId:currPid), successClosure: { (result) -> Void in
                 let json=JSON(result)
                 //每次发请求之前先清除数据源，否则数据会叠加
                 self.childCategory.removeAll()
                 for(_,value) in json{
-                    let entity=Mapper<GoodsCategoryEntity>().map(value.object)
+                    let entity=Mapper<GoodsCategoryEntity>().map(JSONObject: value.object)
                     self.childCategory.append(entity!);
                 }
                 //NSLog("二级分类结果：\(json)")
                 SVProgressHUD.dismiss()
                 self.leftTable?.reloadData()
-                let first=NSIndexPath(forRow: 0, inSection: 0)
-                self.leftTable?.selectRowAtIndexPath(first, animated: true, scrollPosition: UITableViewScrollPosition.None)
-                if(self.leftTable!.delegate!.respondsToSelector("tableView:didSelectRowAtIndexPath:")){
-                    self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAtIndexPath: first)
+                let first=IndexPath(row:0, section:0)
+                self.leftTable?.selectRow(at: first, animated:true, scrollPosition: UITableViewScrollPosition.none)
+                if self.leftTable!.delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:didSelectRowAt:))){
+                    self.leftTable!.delegate!.tableView!(self.leftTable!, didSelectRowAt: first)
                 }
                 }, failClosure: { (errorMsg) -> Void in
-                    SVProgressHUD.showErrorWithStatus(errorMsg)
+                    SVProgressHUD.showError(withStatus: errorMsg)
             })
-        }else{
-            SVProgressHUD.showErrorWithStatus("无网络连接")
-        }
+        
     }
     
         /**
         queryCategory4Android.xhtml   发送三级分类请求
         - parameter goodsCategoryId: 二级分类ID
         */
-        func httpGoodCategoryThree(goodsCategoryId:Int){
-            if IJReachability.isConnectedToNetwork(){
+        func httpGoodCategoryThree(_ goodsCategoryId:Int){
+            
                 PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryCategory4Android(goodsCategoryId:goodsCategoryId), successClosure: { (result) -> Void in
                     let json=JSON(result)
                     self.threeCategory.removeAll()
                     if(json.count > 0){
                         for(_,value) in json{
-                            let entity=Mapper<GoodsCategoryEntity>().map(value.object)
+                            let entity=Mapper<GoodsCategoryEntity>().map(JSONObject:value.object)
                             self.threeCategory.append(entity!);
                         }
                         self.nilView?.removeFromSuperview()
@@ -355,10 +375,8 @@ extension ItemsViewController{
                         self.view.addSubview(self.nilView!)
                     }
                     }, failClosure: { (errorMsg) -> Void in
-                        SVProgressHUD.showErrorWithStatus(errorMsg)
+                        SVProgressHUD.showError(withStatus: errorMsg)
                 })
-            }else{
-                SVProgressHUD.showErrorWithStatus("无网络连接")
-            }
+            
         }
 }

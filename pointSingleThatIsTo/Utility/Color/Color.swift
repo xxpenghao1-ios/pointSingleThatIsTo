@@ -39,31 +39,36 @@ extension UIColor{
     }
 }
 extension UIColor{
-    class func RGBFromHexColor(hexColorString : String)->UIColor{
-        var string = hexColorString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).uppercaseString
-        if string.characters.count < 6{
-            return UIColor.clearColor()
-        }
-        else if string.hasPrefix("0X"){
-            string = string.substringFromIndex(string.startIndex.advancedBy(2))
-        }
-        else if string.hasPrefix("#"){
-            string = string.substringFromIndex(string.startIndex.advancedBy(1))
-        }
-        else if string.characters.count != 6{
-            return UIColor.clearColor()
-        }
-        let rString = (string as NSString).substringToIndex(2)
-        let gString = ((string as NSString).substringFromIndex(2) as NSString).substringToIndex(2)
-        let bString = ((string as NSString).substringFromIndex(4) as NSString).substringToIndex(2)
+    class func RGBFromHexColor(_ hexColorString : String)->UIColor{
+        var cString: String = hexColorString.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
         
-        var r: CUnsignedInt = 0
-        var g: CUnsignedInt = 0
-        var b: CUnsignedInt = 0
+        if cString.characters.count < 6 {
+            return UIColor.black
+        }
+        if cString.hasPrefix("0X") {
+            cString = cString.substring(from: cString.index(cString.startIndex, offsetBy: 2))
+        }
+        if cString.hasPrefix("#") {
+            cString = cString.substring(from: cString.index(cString.startIndex, offsetBy: 1))
+        }
+        if cString.characters.count != 6 {
+            return UIColor.black
+        }
         
-        NSScanner(string: rString).scanHexInt(&r)
-        NSScanner(string: gString).scanHexInt(&g)
-        NSScanner(string: bString).scanHexInt(&b)
+        var range: NSRange = NSMakeRange(0, 2)
+        let rString = (cString as NSString).substring(with: range)
+        range.location = 2
+        let gString = (cString as NSString).substring(with: range)
+        range.location = 4
+        let bString = (cString as NSString).substring(with: range)
+        
+        var r: UInt32 = 0x0
+        var g: UInt32 = 0x0
+        var b: UInt32 = 0x0
+        Scanner.init(string: rString).scanHexInt32(&r)
+        Scanner.init(string: gString).scanHexInt32(&g)
+        Scanner.init(string: bString).scanHexInt32(&b)
+        
         
         return UIColor(red: CGFloat(r) / 255, green: CGFloat(g) / 255, blue: CGFloat(b) / 255, alpha: 1)
         

@@ -18,8 +18,8 @@ class MemberIntegralEntity:Mappable{
     var integral:String?;
     ///生成时间
     var time:String?;
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         memberId <- map["memberId"]

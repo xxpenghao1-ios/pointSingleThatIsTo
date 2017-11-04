@@ -9,14 +9,14 @@
 import Foundation
 import UIKit
 /// 加入购物车效果
-class AddShoppingCartAnimation:BaseViewController{
+class AddShoppingCartAnimation:BaseViewController,CAAnimationDelegate{
     /// 接收tableView
     var tableView:UITableView?
     //  接收button
     var button:UIButton?
     
-    private var _layer:CALayer?
-    private var path:UIBezierPath?
+    fileprivate var _layer:CALayer?
+    fileprivate var path:UIBezierPath?
     /**
      加入购物车特效
      
@@ -24,27 +24,27 @@ class AddShoppingCartAnimation:BaseViewController{
      - parameter imageView:当前位置图片
      - parameter isGoodDetail:是否的商品详情1是否则商品列表
      */
-    func startAnimationWithRect(rect:CGRect, imageView:UIImageView,isGoodDetail:Int){
+    func startAnimationWithRect(_ rect:CGRect, imageView:UIImageView,isGoodDetail:Int){
         if _layer==nil{
             _layer=CALayer()
             _layer!.contents = imageView.layer.contents;
             
             _layer!.contentsGravity = kCAGravityResizeAspectFill;
             _layer!.bounds = rect;
-            _layer!.cornerRadius=CGRectGetHeight(_layer!.bounds)/2
+            _layer!.cornerRadius=_layer!.bounds.height/2
             _layer!.masksToBounds=true;
             if isGoodDetail == 1{//如果是商品详情
-                _layer!.position=CGPointMake(imageView.center.x, CGRectGetMidY(rect)+120)
+                _layer!.position=CGPoint(x: imageView.center.x, y: rect.midY+120)
                 self.view.layer.addSublayer(_layer!)
                 path=UIBezierPath()
-                path!.moveToPoint(_layer!.position)
-                path!.addQuadCurveToPoint(CGPointMake(boundsWidth-40, UIScreen.mainScreen().bounds.height-90), controlPoint:CGPointMake(boundsWidth/2,rect.origin.y-80))
+                path!.move(to: _layer!.position)
+                path!.addQuadCurve(to: CGPoint(x: boundsWidth-40, y: UIScreen.main.bounds.height-90), controlPoint:CGPoint(x: boundsWidth/2,y: rect.origin.y-80))
             }else{
-                _layer!.position=CGPointMake(imageView.center.x, CGRectGetMidY(rect)+120)
+                _layer!.position=CGPoint(x: imageView.center.x, y: rect.midY+120)
                 self.view.layer.addSublayer(_layer!)
                 path=UIBezierPath()
-                path!.moveToPoint(_layer!.position)
-                path!.addQuadCurveToPoint(CGPointMake(boundsWidth-40, UIScreen.mainScreen().bounds.height-90), controlPoint:CGPointMake(boundsWidth/2,rect.origin.y-80))
+                path!.move(to: _layer!.position)
+                path!.addQuadCurve(to: CGPoint(x: boundsWidth-40, y: UIScreen.main.bounds.height-90), controlPoint:CGPoint(x: boundsWidth/2,y: rect.origin.y-80))
             }
         }
         self.groupAnimation()
@@ -53,30 +53,30 @@ class AddShoppingCartAnimation:BaseViewController{
      启动动画组
      */
     func groupAnimation(){
-        tableView?.userInteractionEnabled=false
+        tableView?.isUserInteractionEnabled=false
         let  animation=CAKeyframeAnimation(keyPath:"position")
-        animation.path = path!.CGPath;
+        animation.path = path!.cgPath;
         animation.rotationMode = kCAAnimationRotateAuto;
         let expandAnimation = CABasicAnimation(keyPath:"transform.scale")
         expandAnimation.duration = 0.5;
-        expandAnimation.fromValue = NSNumber(float:1)
-        expandAnimation.toValue = NSNumber(float:2)
+        expandAnimation.fromValue = NSNumber(value: 1 as Float)
+        expandAnimation.toValue = NSNumber(value: 2 as Float)
         expandAnimation.timingFunction=CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseIn)
         let narrowAnimation=CABasicAnimation(keyPath:"transform.scale")
         narrowAnimation.beginTime = 0.5;
-        narrowAnimation.fromValue = NSNumber(float:2.0)
+        narrowAnimation.fromValue = NSNumber(value: 2.0 as Float)
         narrowAnimation.duration = 0.5;
-        narrowAnimation.toValue = NSNumber(float:0.3)
+        narrowAnimation.toValue = NSNumber(value: 0.3 as Float)
         
         narrowAnimation.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
         
         let groups = CAAnimationGroup()
         groups.animations = [animation,expandAnimation,narrowAnimation];
         groups.duration = 1.0;
-        groups.removedOnCompletion=false;
+        groups.isRemovedOnCompletion=false;
         groups.fillMode=kCAFillModeForwards;
-        groups.delegate = self;
-        _layer!.addAnimation(groups, forKey:"group")
+        groups.delegate=self
+        _layer!.add(groups, forKey:"group")
         
         
     }
@@ -87,31 +87,31 @@ class AddShoppingCartAnimation:BaseViewController{
      - parameter anim: CAAnimation
      - parameter flag: Bool
      */
-    override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
-        if (anim == _layer!.animationForKey("group")) {
-            tableView?.userInteractionEnabled=true
+    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+        if (anim == _layer!.animation(forKey: "group")) {
+            tableView?.isUserInteractionEnabled=true
             _layer?.removeFromSuperlayer()
             _layer=nil
             let shakeAnimation = CABasicAnimation(keyPath:"transform.translation.y")
             shakeAnimation.duration = 0.25;
-            shakeAnimation.fromValue =  NSNumber(float:-5)
-            shakeAnimation.toValue =  NSNumber(float:5)
+            shakeAnimation.fromValue =  NSNumber(value: -5 as Float)
+            shakeAnimation.toValue =  NSNumber(value: 5 as Float)
             shakeAnimation.autoreverses = true
-            UIView.animateWithDuration(10, animations: { () -> Void in
+            UIView.animate(withDuration: 10, animations: { () -> Void in
                 let shoppingCarImg2=UIImage(named: "char2");
-                self.button!.setBackgroundImage(shoppingCarImg2, forState: UIControlState.Normal)
-                self.button!.layer.addAnimation(shakeAnimation, forKey:nil)
-                
+                self.button!.setBackgroundImage(shoppingCarImg2, for: UIControlState())
+                self.button!.layer.add(shakeAnimation, forKey:nil)
+
                 }, completion: { (b) -> Void in
                     let delayInSeconds:Int64 = 1000000000 * 1
                     let c=delayInSeconds/4
-                    let popTime:dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW,c)
-                    dispatch_after(popTime, dispatch_get_main_queue(), {
+                    let popTime:DispatchTime = DispatchTime.now() + Double(c) / Double(NSEC_PER_SEC)
+                    DispatchQueue.main.asyncAfter(deadline: popTime, execute: {
                         let shoppingCarImg1=UIImage(named: "char1");
-                        self.button!.setBackgroundImage(shoppingCarImg1, forState: UIControlState.Normal)
+                        self.button!.setBackgroundImage(shoppingCarImg1, for: UIControlState())
                     })
             })
-            
+
         }
     }
 

@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 import Alamofire
-
+import SwiftyJSON
 class TabBarViewController:UITabBarController {
     
     let shoppingCarView=ShoppingCarViewContorller()
@@ -31,19 +31,19 @@ class TabBarViewController:UITabBarController {
         addChildViewController(shoppingCarView, title: "购物车", imageName: "3")
         //个人中心
         addChildViewController(personalCenterView, title: "个人中心", imageName: "4")
-        self.tabBar.backgroundColor=UIColor.clearColor()
-        let viewImg=UIView(frame:CGRectMake(0,0,UIScreen.mainScreen().bounds.width, 49))
-        viewImg.backgroundColor=UIColor.blackColor()
-        self.tabBar.insertSubview(viewImg, atIndex:0)
-        self.tabBar.opaque=true
+        self.tabBar.backgroundColor=UIColor.clear
+        let viewImg=UIView(frame:CGRect(x: 0,y: 0,width: UIScreen.main.bounds.width, height: 49))
+        viewImg.backgroundColor=UIColor.black
+        self.tabBar.insertSubview(viewImg, at:0)
+        self.tabBar.isOpaque=true
         self.tabBar.tintColor=UIColor.applicationMainColor()
         
         //设置购物车角标
         setBadgeValue()
         //接收通知 更新购物车角标
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:"updateBadgeValue:", name:"postBadgeValue", object:nil)
+        NotificationCenter.default.addObserver(self, selector:Selector(("updateBadgeValue:")), name:NSNotification.Name(rawValue: "postBadgeValue"), object:nil)
         //更新个人中心角标
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:"updatePersonalCenter:", name:"postPersonalCenter", object: nil)
+        NotificationCenter.default.addObserver(self, selector:Selector(("updatePersonalCenter:")), name:NSNotification.Name(rawValue: "postPersonalCenter"), object: nil)
         
      }
     /// 个人中心角标总数
@@ -53,7 +53,7 @@ class TabBarViewController:UITabBarController {
      
      - parameter notification:NSNotification
      */
-    func updatePersonalCenter(notification:NSNotification){
+    func updatePersonalCenter(_ notification:Notification){
         let obj=notification.object as! Int
         if obj == 1{//表示角标数值累加
             sumCount+=obj
@@ -65,14 +65,14 @@ class TabBarViewController:UITabBarController {
         /**
         发送通知  通知个人中心小红点是否显示
         */
-        NSNotificationCenter.defaultCenter().postNotificationName("postIsHiddenMessageBadgeView", object:sumCount, userInfo:nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "postIsHiddenMessageBadgeView"), object:sumCount, userInfo:nil)
     }
     /**
      收到通知更新角标
      
      - parameter notification:NSNotification
      */
-    func updateBadgeValue(notification:NSNotification){
+    func updateBadgeValue(_ notification:Notification){
         if notification.object != nil{
             let obj=notification.object as! Int
             if obj == 1{//读取服务器购物车总数量
@@ -102,7 +102,7 @@ class TabBarViewController:UITabBarController {
      设置购物车角标
      */
     func setBadgeValue(){
-        request(.GET,URL+"memberShoppingCarCountForMobile.xhtml",parameters:["memberId":memberId!]).responseJSON{ response in
+        request(URL+"memberShoppingCarCountForMobile.xhtml",method:.get ,parameters:["memberId":memberId!]).responseJSON{ response in
             if response.result.value != nil{
                 let json=JSON(response.result.value!)
                 let shoppingCount=json["shoppingCount"].intValue
@@ -122,11 +122,11 @@ class TabBarViewController:UITabBarController {
     - parameter title:           子控制器的标题
     - parameter imageName:       子控制器的图片
     */
-    private func addChildViewController(childController: UIViewController, title:String?, imageName:String) {
+    fileprivate func addChildViewController(_ childController: UIViewController, title:String?, imageName:String) {
         
         // 1.设置子控制器对应的数据
-        childController.tabBarItem.image = UIImage(named:imageName)?.imageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal)
-        childController.tabBarItem.selectedImage = UIImage(named:"selected"+imageName)?.imageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal)
+        childController.tabBarItem.image = UIImage(named:imageName)?.withRenderingMode(UIImageRenderingMode.alwaysOriginal)
+        childController.tabBarItem.selectedImage = UIImage(named:"selected"+imageName)?.withRenderingMode(UIImageRenderingMode.alwaysOriginal)
         
         
         // 2.设置底部工具栏标题
@@ -140,6 +140,6 @@ class TabBarViewController:UITabBarController {
         addChildViewController(nav)
     }
     deinit{
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 }

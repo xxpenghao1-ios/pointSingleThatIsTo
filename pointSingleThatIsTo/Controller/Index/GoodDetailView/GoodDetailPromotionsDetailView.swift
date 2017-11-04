@@ -15,15 +15,15 @@ class GoodDetailPromotionsDetailView:BaseViewController{
     override func viewDidLoad(){
         super.viewDidLoad()
         self.title="促销活动详情"
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         let lblStr=UILabel()
         lblStr.text=str
-        lblStr.font=UIFont.systemFontOfSize(15)
+        lblStr.font=UIFont.systemFont(ofSize: 15)
         lblStr.textColor=UIColor.applicationMainColor()
         lblStr.numberOfLines=0
-        lblStr.lineBreakMode=NSLineBreakMode.ByWordWrapping
-        let size=lblStr.text!.textSizeWithFont(lblStr.font, constrainedToSize:CGSizeMake(boundsWidth-30,300))
-        lblStr.frame=CGRectMake(15,84,boundsWidth-30,size.height)
+        lblStr.lineBreakMode=NSLineBreakMode.byWordWrapping
+        let size=lblStr.text!.textSizeWithFont(lblStr.font, constrainedToSize:CGSize(width: boundsWidth-30,height: 300))
+        lblStr.frame=CGRect(x: 15,y: 84,width: boundsWidth-30,height: size.height)
         self.view.addSubview(lblStr)
         
         

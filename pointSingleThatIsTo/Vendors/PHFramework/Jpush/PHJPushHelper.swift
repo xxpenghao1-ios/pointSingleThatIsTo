@@ -22,21 +22,21 @@ class PHJPushHelper:NSObject{
      - parameter launchOptions:需要传入NSDictionary
      */
     
-    class func setupWithOptions(launchOptions:[NSObject: AnyObject]?){
+    class func setupWithOptions(_ launchOptions:[AnyHashable: Any]?){
         // ios8之后可以自定义category
-        if (UIDevice.currentDevice().systemVersion as NSString).floatValue >= 8.0{
-            JPUSHService.registerForRemoteNotificationTypes(UIUserNotificationType.Badge.rawValue|UIUserNotificationType.Sound.rawValue|UIUserNotificationType.Alert.rawValue,categories: nil)
+        if (UIDevice.current.systemVersion as NSString).floatValue >= 8.0{
+            JPUSHService.register(forRemoteNotificationTypes: UIUserNotificationType.badge.rawValue|UIUserNotificationType.sound.rawValue|UIUserNotificationType.alert.rawValue,categories: nil)
         }else{//categories 必须为nil
-            JPUSHService.registerForRemoteNotificationTypes(UIUserNotificationType.Badge.rawValue|UIUserNotificationType.Sound.rawValue|UIUserNotificationType.Alert.rawValue,categories: nil)
+            JPUSHService.register(forRemoteNotificationTypes: UIUserNotificationType.badge.rawValue|UIUserNotificationType.sound.rawValue|UIUserNotificationType.alert.rawValue,categories: nil)
         }
-        JPUSHService.setupWithOption(launchOptions, appKey:APP_KEY, channel:CHANNEL, apsForProduction:APS_FOR_PRODUCTION)
+        JPUSHService.setup(withOption: launchOptions, appKey:APP_KEY, channel:CHANNEL, apsForProduction:APS_FOR_PRODUCTION)
     }
     /**
      
      在appdelegate注册设备处调用
      - parameter deviceToken:设备令牌
      */
-    class func registerDeviceToken(deviceToken:NSData){
+    class func registerDeviceToken(_ deviceToken:Data){
         JPUSHService.registerDeviceToken(deviceToken)
     }
     /**
@@ -45,10 +45,10 @@ class PHJPushHelper:NSObject{
      - parameter userInfo:   [NSObject: AnyObject]
      - parameter completion: UIBackgroundFetchResult？
      */
-    class func handleRemoteNotification(userInfo:[NSObject: AnyObject],completion:((UIBackgroundFetchResult) -> Void)?){
+    class func handleRemoteNotification(_ userInfo:[AnyHashable: Any],completion:((UIBackgroundFetchResult) -> Void)?){
         JPUSHService.handleRemoteNotification(userInfo)
         if (completion != nil){//如果不等于空调用闭包方法
-            completion!(UIBackgroundFetchResult.NewData)
+            completion!(UIBackgroundFetchResult.newData)
         }
     }
     /**
@@ -56,8 +56,8 @@ class PHJPushHelper:NSObject{
      
      - parameter notification:实现本地通知对象
      */
-    class func showLocalNotificationAtFront(notification:UILocalNotification){
-        JPUSHService.showLocalNotificationAtFront(notification, identifierKey:nil)
+    class func showLocalNotificationAtFront(_ notification:UILocalNotification){
+        JPUSHService.showLocalNotification(atFront: notification, identifierKey:nil)
     }
 }
 

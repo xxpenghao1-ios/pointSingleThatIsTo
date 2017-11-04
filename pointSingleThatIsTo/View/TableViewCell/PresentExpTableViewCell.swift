@@ -16,28 +16,28 @@ protocol PresentExpTableViewCellDelegate:NSObjectProtocol{
      
      - parameter entity:IntegralGoodExchangeEntity
      */
-    func httpExchangeInfo(entity:IntegralGoodExchangeEntity,index:NSIndexPath)
+    func httpExchangeInfo(_ entity:IntegralGoodExchangeEntity,index:IndexPath)
 }
 /// 购物积分兑换商品cell
 class PresentExpTableViewCell: UITableViewCell {
     internal var delegate:PresentExpTableViewCellDelegate?
     /// 兑换按钮
-    @IBOutlet weak private var btnExchange: UIButton!
+    @IBOutlet weak fileprivate var btnExchange: UIButton!
     /// 商品图片
-    @IBOutlet weak private var ImgGood: UIImageView!
+    @IBOutlet weak fileprivate var ImgGood: UIImageView!
     /// 商品名称
-    @IBOutlet weak private var lblGoodName: UILabel!
+    @IBOutlet weak fileprivate var lblGoodName: UILabel!
     /// 剩余兑换数
-    @IBOutlet weak private var lblRemainingExchangeNumber: UILabel!
+    @IBOutlet weak fileprivate var lblRemainingExchangeNumber: UILabel!
     /// 消耗积分
-    @IBOutlet weak private var lblConsumptionIntegral: UILabel!
+    @IBOutlet weak fileprivate var lblConsumptionIntegral: UILabel!
     //供应商名称
     @IBOutlet weak var lblSubSupplierName: UILabel!
     
     /// 用于保存传入的实体对象
-    private var cellEntity:IntegralGoodExchangeEntity?
+    fileprivate var cellEntity:IntegralGoodExchangeEntity?
     /// 记录行索引
-    internal var index:NSIndexPath?
+    internal var index:IndexPath?
     
     
     override func awakeFromNib() {
@@ -45,11 +45,11 @@ class PresentExpTableViewCell: UITableViewCell {
         lblRemainingExchangeNumber.textColor=UIColor.textColor()
         lblConsumptionIntegral.textColor=UIColor.textColor()
         btnExchange.backgroundColor=UIColor.applicationMainColor()
-        btnExchange.titleLabel!.textColor=UIColor.whiteColor()
+        btnExchange.titleLabel!.textColor=UIColor.white
         btnExchange.layer.cornerRadius=15
-        btnExchange.addTarget(self, action:"submitExchangeInfo:", forControlEvents: UIControlEvents.TouchUpInside)
+        btnExchange.addTarget(self, action:Selector("submitExchangeInfo:"), for: UIControlEvents.touchUpInside)
         //去掉选中背景
-        self.selectionStyle=UITableViewCellSelectionStyle.None;
+        self.selectionStyle=UITableViewCellSelectionStyle.none;
         // Initialization code
     }
     /**
@@ -57,10 +57,10 @@ class PresentExpTableViewCell: UITableViewCell {
      
      - parameter entity:IntegralGoodExchangeEntity
      */
-    func updateCell(entity:IntegralGoodExchangeEntity){
+    func updateCell(_ entity:IntegralGoodExchangeEntity){
         cellEntity=entity
-        
-        ImgGood.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodsPic!), placeholderImage:UIImage(named: "def_nil"))
+        entity.goodsPic=entity.goodsPic ?? ""
+        ImgGood.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodsPic!), placeholderImage:UIImage(named: "def_nil"))
         if entity.goodsSurplusCount != nil{
             lblRemainingExchangeNumber.text="剩余兑换:\(entity.goodsSurplusCount!)"
         }else{
@@ -80,7 +80,7 @@ class PresentExpTableViewCell: UITableViewCell {
         }
         
     }
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
@@ -94,7 +94,7 @@ extension PresentExpTableViewCell{
      
      - parameter sender: UIButton
      */
-    func submitExchangeInfo(sender:UIButton){
+    func submitExchangeInfo(_ sender:UIButton){
         delegate?.httpExchangeInfo(cellEntity!,index:index!)
     }
 }

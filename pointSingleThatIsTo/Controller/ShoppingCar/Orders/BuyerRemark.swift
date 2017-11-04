@@ -19,7 +19,7 @@ class BuyerRemark:UIViewController,UITextViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="买家附言"
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         self.automaticallyAdjustsScrollViewInsets = false
         creatUI()
     }
@@ -28,31 +28,31 @@ class BuyerRemark:UIViewController,UITextViewDelegate {
      */
     func creatUI(){
         //文本容器
-        textViews=UITextView(frame: CGRectMake(10, 84, boundsWidth-20, 100));
-        textViews.font=UIFont.systemFontOfSize(14)
+        textViews=UITextView(frame: CGRect(x: 10, y: 84, width: boundsWidth-20, height: 100));
+        textViews.font=UIFont.systemFont(ofSize: 14)
         textViews.layer.borderWidth=0.5
         textViews.layer.cornerRadius=5
-        textViews.layer.borderColor=UIColor.borderColor().CGColor
+        textViews.layer.borderColor=UIColor.borderColor().cgColor
         textViews.placeholder="重要提示! 不能输入表情,有可能导致订单提交失败"
         textViews.text=textLbl
         //textView响应弹出键盘
         textViews.resignFirstResponder();
-        textViews.hidden = false
+        textViews.isHidden = false
         textViews.delegate=self
         self.view.addSubview(textViews)
         
         //完成按钮
-        confirmBtn=UIButton(frame: CGRectMake(10, CGRectGetMaxY(textViews.frame)+10, boundsWidth-20, 45))
-        confirmBtn.setTitle("完成", forState: UIControlState.Normal)
-        confirmBtn.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        confirmBtn=UIButton(frame: CGRect(x: 10, y: textViews.frame.maxY+10, width: boundsWidth-20, height: 45))
+        confirmBtn.setTitle("完成", for: UIControlState())
+        confirmBtn.setTitleColor(UIColor.white, for: UIControlState())
         confirmBtn.backgroundColor=UIColor.applicationMainColor()
         confirmBtn.layer.cornerRadius=5
         self.view.addSubview(confirmBtn)
         //添加点击事件
-        confirmBtn.addTarget(self, action: "actionRemark:", forControlEvents: UIControlEvents.TouchUpInside)
+        confirmBtn.addTarget(self, action: "actionRemark:", for: UIControlEvents.touchUpInside)
     }
     //文本框变化事件
-    func textViewDidChange(textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         //接收textView的值
         textLbl=textView.text
     }
@@ -61,16 +61,16 @@ class BuyerRemark:UIViewController,UITextViewDelegate {
      
      - parameter sender: 当前完成按钮
      */
-    func actionRemark(sender:UIButton){
+    func actionRemark(_ sender:UIButton){
         if textLbl != nil{
             //发送通知
-        NSNotificationCenter.defaultCenter().postNotificationName("remarkNotification", object:textLbl!.pregReplace())
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "remarkNotification"), object:textLbl!.pregReplace())
         }
-        self.navigationController?.popViewControllerAnimated(true)
+        self.navigationController?.popViewController(animated: true)
         
     }
     //点击view隐藏键盘
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
 
@@ -88,9 +88,9 @@ extension String {
     }
     
     //使用正则表达式替换
-    func pregReplace(options: NSRegularExpressionOptions = []) -> String {
+    func pregReplace(_ options: NSRegularExpression.Options = []) -> String {
             let regex = try! NSRegularExpression(pattern:"[\\ud83c\\udc00-\\ud83c\\udfff]|[\\ud83d\\udc00-\\ud83d\\udfff]|[\\u2600-\\u27ff]", options: options)
-            return regex.stringByReplacingMatchesInString(self, options:[],range:NSMakeRange(0, self.count), withTemplate:"")
+            return regex.stringByReplacingMatches(in: self, options:[],range:NSMakeRange(0, self.count), withTemplate:"")
     }
 }
 extension String{
@@ -107,19 +107,19 @@ extension String{
             
             // - 2、创建正则表达式对象
             
-            let regex = try NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions.CaseInsensitive)
+            let regex = try NSRegularExpression(pattern: pattern, options: NSRegularExpression.Options.caseInsensitive)
             
             // - 3、开始匹配
             
-            let res = regex.matchesInString(self, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, self.characters.count))
+            let res = regex.matches(in: self, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, self.characters.count))
             
             // 输出结果
             
             for checkingRes in res {
                 
-                let nn = (self as NSString).substringWithRange(checkingRes.range) as NSString
+                let nn = (self as NSString).substring(with: checkingRes.range) as NSString
                 
-                result.appendString(nn as String)
+                result.append(nn as String)
                 
             }
             

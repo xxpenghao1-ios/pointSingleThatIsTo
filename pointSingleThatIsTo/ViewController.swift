@@ -15,10 +15,10 @@ class ViewController: UIViewController,EAIntroDelegate{
     var page3:EAIntroPage!
     var intro:EAIntroView!
     //登录成功跳转到首页
-    var app=UIApplication.sharedApplication().delegate as! AppDelegate
+    var app=UIApplication.shared.delegate as! AppDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         //隐藏导航栏
         self.navigationController?.setNavigationBarHidden(true, animated: true)
         // Do any additional setup after loading the view, typically from a nib
@@ -39,13 +39,13 @@ class ViewController: UIViewController,EAIntroDelegate{
         
         intro=EAIntroView(frame: self.view.bounds, andPages: [page1,page2,page3])
         intro.delegate=self
-        intro.showInView(self.view, animateDuration: 0.3)
+        intro.show(in: self.view, animateDuration: 0.3)
         intro.tapToNext = true
         intro.skipButton.alpha=0
     }
 
     // -------------pragma mark---------- EAIntroView delegate
-    func introDidFinish(introView: EAIntroView!) {
+    func introDidFinish(_ introView: EAIntroView!) {
         app.window?.rootViewController=app.navLogin
     }
     

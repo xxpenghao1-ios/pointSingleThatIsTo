@@ -9,15 +9,15 @@
 import Foundation
 import Moya
 /// 成功
-typealias SuccessClosure = (result: AnyObject) -> Void
+typealias SuccessClosure = (_ result: Any) -> Void
 /// 失败
-typealias FailClosure = (errorMsg: String?) -> Void
+typealias FailClosure = (_ errorMsg: String?) -> Void
 
 /// 网络请求
-public class PHMoyaHttp {
+open class PHMoyaHttp {
     /// 共享实例
     static let sharedInstance = PHMoyaHttp()
-    private init(){}
+    fileprivate init(){}
     let requestProvider = MoyaProvider<RequestAPI>()
     /**
      根据target请求JSON数据
@@ -26,18 +26,20 @@ public class PHMoyaHttp {
      - parameter successClosure: 成功结果
      - parameter failClosure:    失败结果
      */
-    func requestDataWithTargetJSON(target:RequestAPI,successClosure:SuccessClosure,failClosure: FailClosure) {
+    func requestDataWithTargetJSON(_ target:RequestAPI,successClosure:@escaping SuccessClosure,failClosure: @escaping FailClosure) {
         let _=requestProvider.request(target) { (result) -> () in
             switch result{
-            case let .Success(response):
+               
+            case let .success(response):
+                print(response.response)
                 do {
-                    let json = try response.mapJSON()
-                    successClosure(result:json)
+                    let arr = try response.mapJSON()
+                    successClosure(arr)
                 } catch {
-                    log.error("网络请求数据解析错误")
+                    
                 }
-            case let .Failure(error):
-                failClosure(errorMsg:error.nsError.localizedDescription)
+            case let .failure(error):
+                failClosure(error.errorDescription)
             }
         }
     }
@@ -48,21 +50,18 @@ public class PHMoyaHttp {
      - parameter successClosure: 成功结果
      - parameter failClosure:    失败结果
      */
-    func requestDataWithTargetString(target:RequestAPI,successClosure:SuccessClosure,failClosure: FailClosure) {
+    func requestDataWithTargetString(_ target:RequestAPI,successClosure:@escaping SuccessClosure,failClosure: @escaping FailClosure) {
         let _=requestProvider.request(target) { (result) -> () in
             switch result{
-            case let .Success(response):
+            case let .success(response):
                 do {
                     let str = try response.mapString()
-                    successClosure(result:str)
+                    successClosure(str as AnyObject)
                 } catch {
-                    log.error("网络请求数据解析错误")
+                    
                 }
-            case let .Failure(error):
-                guard let error = error as? CustomStringConvertible else {
-                    break
-                }
-                failClosure(errorMsg:error.description)
+            case let .failure(error):
+                failClosure(error.errorDescription)
             }
         }
     }
@@ -136,7 +135,7 @@ public enum RequestAPI {
     //退出登录
     case outLoginForStore(memberId:String)
     //根据条形码查询供应商
-    case SuoYuan(countyId:String,goodInfoCode:String)
+    case suoYuan(countyId:String,goodInfoCode:String)
     //查询店铺订单状态 3已完成 2已发货 1未发货
     case queryOrderInfo4AndroidStoreByOrderStatus(orderStatus:Int,storeId:String,pageSize:Int,currentPage:Int)
     //取消订单
@@ -189,8 +188,17 @@ public enum RequestAPI {
     case queryStoreToDaySign(storeId:String)
 }
 extension RequestAPI:TargetType{
-    public var baseURL:NSURL{
-        return NSURL(string:URL)!
+    public var task: Task {
+        return .requestPlain
+    }
+    public var parameterEncoding: ParameterEncoding {
+        return URLEncoding.default
+    }
+    public var headers: [String : String]? {
+        return ["Content-type": "application/json"]
+    }
+    public var baseURL:Foundation.URL{
+        return Foundation.URL(string:URL)!
     }
     public var path:String{
         switch self{
@@ -258,7 +266,7 @@ extension RequestAPI:TargetType{
             return "queryStoreMember"+InterfaceSuffix.XHTML.rawValue
         case .outLoginForStore(_):
             return "outLoginForStore"+InterfaceSuffix.XHTML.rawValue
-        case .SuoYuan(_,_):
+        case .suoYuan(_,_):
             return "SuoYuan"+InterfaceSuffix.XHTML.rawValue
         case .queryOrderInfo4AndroidStoreByOrderStatus(_,_,_,_):
             return "queryOrderInfo4AndroidStoreByOrderStatus"+InterfaceSuffix.XHTML.rawValue
@@ -318,15 +326,16 @@ extension RequestAPI:TargetType{
     public var method:Moya.Method{
         switch self{
         case .login(_,_,_,_,_),.register(_,_,_,_),.doRegest(_,_,_,_),.storeConfirmDelivergoods(_,_),.nmoreGlobalPosiUploadStoreLogin(_,_),.nmoreGlobalPosiUploadStore(_,_,_,_,_,_,_,_),.storeOrderForAndroid(_,_,_,_,_,_,_,_),.complaintsAndSuggestions(_,_),.storeSign(_):
-            return .POST
-        case .returnRandCode(_,_),.updatePassWord(_,_),.doMemberTheOnly(_),.queryCategory4AndroidAll(_),.queryCategory4Android(_),.queryBrandList4Android(_,_),.queryStoreAllRobOrderForList(_,_,_,_),.queryRobFor1OrderForList(_),.queryOrderInfo4AndroidByorderId(_),.robOrderByStore4Android(_,_),.insertShoppingCar(_,_,_,_,_,_,_,_,_),.queryGoodsForAndroidIndexForStoreNew(_,_,_,_,_,_),.queryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_,_),.searchGoodsInterfaceForStore(_,_,_,_,_,_,_,_,_,_),.queryStorePromotionGoodsList(_,_,_,_),.queryGoodsDetailsForAndroid(_,_,_,_,_,_,_,_),.queryPreferentialAndGoods4Store(_,_,_,_,_,_),.mobileAdvertisingPromotion(),.queryAdMessgInfo(_),.queryGoodsForAndroidIndexForStore(_,_,_),.queryOneCategory(_),.mobileAdvertising(_),.storeQueryMyNews(_,_,_,_),.queryRecommended(_),.queryMessageToStore(_,_,_),.queryStoreMember(_,_),.outLoginForStore(_),.SuoYuan(_,_),.queryOrderInfo4AndroidStoreByOrderStatus(_,_,_,_),.storeCancelOrder(_),.updataOrderStatus4Store(_),.bindingRecommended4Store(_,_),.integralMallExchange(_,_,_),.queryMemberIntegral(_),.queryIntegralMallForSubStation(_,_,_),.storeQueryMemberIntegralV1(_,_,_),.queryIntegralMallExchangeRecord(_,_,_),.queryStoreShippAddressforAndroid(_),.deleteStoreShippAddressforAndroid(_),.updateStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_,_),.addStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_),.letterQueryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_,_),.queryTwoCategoryForMob(_,_),goodsAddCollection(_,_,_,_),.queryStoreCollectionList(_,_,_),.goodsCancelCollection(_,_),.mobileAdvertisingPromotionAndPreferential(),.queryShoppingCarMoreGoodsForSubSupplier(_,_,_,_,_,_,_),.queryStoreSignRecord(_),.queryStoreToDaySign(_):
-            return .GET
+            return .post
+        case .returnRandCode(_,_),.updatePassWord(_,_),.doMemberTheOnly(_),.queryCategory4AndroidAll(_),.queryCategory4Android(_),.queryBrandList4Android(_,_),.queryStoreAllRobOrderForList(_,_,_,_),.queryRobFor1OrderForList(_),.queryOrderInfo4AndroidByorderId(_),.robOrderByStore4Android(_,_),.insertShoppingCar(_,_,_,_,_,_,_,_,_),.queryGoodsForAndroidIndexForStoreNew(_,_,_,_,_,_),.queryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_,_),.searchGoodsInterfaceForStore(_,_,_,_,_,_,_,_,_,_),.queryStorePromotionGoodsList(_,_,_,_),.queryGoodsDetailsForAndroid(_,_,_,_,_,_,_,_),.queryPreferentialAndGoods4Store(_,_,_,_,_,_),.mobileAdvertisingPromotion(),.queryAdMessgInfo(_),.queryGoodsForAndroidIndexForStore(_,_,_),.queryOneCategory(_),.mobileAdvertising(_),.storeQueryMyNews(_,_,_,_),.queryRecommended(_),.queryMessageToStore(_,_,_),.queryStoreMember(_,_),.outLoginForStore(_),.suoYuan(_,_),.queryOrderInfo4AndroidStoreByOrderStatus(_,_,_,_),.storeCancelOrder(_),.updataOrderStatus4Store(_),.bindingRecommended4Store(_,_),.integralMallExchange(_,_,_),.queryMemberIntegral(_),.queryIntegralMallForSubStation(_,_,_),.storeQueryMemberIntegralV1(_,_,_),.queryIntegralMallExchangeRecord(_,_,_),.queryStoreShippAddressforAndroid(_),.deleteStoreShippAddressforAndroid(_),.updateStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_,_),.addStoreShippAddressforAndroid(_,_,_,_,_,_,_,_,_),.letterQueryGoodsInfoByCategoryForAndroidForStore(_,_,_,_,_,_,_,_,_),.queryTwoCategoryForMob(_,_),.goodsAddCollection(_,_,_,_),.queryStoreCollectionList(_,_,_),.goodsCancelCollection(_,_),.mobileAdvertisingPromotionAndPreferential(),.queryShoppingCarMoreGoodsForSubSupplier(_,_,_,_,_,_,_),.queryStoreSignRecord(_),.queryStoreToDaySign(_):
+            return .get
         }
     }
-    public var parameters: [String: AnyObject]? {
+    
+    public var parameters: [String:Any]? {
         switch self {
         case let .login(memberName,password,deviceToken,deviceName,flag):
-            return ["memberName":memberName,"password":password,"deviceToken":deviceToken,"deviceName":deviceName,"flag":flag]
+            return ["memberName":memberName,"password":password,"deviceToken":deviceToken,"deviceName":deviceName,"flag":flag] as [String : Any]
         case let .register(memberName, password, phone_mob,referralName):
             return ["memberName":memberName,"password":password,"phone_mob":phone_mob,"referralName":referralName]
         case let .returnRandCode(memberName,flag):
@@ -406,7 +415,7 @@ extension RequestAPI:TargetType{
             return ["storeId":storeId,"memberId":memberId]
         case let .outLoginForStore(memberId):
             return ["memberId":memberId]
-        case let .SuoYuan(countyId, goodInfoCode):
+        case let .suoYuan(countyId, goodInfoCode):
             return ["countyId":countyId,"goodInfoCode":goodInfoCode]
         case let .queryOrderInfo4AndroidStoreByOrderStatus(orderStatus, storeId, pageSize, currentPage):
             return ["orderStatus":orderStatus,"storeId":storeId,"pageSize":pageSize,"currentPage":currentPage]
@@ -419,7 +428,7 @@ extension RequestAPI:TargetType{
         case let .integralMallExchange(integralMallId, memberId, exchangeCount):
             return ["integralMallId":integralMallId,"memberId":memberId,"exchangeCount":exchangeCount]
         case let .queryMemberIntegral(memberId):
-            return ["memberId":memberId]
+            return ["memberId":memberId as AnyObject]
         case let .queryIntegralMallForSubStation(subStationId, currentPage, pageSize):
             return ["subStationId":subStationId,"currentPage":currentPage,"pageSize":pageSize]
         case let .storeQueryMemberIntegralV1(memberId, currentPage, pageSize):
@@ -476,7 +485,7 @@ extension RequestAPI:TargetType{
         }
     }
     //  单元测试用
-    public var sampleData: NSData{
-        return "{}".dataUsingEncoding(NSUTF8StringEncoding)!
+    public var sampleData: Data{
+        return "{}".data(using: String.Encoding.utf8)!
     }
 }

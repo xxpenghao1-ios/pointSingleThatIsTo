@@ -61,8 +61,8 @@ class OrderListEntity:Mappable{
     /*代金券id*/
     var cashCouponId:Int?
     init(){}
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map:Map){
         out_trade_sn <- map["out_trade_sn"]

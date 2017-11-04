@@ -14,11 +14,11 @@ import Foundation
  
  - returns:json字符串
  */
-func toJSONString(dict:Dictionary<String,GoodDetailEntity>)->String{
+func toJSONString(_ dict:Dictionary<String,GoodDetailEntity>)->String{
     
     //1. 初始化可变字符串，存放最终生成json字串
     let josnString:NSMutableString=NSMutableString();
-    josnString.appendString("[");
+    josnString.append("[");
     //2. 遍历数组，取出键值对并按json格式存放
     for(_,value) in dict{
         if value.flag == 1{
@@ -26,14 +26,14 @@ func toJSONString(dict:Dictionary<String,GoodDetailEntity>)->String{
         }else{
             value.goodsSumMoney="\(Float(value.carNumber!)*Float(value.uprice!)!)"
         }
-        josnString.appendString(value.toJSONString(true)!+",");
+        josnString.append(value.toJSONString()!+",");
         
     }
     //3. 获取末尾逗号所在位置
     let location=josnString.length-1;
     let range=NSMakeRange(location,1);
     // 4. 将末尾逗号换成结束的]
-    josnString.replaceCharactersInRange(range, withString:"]");
+    josnString.replaceCharacters(in: range, with:"]");
     return josnString as String;
 }
 /**
@@ -43,12 +43,12 @@ func toJSONString(dict:Dictionary<String,GoodDetailEntity>)->String{
  
  - returns: json字符串
  */
-func toJSONString(entity:GoodDetailEntity) -> String{
+func toJSONString(_ entity:GoodDetailEntity) -> String{
     //1. 初始化可变字符串，存放最终生成json字串
     let josnString:NSMutableString=NSMutableString();
-    josnString.appendString("[");
-    josnString.appendString(entity.toJSONString(true)!)
-    josnString.appendString("]")
+    josnString.append("[");
+    josnString.append(entity.toJSONString()!)
+    josnString.append("]")
     return josnString as String
 }
 /**
@@ -58,10 +58,10 @@ func toJSONString(entity:GoodDetailEntity) -> String{
  
  - returns: json字符串
  */
-func toJSONString(arr:NSMutableArray) ->String{
+func toJSONString(_ arr:NSMutableArray) ->String{
     //1. 初始化可变字符串，存放最终生成json字串
     let josnString:NSMutableString=NSMutableString();
-    josnString.appendString("[");
+    josnString.append("[");
     //2. 遍历数组，取出键值对并按json格式存放
     for(value) in arr{
         let str=value as! GoodDetailEntity
@@ -70,14 +70,14 @@ func toJSONString(arr:NSMutableArray) ->String{
         }else{
             str.goodsSumMoney="\(Double(str.carNumber!)*Double(str.uprice!)!)"
         }
-        josnString.appendString(str.toJSONString(true)!+",");
+        josnString.append(str.toJSONString()!+",");
         
     }
     //3. 获取末尾逗号所在位置
     let location=josnString.length-1;
     let range=NSMakeRange(location,1);
     // 4. 将末尾逗号换成结束的]
-    josnString.replaceCharactersInRange(range, withString:"]");
+    josnString.replaceCharacters(in: range, with:"]");
     return josnString as String;
 
 }

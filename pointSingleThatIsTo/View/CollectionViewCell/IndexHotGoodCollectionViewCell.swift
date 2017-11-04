@@ -20,28 +20,28 @@ class IndexHotGoodCollectionViewCell:UICollectionViewCell {
     var goodUpice:UILabel!
     override init(frame: CGRect) {
         super.init(frame:frame)
-        hotView=UIView(frame:CGRectMake(0,0,frame.size.width,frame.size.height))
+        hotView=UIView(frame:CGRect(x: 0,y: 0,width: frame.size.width,height: frame.size.height))
         hotView.layer.cornerRadius=10;
-        hotView.layer.borderColor=UIColor(red:215/255, green:215/255, blue: 215/255, alpha: 1).CGColor
+        hotView.layer.borderColor=UIColor(red:215/255, green:215/255, blue: 215/255, alpha: 1).cgColor
         hotView.layer.borderWidth=1
         self.contentView.addSubview(hotView)
         //商品图片
-        goodImgView=UIImageView(frame:CGRectMake((frame.size.width-100)/2,20,100, 100))
+        goodImgView=UIImageView(frame:CGRect(x: (frame.size.width-100)/2,y: 20,width: 100, height: 100))
         self.contentView.addSubview(goodImgView)
         //商品名称
-        goodName=UILabel(frame:CGRectMake(10,CGRectGetMaxY(goodImgView.frame)+20,frame.size.width-20,40))
-        goodName.font=UIFont.systemFontOfSize(13)
-        goodName.lineBreakMode=NSLineBreakMode.ByWordWrapping
+        goodName=UILabel(frame:CGRect(x: 10,y: goodImgView.frame.maxY+20,width: frame.size.width-20,height: 40))
+        goodName.font=UIFont.systemFont(ofSize: 13)
+        goodName.lineBreakMode=NSLineBreakMode.byWordWrapping
         goodName.numberOfLines=2
         self.contentView.addSubview(goodName)
         //边线
-        let border=UIView(frame:CGRectMake(10,CGRectGetMaxY(goodName.frame)+5,frame.size.width-20,0.5))
+        let border=UIView(frame:CGRect(x: 10,y: goodName.frame.maxY+5,width: frame.size.width-20,height: 0.5))
         border.backgroundColor=UIColor.borderColor()
         self.contentView.addSubview(border)
         //价格
-        goodUpice=UILabel(frame:CGRectMake(0,CGRectGetMaxY(border.frame)+5
-            ,frame.size.width,20))
-        goodUpice.textAlignment=NSTextAlignment.Center
+        goodUpice=UILabel(frame:CGRect(x: 0,y: border.frame.maxY+5
+            ,width: frame.size.width,height: 20))
+        goodUpice.textAlignment=NSTextAlignment.center
         goodUpice.textColor=UIColor(red:255/255, green:0/255, blue:0/255, alpha:1)
         self.contentView.addSubview(goodUpice)
         
@@ -53,8 +53,9 @@ class IndexHotGoodCollectionViewCell:UICollectionViewCell {
      
      - parameter entity:热门商品entity
      */
-    func updateCell(entity:GoodDetailEntity){
-        goodImgView.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named:"def_nil"))
+    func updateCell(_ entity:GoodDetailEntity){
+       entity.goodPic=entity.goodPic ?? ""
+        goodImgView.sd_setImage(with:Foundation.URL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named:"def_nil"))
         goodName.text=entity.goodInfoName!
         goodUpice.text="￥\(entity.uprice!)"
     }

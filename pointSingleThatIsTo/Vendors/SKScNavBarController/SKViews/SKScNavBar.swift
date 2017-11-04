@@ -14,12 +14,12 @@ protocol SKScNavBarDelegate: NSObjectProtocol{
      * 点击ScNavBar上的Items回调的方法
      * @param index 被点击的Item的下标
      */
-    func didSelectedWithIndex(index:Int)
+    func didSelectedWithIndex(_ index:Int)
     
     /**
      * 点击扩展菜单键触发的方法
      */
-    func isShowScNavBarItemMenu(show:Bool, height:CGFloat)
+    func isShowScNavBarItemMenu(_ show:Bool, height:CGFloat)
 }
 
 class SKScNavBar: UIView, SKLaunchMenuDelegate {
@@ -61,21 +61,21 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
                 if currentItemIndex < (items.count - 1) {
                     offsetX = offsetX + 40.0
                 }
-                scNavBar.setContentOffset(CGPointMake(offsetX, 0), animated: true)
+                scNavBar.setContentOffset(CGPoint(x: offsetX, y: 0), animated: true)
             }else{
-                scNavBar.setContentOffset(CGPointMake(0, 0), animated: true)
+                scNavBar.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
             }
-            UIView.animateWithDuration(0.2) { () -> Void in
+            UIView.animate(withDuration: 0.2, animations: { () -> Void in
                 let lineWidth = self.itemsWidth[self.currentItemIndex] as! CGFloat
-                self.line.frame = CGRectMake(itemBtn.frame.origin.x, self.line.frame.origin.y, lineWidth, self.line.frame.size.height)
+                self.line.frame = CGRect(x: itemBtn.frame.origin.x, y: self.line.frame.origin.y, width: lineWidth, height: self.line.frame.size.height)
                 for btn in self.items {
                     let tempBtn = btn as! UIButton
-                    tempBtn.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-                    tempBtn.titleLabel?.font = UIFont.systemFontOfSize(14)
+                    tempBtn.setTitleColor(UIColor.black, for: UIControlState())
+                    tempBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
                 }
-                itemBtn.setTitleColor(UIColor.applicationMainColor(), forState: UIControlState.Normal)
-                itemBtn.titleLabel?.font = UIFont.systemFontOfSize(16)
-            }
+                itemBtn.setTitleColor(UIColor.applicationMainColor(), for: UIControlState())
+                itemBtn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+            }) 
         }
         get{
             return currentItemIndex
@@ -83,14 +83,14 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
     }
     
     //MARK: -- 私有属性
-    private var scNavBar:UIScrollView!            //可滑动导航栏
-    private var arrowBtnImageView:UIImageView!    //展开扩展菜单栏的按钮
-    private var line:UIView!                      //导航栏Item下面的线
-    private var skLaunchMenu:SKLaunchMenu!        //扩展菜单栏
-    private var items:NSMutableArray!             //导航栏上Item数组
-    private var itemsWidth:NSArray!               //Items的宽度数组
-    private var showArrowButton:Bool = true       //显示扩展菜单按钮
-    private var showScNavBarItemMenu:Bool!        //是否展开扩展菜单
+    fileprivate var scNavBar:UIScrollView!            //可滑动导航栏
+    fileprivate var arrowBtnImageView:UIImageView!    //展开扩展菜单栏的按钮
+    fileprivate var line:UIView!                      //导航栏Item下面的线
+    fileprivate var skLaunchMenu:SKLaunchMenu!        //扩展菜单栏
+    fileprivate var items:NSMutableArray!             //导航栏上Item数组
+    fileprivate var itemsWidth:NSArray!               //Items的宽度数组
+    fileprivate var showArrowButton:Bool = true       //显示扩展菜单按钮
+    fileprivate var showScNavBarItemMenu:Bool!        //是否展开扩展菜单
     
     //MARK: ---- 公共方法 -----
     
@@ -116,7 +116,7 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
         itemsWidth = getItemsWidthWithTitles(itemsTitles)
         if itemsWidth.count != 0 {
             let contentWidth = getScNavContentAddScNavBarItemsWithItemsWidth(itemsWidth)
-            scNavBar.contentSize = CGSizeMake(contentWidth, 0)
+            scNavBar.contentSize = CGSize(width: contentWidth, height: 0)
         }
     }
     
@@ -129,18 +129,18 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
     
     //MARK: ----- 私有方法 -----
     //MARK: -- 初始化方法
-    private func initWithConfig() {
+    fileprivate func initWithConfig() {
         items = NSMutableArray()
         //调用配置视图的方法
         configView()
     }
     
     //MARK: -- 配置视图
-    private func configView() {
+    fileprivate func configView() {
         let frameX = showArrowButton ? (kScreenWidth - kArrowButtonWidth) : kScreenWidth
         if showArrowButton {
-            arrowBtnImageView = UIImageView(frame: CGRectMake(frameX, 0, kArrowButtonWidth, kArrowButtonWidth))
-            arrowBtnImageView.userInteractionEnabled = true
+            arrowBtnImageView = UIImageView(frame: CGRect(x: frameX, y: 0, width: kArrowButtonWidth, height: kArrowButtonWidth))
+            arrowBtnImageView.isUserInteractionEnabled = true
             
             arrowBtnImageView.image = arrowBtnImage
             arrowBtnImageView.backgroundColor = self.backgroundColor
@@ -148,10 +148,10 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
             
             //setShadowForView(arrowBtnImageView, shadowRadius: 10.0, shadowOpacity: 10.0)
             
-            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: "arrowBtnTapGesAction")
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: Selector("arrowBtnTapGesAction"))
             arrowBtnImageView.addGestureRecognizer(tapGestureRecognizer)
         }
-        scNavBar = UIScrollView(frame: CGRectMake(0, 0, frameX, kScNavBarHeight))
+        scNavBar = UIScrollView(frame: CGRect(x: 0, y: 0, width: frameX, height: kScNavBarHeight))
         scNavBar.showsHorizontalScrollIndicator = false
         self.addSubview(scNavBar)
         //调用给视图设置阴影的方法
@@ -159,62 +159,62 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
     }
     
     //MARK: -- 往导航栏上添加ItemButton
-    private func getScNavContentAddScNavBarItemsWithItemsWidth(widths:NSArray) -> CGFloat {
+    fileprivate func getScNavContentAddScNavBarItemsWithItemsWidth(_ widths:NSArray) -> CGFloat {
         var buttonX:CGFloat = 0
-        for var index = 0; index < itemsTitles.count; index++ {
-            let button = UIButton(type: UIButtonType.Custom)
-            button.frame = CGRectMake(buttonX, 0, widths[index] as! CGFloat, kScNavBarHeight)
-            button.setTitle((itemsTitles[index] as! String), forState: UIControlState.Normal)
-            button.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-            button.titleLabel?.font = UIFont.systemFontOfSize(14)
-            button.addTarget(self, action: "itemsBtnAction:", forControlEvents: UIControlEvents.TouchUpInside)
+        for index in 0...itemsTitles.count{
+            let button = UIButton(type: UIButtonType.custom)
+            button.frame = CGRect(x: buttonX, y: 0, width: widths[index] as! CGFloat, height: kScNavBarHeight)
+            button.setTitle((itemsTitles[index] as! String), for: UIControlState())
+            button.setTitleColor(UIColor.black, for: UIControlState())
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+            button.addTarget(self, action: Selector("itemsBtnAction:"), for: UIControlEvents.touchUpInside)
             scNavBar.addSubview(button)
             
-            items.addObject(button)
+            items.add(button)
             buttonX += widths[index] as! CGFloat
         }
         let btn = items[0] as! UIButton
-        btn.setTitleColor(UIColor.applicationMainColor(), forState: UIControlState.Normal)
-        btn.titleLabel?.font = UIFont.systemFontOfSize(16)
+        btn.setTitleColor(UIColor.applicationMainColor(), for: UIControlState())
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         self.setLineWithItensWidth(widths[0] as! CGFloat)
         
         return buttonX
     }
     
     //MARK: -- 根据Items的宽度设置Item下面的线
-    private func setLineWithItensWidth(width:CGFloat) {
-        line = UIView(frame: CGRectMake(0, kScNavBarHeight - 3, width, 3))
+    fileprivate func setLineWithItensWidth(_ width:CGFloat) {
+        line = UIView(frame: CGRect(x: 0, y: kScNavBarHeight - 3, width: width, height: 3))
         line.backgroundColor = lineColor
         scNavBar.addSubview(line)
     }
     
     //MARK: -- 给视图设置阴影的方法
-    private func setShadowForView(view:UIView, shadowRadius:CGFloat, shadowOpacity:Float) {
+    fileprivate func setShadowForView(_ view:UIView, shadowRadius:CGFloat, shadowOpacity:Float) {
         view.layer.shadowRadius = shadowRadius
         view.layer.shadowOpacity = shadowOpacity
     }
     
     //MARK: -- 通过Item上的标题获取每个Item的宽度组成的数组
-    private func getItemsWidthWithTitles(titles:NSArray) -> NSArray {
+    fileprivate func getItemsWidthWithTitles(_ titles:NSArray) -> NSArray {
         let itemsWidths = NSMutableArray()
         for _ in titles {
 //            let str = title as! NSString
 //            let size:CGSize = str.sizeWithAttributes([NSFontAttributeName:UIFont.systemFontOfSize(UIFont.systemFontSize())])
             let fValue:CGFloat = kScreenWidth/CGFloat(titles.count)
-            itemsWidths.addObject(fValue)
+            itemsWidths.add(fValue)
         }
         return itemsWidths
     }
     
     //MARK: -- 添加扩展菜单栏
-    private func showLaunchMenu(show:Bool) {
+    fileprivate func showLaunchMenu(_ show:Bool) {
         if show {
             setShadowForView(arrowBtnImageView, shadowRadius:0, shadowOpacity:0)
-            UIView.animateWithDuration(0.5, animations: { () -> Void in
-                self.scNavBar.hidden = true
-                self.arrowBtnImageView.transform = CGAffineTransformMakeRotation(CGFloat(M_PI))
+            UIView.animate(withDuration: 0.5, animations: { () -> Void in
+                self.scNavBar.isHidden = true
+                self.arrowBtnImageView.transform = CGAffineTransform(rotationAngle: CGFloat(M_PI))
                 }, completion: { (finished:Bool) -> Void in
-                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    UIView.animate(withDuration: 0.2, animations: { () -> Void in
                         if self.skLaunchMenu == nil {
                             let layout = UICollectionViewFlowLayout()
                             self.skLaunchMenu = SKLaunchMenu(layout: layout, subViewTitles: self.itemsTitles)
@@ -222,23 +222,23 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
                             self.addSubview(self.skLaunchMenu.launchMenu)
                             self.skLaunchMenu.launchMenu.reloadData()
                         }
-                        self.skLaunchMenu.launchMenu.hidden = false
+                        self.skLaunchMenu.launchMenu.isHidden = false
                     })
             })
         }else{
-            UIView.animateWithDuration(0.5, animations: { () -> Void in
-                self.skLaunchMenu.launchMenu.hidden = !self.skLaunchMenu.launchMenu.hidden
-                self.arrowBtnImageView.transform = CGAffineTransformIdentity
+            UIView.animate(withDuration: 0.5, animations: { () -> Void in
+                self.skLaunchMenu.launchMenu.isHidden = !self.skLaunchMenu.launchMenu.isHidden
+                self.arrowBtnImageView.transform = CGAffineTransform.identity
                 }, completion: { (finished:Bool) -> Void in
-                    self.scNavBar.hidden = !self.scNavBar.hidden
+                    self.scNavBar.isHidden = !self.scNavBar.isHidden
                self.setShadowForView(self.arrowBtnImageView, shadowRadius: 5, shadowOpacity:5)
             })
         }
     }
     
     //MARK: -- 导航栏上面Item的点击事件
-    func itemsBtnAction(sender:UIButton) {
-        let index = items.indexOfObject(sender)
+    func itemsBtnAction(_ sender:UIButton) {
+        let index = items.index(of: sender)
         delegate?.didSelectedWithIndex(index)
     }
     
@@ -250,7 +250,7 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
     }
     
     //MARK: -- SKLaunchMenuDelegate中的方法
-    func itemPressedWithIndex(index: Int) {
+    func itemPressedWithIndex(_ index: Int) {
         arrowBtnTapGesAction()
         delegate?.didSelectedWithIndex(index)
     }

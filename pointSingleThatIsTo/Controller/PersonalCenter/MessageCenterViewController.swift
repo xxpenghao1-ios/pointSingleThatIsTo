@@ -17,34 +17,35 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
+import SwiftyJSON
 /// 消息中心
 class  MessageCenterViewController:BaseViewController,UITableViewDelegate,UITableViewDataSource{
     /// 空视图提示
-    private var nilView:UIView?
+    fileprivate var nilView:UIView?
     /// 数据源
-    private var arr=NSMutableArray()
+    fileprivate var arr=NSMutableArray()
     /// cell数据源
-    private var cellArr=NSMutableArray()
+    fileprivate var cellArr=NSMutableArray()
     /// table
-    private var table:UITableView?
+    fileprivate var table:UITableView?
     ///
-    private var currentPage=0
+    fileprivate var currentPage=0
     override func viewDidLoad() {
         super.viewDidLoad();
         self.title="消息中心"
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         table=UITableView(frame:self.view.bounds)
         table!.contentSize=self.view.bounds.size
         table!.dataSource=self
         table!.delegate=self
         //移除空单元格
-        table!.tableFooterView = UIView(frame:CGRectZero)
+        table!.tableFooterView = UIView(frame:CGRect.zero)
         //设置cell下边线全屏
-        if(table!.respondsToSelector("setLayoutMargins:")){
-            table?.layoutMargins=UIEdgeInsetsZero
+        if(table!.responds(to: "setLayoutMargins:")){
+            table?.layoutMargins=UIEdgeInsets.zero
         }
-        if(table!.respondsToSelector("setSeparatorInset:")){
-            table?.separatorInset=UIEdgeInsetsZero;
+        if(table!.responds(to: "setSeparatorInset:")){
+            table?.separatorInset=UIEdgeInsets.zero;
         }
         self.view.addSubview(table!)
         table!.addHeaderWithCallback({//刷新
@@ -61,16 +62,16 @@ class  MessageCenterViewController:BaseViewController,UITableViewDelegate,UITabl
             self.httpQueryMessageToStore(self.currentPage, isRefresh:false)
         })
         //加载视图
-        SVProgressHUD.showWithStatus("数据加载中")
+        SVProgressHUD.show(withStatus: "数据加载中")
         table!.headerBeginRefreshing()
     }
     //返回tabview每一行显示什么
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         //定义标示符
         let cells:String="messageCells";
-        var cell=tableView.dequeueReusableCellWithIdentifier(cells) as? MessageCenterTableViewCell;
+        var cell=tableView.dequeueReusableCell(withIdentifier: cells) as? MessageCenterTableViewCell;
         if cell == nil{
-            cell=MessageCenterTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier:cells)
+            cell=MessageCenterTableViewCell(style: UITableViewCellStyle.default, reuseIdentifier:cells)
         }
         if arr.count > 0{
             let entity=arr[indexPath.row] as! AdMessgInfoEntity
@@ -81,11 +82,11 @@ class  MessageCenterViewController:BaseViewController,UITableViewDelegate,UITabl
        return cell!
     }
     //返回tabview的行数
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return arr.count
     }
     //返回tabview的高度
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
         if arr.count > 0{
             let cell=cellArr[indexPath.row] as! MessageCenterTableViewCell
             let entity=arr[indexPath.row] as! AdMessgInfoEntity
@@ -96,7 +97,7 @@ class  MessageCenterViewController:BaseViewController,UITableViewDelegate,UITabl
         }
     }
     //6.表格点击事件
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let entity=arr[indexPath.row] as! AdMessgInfoEntity
         if entity.pushReason == 1{//跳转促销区
             let vc=GoodCategory3ViewController()
@@ -118,20 +119,20 @@ extension MessageCenterViewController{
     /**
      查询消息中心
      */
-    func httpQueryMessageToStore(currentPage:Int,isRefresh:Bool){
+    func httpQueryMessageToStore(_ currentPage:Int,isRefresh:Bool){
         var count=0
-        let substationId=userDefaults.objectForKey("substationId") as! String
+        let substationId=userDefaults.object(forKey: "substationId") as! String
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryMessageToStore(substationId: substationId, pageSize: 10, currentPage: currentPage), successClosure: { (result) -> Void in
             let json=JSON(result)
             if isRefresh{
                 self.arr.removeAllObjects()
             }
             for(_,value) in json{
-                count++
-                let entity=Mapper<AdMessgInfoEntity>().map(value.object)
+                count+=1
+                let entity=Mapper<AdMessgInfoEntity>().map(JSONObject:value.object)
                 let cell=MessageCenterTableViewCell()
-                self.cellArr.addObject(cell)
-                self.arr.addObject(entity!)
+                self.cellArr.add(cell)
+                self.arr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
                 self.table?.setFooterHidden(true)
@@ -156,7 +157,7 @@ extension MessageCenterViewController{
             //刷新table
             self.table?.reloadData()
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
                 //关闭刷新状态
                 self.table?.headerEndRefreshing()
                 //关闭加载状态

@@ -15,9 +15,9 @@ class CategoryListController:BaseViewController{
     // 分类
     //var CategoryVC=CategoryViewController()
     // 品牌
-    private var BrandVC=BrandViewController()
+    fileprivate var BrandVC=BrandViewController()
     // 品项
-    private var ItemsVC=ItemsViewController()
+    fileprivate var ItemsVC=ItemsViewController()
     //一级分类ID
     var pid:Int?;
     //判断页面从首页传过来还是底部工具栏(1-首页，其他从底部传过来)
@@ -26,7 +26,7 @@ class CategoryListController:BaseViewController{
         super.viewDidLoad()
         categoryName=categoryName ?? "分类"
         self.title=categoryName
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         BrandVC.title="按品牌"
         ItemsVC.title="按品项"
         BrandVC.pid=self.pid
@@ -38,7 +38,7 @@ class CategoryListController:BaseViewController{
         SKNac.showArrowButton=false
         SKNac.addParentController(self)
         if categoryName == "休闲零食"{
-            self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"1元区", style: UIBarButtonItemStyle.Done, target:self, action:"push1yuanqu")
+            self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"1元区", style: UIBarButtonItemStyle.done, target:self, action:"push1yuanqu")
         }
     }
     

@@ -9,9 +9,9 @@
 import Foundation
 import UIKit
 class PersonalCenterCollectionViewCell:LWLineSeparatorCollectionViewCell{
-    private var img:UIImageView!
-    private var lblName:UILabel!
-    private var view:UIView!
+    fileprivate var img:UIImageView!
+    fileprivate var lblName:UILabel!
+    fileprivate var view:UIView!
     override init(frame: CGRect) {
         super.init(frame:frame)
         view=UIView(frame:CGRect(x:0,y:0,width:90,height:90))
@@ -19,10 +19,10 @@ class PersonalCenterCollectionViewCell:LWLineSeparatorCollectionViewCell{
         self.contentView.addSubview(view)
         img=UIImageView(frame:CGRect(x:20,y:0,width:50,height:50))
         view.addSubview(img)
-        lblName=buildLabel(UIColor.textColor(), font:16, textAlignment: NSTextAlignment.Center)
+        lblName=buildLabel(UIColor.textColor(), font:16, textAlignment: NSTextAlignment.center)
         lblName.frame=CGRect(x:0,y:img.frame.maxY,width:90,height:20)
         view.addSubview(lblName)
-        self.contentView.backgroundColor=UIColor.whiteColor()
+        self.contentView.backgroundColor=UIColor.white
         
     }
     
@@ -31,7 +31,7 @@ class PersonalCenterCollectionViewCell:LWLineSeparatorCollectionViewCell{
     /// - Parameters:
     ///   - imgStr: 图片
     ///   - str: 名称
-    func updateCell(imgStr:String,str:String){
+    func updateCell(_ imgStr:String,str:String){
         img.image=UIImage(named:imgStr)
         lblName.text=str
     }

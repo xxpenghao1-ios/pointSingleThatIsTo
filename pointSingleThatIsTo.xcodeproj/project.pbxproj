@@ -123,7 +123,6 @@
 		EF455FB21D33847500E9539F /* SKLaunchMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F0D1D33847500E9539F /* SKLaunchMenu.swift */; };
 		EF455FB31D33847500E9539F /* SKLaunchMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F0E1D33847500E9539F /* SKLaunchMenuItem.swift */; };
 		EF455FB41D33847500E9539F /* SKScNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F0F1D33847500E9539F /* SKScNavBar.swift */; };
-		EF455FB91D33847500E9539F /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F161D33847500E9539F /* SwiftyJSON.swift */; };
 		EF455FBA1D33847500E9539F /* UIButton+Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = EF455F191D33847500E9539F /* UIButton+Badge.m */; };
 		EF455FBB1D33847500E9539F /* categoryListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F1C1D33847500E9539F /* categoryListCell.swift */; };
 		EF455FBC1D33847500E9539F /* IndexClassifyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F1D1D33847500E9539F /* IndexClassifyCollectionViewCell.swift */; };
@@ -165,7 +164,7 @@
 		EF7082D61DE80F4B00C47AC4 /* LetterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7082D51DE80F4B00C47AC4 /* LetterViewController.swift */; };
 		EFA34D6A1D3DBCF1007284C8 /* IntegralRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */; };
 		EFADF3AB1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */; };
-		EFD7D0031C7BFC6800DA8C1B /* (null) in Sources */ = {isa = PBXBuildFile; };
+		EFD7D0031C7BFC6800DA8C1B /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		EFE0B53E1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE0B53C1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift */; };
 		EFE0B53F1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFE0B53D1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib */; };
 		EFE0B5411D3CBA0B00E3C5AA /* MemberIntegralEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE0B5401D3CBA0B00E3C5AA /* MemberIntegralEntity.swift */; };
@@ -337,7 +336,6 @@
 		EF455F0D1D33847500E9539F /* SKLaunchMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKLaunchMenu.swift; sourceTree = "<group>"; };
 		EF455F0E1D33847500E9539F /* SKLaunchMenuItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKLaunchMenuItem.swift; sourceTree = "<group>"; };
 		EF455F0F1D33847500E9539F /* SKScNavBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKScNavBar.swift; sourceTree = "<group>"; };
-		EF455F161D33847500E9539F /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		EF455F181D33847500E9539F /* UIButton+Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Badge.h"; sourceTree = "<group>"; };
 		EF455F191D33847500E9539F /* UIButton+Badge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Badge.m"; sourceTree = "<group>"; };
 		EF455F1C1D33847500E9539F /* categoryListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = categoryListCell.swift; sourceTree = "<group>"; };
@@ -849,7 +847,6 @@
 				EF455EF91D33847500E9539F /* PHFramework */,
 				EF455EFE1D33847500E9539F /* Refresh */,
 				EF455F061D33847500E9539F /* SKScNavBarController */,
-				EF455F151D33847500E9539F /* SwiftJson */,
 				EF455F171D33847500E9539F /* UIButton+Badge */,
 			);
 			path = Vendors;
@@ -966,14 +963,6 @@
 				EF455F0F1D33847500E9539F /* SKScNavBar.swift */,
 			);
 			path = SKViews;
-			sourceTree = "<group>";
-		};
-		EF455F151D33847500E9539F /* SwiftJson */ = {
-			isa = PBXGroup;
-			children = (
-				EF455F161D33847500E9539F /* SwiftyJSON.swift */,
-			);
-			path = SwiftJson;
 			sourceTree = "<group>";
 		};
 		EF455F171D33847500E9539F /* UIButton+Badge */ = {
@@ -1285,12 +1274,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = penghao;
 				TargetAttributes = {
 					EFE4593A1C477EE900B8B24C = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 5A79UN6C3M;
+						LastSwiftMigration = 0830;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -1302,10 +1292,12 @@
 					};
 					EFE4594E1C477EE900B8B24C = {
 						CreatedOnToolsVersion = 7.2;
+						LastSwiftMigration = 0830;
 						TestTargetID = EFE4593A1C477EE900B8B24C;
 					};
 					EFE459591C477EE900B8B24C = {
 						CreatedOnToolsVersion = 7.2;
+						LastSwiftMigration = 0830;
 						TestTargetID = EFE4593A1C477EE900B8B24C;
 					};
 				};
@@ -1394,7 +1386,7 @@
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
-				"${BUILT_PRODUCTS_DIR}/XCGLogger/XCGLogger.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -1410,7 +1402,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/XCGLogger.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1519,8 +1511,7 @@
 				EF455F851D33847500E9539F /* GoodDetailEntity.swift in Sources */,
 				EF455FBA1D33847500E9539F /* UIButton+Badge.m in Sources */,
 				EF455F6F1D33847500E9539F /* DeliverGoodsedViewController.swift in Sources */,
-				EFD7D0031C7BFC6800DA8C1B /* (null) in Sources */,
-				EF455FB91D33847500E9539F /* SwiftyJSON.swift in Sources */,
+				EFD7D0031C7BFC6800DA8C1B /* BuildFile in Sources */,
 				EF455FA71D33847500E9539F /* PHJPushHelper.swift in Sources */,
 				63F360EA1EEB78F500F72A0D /* PersonalCenterCollectionViewCell.swift in Sources */,
 				EF455F571D33847500E9539F /* RobbedListViewController.swift in Sources */,
@@ -1667,13 +1658,21 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -1714,13 +1713,21 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -1742,6 +1749,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1774,6 +1782,7 @@
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "pointSingleThatIsTo/pointSingleThatIsTo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/** $(PROJECT_DIR)/pointSingleThatIsTo/Vendors/PHFramework/Jpush";
 			};
 			name = Debug;
@@ -1805,6 +1814,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "pointSingleThatIsTo/pointSingleThatIsTo-Bridging-Header.h";
+				SWIFT_VERSION = 4.0;
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/** $(PROJECT_DIR)/pointSingleThatIsTo/Vendors/PHFramework/Jpush";
 			};
 			name = Release;
@@ -1817,6 +1827,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nmore.pointSingleThatIsToTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/pointSingleThatIsTo.app/pointSingleThatIsTo";
 			};
 			name = Debug;
@@ -1829,6 +1840,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nmore.pointSingleThatIsToTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/pointSingleThatIsTo.app/pointSingleThatIsTo";
 			};
 			name = Release;
@@ -1840,6 +1852,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nmore.pointSingleThatIsToUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = pointSingleThatIsTo;
 				USES_XCTRUNNER = YES;
 			};
@@ -1852,6 +1865,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nmore.pointSingleThatIsToUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = pointSingleThatIsTo;
 				USES_XCTRUNNER = YES;
 			};

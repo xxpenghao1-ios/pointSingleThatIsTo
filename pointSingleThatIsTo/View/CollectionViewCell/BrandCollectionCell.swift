@@ -13,17 +13,17 @@ class BrandCollectionCell:UICollectionViewCell {
     override init(frame:CGRect) {
         super.init(frame:frame)
         if frame.width < boundsWidth/3-10{
-            btn=UIButton(frame:CGRectMake(10,10,frame.width-20,28))
-            btn.titleLabel!.font=UIFont.systemFontOfSize(12)
+            btn=UIButton(frame:CGRect(x: 10,y: 10,width: frame.width-20,height: 28))
+            btn.titleLabel!.font=UIFont.systemFont(ofSize: 12)
             btn.layer.cornerRadius=14
         }else{
-            btn=UIButton(frame:CGRectMake(10,10,boundsWidth/3-20,32))
-            btn.titleLabel!.font=UIFont.systemFontOfSize(14)
+            btn=UIButton(frame:CGRect(x: 10,y: 10,width: boundsWidth/3-20,height: 32))
+            btn.titleLabel!.font=UIFont.systemFont(ofSize: 14)
             btn.layer.cornerRadius=16
         }
         btn.layer.borderWidth=1
-        btn.layer.borderColor=UIColor(red:0, green:214/255, blue:152/255, alpha:1).CGColor
-        btn.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
+        btn.layer.borderColor=UIColor(red:0, green:214/255, blue:152/255, alpha:1).cgColor
+        btn.setTitleColor(UIColor.black, for: UIControlState())
         self.contentView.addSubview(btn)
         
     }
@@ -32,8 +32,8 @@ class BrandCollectionCell:UICollectionViewCell {
      
      - parameter entity:
      */
-    func updateCell(entity:GoodsCategoryEntity){
-        btn.setTitle(entity.brandname, forState: UIControlState.Normal)
+    func updateCell(_ entity:GoodsCategoryEntity){
+        btn.setTitle(entity.brandname, for: UIControlState())
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

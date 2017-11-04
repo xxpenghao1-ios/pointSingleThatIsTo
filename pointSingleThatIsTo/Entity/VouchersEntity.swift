@@ -15,8 +15,8 @@ class VouchersEntity:Mappable {
     var cashCouponExpirationDateInt:Int?
     var cashCouponId:Int?
     init(){}
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         cashCouponAmountOfMoney <- map["cashCouponAmountOfMoney"]

@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
+import SwiftyJSON
 
 class RegisterValidationViewController:UIViewController{
     /// 手机号码
@@ -27,7 +28,7 @@ class RegisterValidationViewController:UIViewController{
     /// 下一步 按钮
     var btnNext:UIButton?
     /// 时间器
-    var timer:NSTimer?;
+    var timer:Timer?;
     /// 时间跳动的数字
     var count=60
     
@@ -36,7 +37,7 @@ class RegisterValidationViewController:UIViewController{
         //显示导航栏
         self.navigationController?.setNavigationBarHidden(false, animated:true)
         //设置背景色
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         initFunc()
     }
     //方法流程
@@ -49,58 +50,58 @@ class RegisterValidationViewController:UIViewController{
     func initview(){
         //画横线用的view
         let lianview=UIView()
-        lianview.frame=CGRectMake(-1, 80, boundsWidth+2, 50)
+        lianview.frame=CGRect(x: -1, y: 80, width: boundsWidth+2, height: 50)
         lianview.layer.borderWidth=1
-        lianview.layer.borderColor=UIColor.borderColor().CGColor
+        lianview.layer.borderColor=UIColor.borderColor().cgColor
         self.view.addSubview(lianview)
         //验证码 标签
         let lblCode:UILabel=UILabel()
-        lblCode.frame=CGRectMake(0, CGRectGetMinY(lianview.frame)+15, boundsWidth*2/7, 20)
+        lblCode.frame=CGRect(x: 0, y: lianview.frame.minY+15, width: boundsWidth*2/7, height: 20)
         lblCode.text="验证码"
-        lblCode.font=UIFont.systemFontOfSize(16)
-        lblCode.textAlignment=NSTextAlignment.Center
+        lblCode.font=UIFont.systemFont(ofSize: 16)
+        lblCode.textAlignment=NSTextAlignment.center
         
         self.view.addSubview(lblCode)
         /// 验证码输入框
         feildCode=UITextField()
-        feildCode?.font=UIFont.systemFontOfSize(14)
+        feildCode?.font=UIFont.systemFont(ofSize: 14)
         feildCode?.placeholder="手机收到的验证码"
-        feildCode?.frame=CGRectMake(CGRectGetMaxX(lblCode.frame), CGRectGetMinY(lblCode.frame), boundsWidth*3/7, 20)
-        feildCode?.backgroundColor=UIColor.whiteColor()
-        feildCode?.clearButtonMode=UITextFieldViewMode.Always
-        feildCode?.keyboardType=UIKeyboardType.NumberPad
+        feildCode?.frame=CGRect(x: lblCode.frame.maxX, y: lblCode.frame.minY, width: boundsWidth*3/7, height: 20)
+        feildCode?.backgroundColor=UIColor.white
+        feildCode?.clearButtonMode=UITextFieldViewMode.always
+        feildCode?.keyboardType=UIKeyboardType.numberPad
         self.view.addSubview(feildCode!)
         //隔开线
         let tolian=UIView()
-        tolian.frame=CGRectMake(CGRectGetMaxX(feildCode!.frame)+1, CGRectGetMinY(lianview.frame)+5, 1, 40)
+        tolian.frame=CGRect(x: feildCode!.frame.maxX+1, y: lianview.frame.minY+5, width: 1, height: 40)
         tolian.backgroundColor=UIColor.borderColor()
         self.view.addSubview(tolian)
         
         /// 获取验证码按钮
         getCode=UIButton()
-        getCode?.frame=CGRectMake(CGRectGetMaxX(feildCode!.frame), CGRectGetMinY(lblCode.frame), boundsWidth*2/7, 20)
-        getCode?.setTitle("获取验证码", forState: UIControlState.Normal)
-        getCode?.setTitleColor(UIColor(red: 0.91, green: 0.40, blue: 0.55, alpha: 1), forState: UIControlState.Normal)
-        getCode?.titleLabel?.font=UIFont.systemFontOfSize(16)
-        getCode?.addTarget(self, action: "getCodeBtn:", forControlEvents: UIControlEvents.TouchUpInside)
+        getCode?.frame=CGRect(x: feildCode!.frame.maxX, y: lblCode.frame.minY, width: boundsWidth*2/7, height: 20)
+        getCode?.setTitle("获取验证码", for: UIControlState())
+        getCode?.setTitleColor(UIColor(red: 0.91, green: 0.40, blue: 0.55, alpha: 1), for: UIControlState())
+        getCode?.titleLabel?.font=UIFont.systemFont(ofSize: 16)
+        getCode?.addTarget(self, action:#selector(getCodeBtn), for: UIControlEvents.touchUpOutside)
         self.view.addSubview(getCode!)
         /// 下一步按钮
         btnNext=UIButton()
-        btnNext?.frame=CGRectMake(30, CGRectGetMaxY(getCode!.frame)+50, boundsWidth-60, 40)
-        btnNext?.backgroundColor=UIColor.redColor()
+        btnNext?.frame=CGRect(x: 30, y: getCode!.frame.maxY+50, width: boundsWidth-60, height: 40)
+        btnNext?.backgroundColor=UIColor.red
         btnNext?.layer.cornerRadius=20
-        btnNext?.setTitle("下一步", forState: UIControlState.Normal)
-        btnNext?.addTarget(self, action: "clickBtn:", forControlEvents: UIControlEvents.TouchUpInside)
+        btnNext?.setTitle("下一步", for: .normal)
+        btnNext?.addTarget(self, action:#selector(clickBtn), for: UIControlEvents.touchUpInside)
         self.view.addSubview(btnNext!)
         
         
         
     }
     //点击 下一步按钮  触发
-    func clickBtn(sender:UIButton){
+    @objc func clickBtn(_ sender:UIButton){
         let count=feildCode?.text?.characters.count
         if feildCode?.text==nil||count==0{
-            SVProgressHUD.showInfoWithStatus("请输入验证码", maskType: .Clear)
+            SVProgressHUD.showInfo(withStatus:"请输入验证码")
         }else{
             if self.ranCode != nil{
                 if feildCode?.text==self.ranCode{
@@ -109,7 +110,7 @@ class RegisterValidationViewController:UIViewController{
                     vc.flag=self.flag
                     self.navigationController?.pushViewController(vc, animated:true);
                 }else{
-                    SVProgressHUD.showErrorWithStatus("验证码错误", maskType: .Clear)
+                    SVProgressHUD.showError(withStatus: "验证码错误", maskType: .clear)
                 }
             }
         }
@@ -126,24 +127,24 @@ class RegisterValidationViewController:UIViewController{
                 let json=JSON(result)
                 let success=json["success"].stringValue
                 if success=="failds"{
-                    SVProgressHUD.showErrorWithStatus("发送失败")
+                    SVProgressHUD.showError(withStatus: "发送失败")
                 }else if success=="error"{
-                    SVProgressHUD.showErrorWithStatus("服务器异常")
+                    SVProgressHUD.showError(withStatus: "服务器异常")
                 }else if success=="success"{
                     self.ranCode=json["randCode"].stringValue
                 }
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
     //点击 （获取验证码按钮）触发
-    func getCodeBtn(sender:UIButton){
+    @objc func getCodeBtn(_ sender:UIButton){
         httpGetCode()
-        getCode!.enabled=false
-        getCode?.setTitleColor(UIColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1), forState: UIControlState.Normal)
+        getCode!.isEnabled=false
+        getCode?.setTitleColor(UIColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1), for: UIControlState())
         //创建定时器每隔一秒钟执行一次
         if timer == nil {
-            timer=NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: "updateTimer:", userInfo: nil, repeats: true);
+            timer=Timer.scheduledTimer(timeInterval: 1, target: self, selector: "updateTimer:", userInfo: nil, repeats: true);
         }else{
             self.timer?.invalidate();
             self.timer = nil;
@@ -161,12 +162,12 @@ class RegisterValidationViewController:UIViewController{
     }
     
     //定时器方法
-    func updateTimer(timer:NSTimer){
+    func updateTimer(_ timer:Timer){
         //更改验证按信息
         count-=1;
-        getCode?.setTitle("还剩\(count)秒", forState: UIControlState.Normal)
-        getCode!.enabled=false
-        getCode?.setTitleColor(UIColor(red: 0.91, green: 0.40, blue: 0.55, alpha: 1), forState: UIControlState.Normal)
+        getCode?.setTitle("还剩\(count)秒", for: UIControlState())
+        getCode!.isEnabled=false
+        getCode?.setTitleColor(UIColor(red: 0.91, green: 0.40, blue: 0.55, alpha: 1), for: UIControlState())
         //计时数每次-1；
         
         //等于0的时候关闭计时器
@@ -174,25 +175,25 @@ class RegisterValidationViewController:UIViewController{
             self.timer?.invalidate();
             self.timer = nil;
             //重新设置验证lbl
-            getCode?.setTitle("重新获取", forState: UIControlState.Normal)
+            getCode?.setTitle("重新获取", for: UIControlState())
             count=60;
-            getCode!.enabled=true
-            getCode?.setTitleColor(UIColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1), forState: UIControlState.Normal)
+            getCode!.isEnabled=true
+            getCode?.setTitleColor(UIColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1), for: UIControlState())
             
         }
     }
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         //清空计时器
         self.timer?.invalidate();
         self.timer = nil;
         feildCode?.text=nil
-        getCode?.setTitle("获取验证码", forState: UIControlState.Normal)
+        getCode?.setTitle("获取验证码", for: UIControlState())
     }
 
 
     //点击view区域收起输入键盘
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
 

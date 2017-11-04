@@ -39,7 +39,7 @@ class BaseViewController: UIViewController {
 //    func hideLoadingView() {
 //        self._loadView?.removeFromSuperview()
 //    }
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if SVProgressHUD.isVisible(){
             SVProgressHUD.dismiss()

@@ -27,8 +27,8 @@ class SubstationEntity:Mappable {
     var stateType:Int?
     ///是否开启店铺可以签到；1开启。2不开启；默认不开启
     var  storeSignStatu:Int?
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         substationName <- map["substationName"]

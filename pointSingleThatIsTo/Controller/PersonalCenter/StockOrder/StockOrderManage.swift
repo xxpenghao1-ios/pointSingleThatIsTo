@@ -23,7 +23,7 @@ class StockOrderManage:BaseViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         self.title="进货订单"
         UnDeliverGoodsVC.title="未发货"
         DeliverGoodsVC.title="已发货"
@@ -32,7 +32,7 @@ class StockOrderManage:BaseViewController{
         SKScNav.showArrowButton=false
         SKScNav.addParentController(self)
         if flag == 2{
-            self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Stop, target:self, action:"cancel")
+            self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.stop, target:self, action:"cancel")
         }
         
     }
@@ -40,7 +40,7 @@ class StockOrderManage:BaseViewController{
      关闭页面
      */
     func cancel(){
-        self.dismissViewControllerAnimated(true, completion:nil)
+        self.dismiss(animated: true, completion:nil)
     }
 
 }

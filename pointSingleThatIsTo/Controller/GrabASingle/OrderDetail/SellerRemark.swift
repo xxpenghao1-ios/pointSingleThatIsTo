@@ -30,33 +30,33 @@ class SellerRemark:BaseViewController,UITextViewDelegate{
     */
     func creatUI(){
         //文本容器
-        textViews=UITextView(frame: CGRectMake(10, 84, boundsWidth-20, 100));
-        textViews.font=UIFont.systemFontOfSize(14)
+        textViews=UITextView(frame: CGRect(x: 10, y: 84, width: boundsWidth-20, height: 100));
+        textViews.font=UIFont.systemFont(ofSize: 14)
         textViews.layer.borderWidth=0.5
-        textViews.layer.borderColor=UIColor.borderColor().CGColor
+        textViews.layer.borderColor=UIColor.borderColor().cgColor
         textViews.placeholder="输入你想说的话..."
         textViews.text=textLbl
         //textView响应弹出键盘
         textViews.resignFirstResponder();
-        textViews.hidden = false
+        textViews.isHidden = false
         textViews.delegate=self
         self.view.addSubview(textViews)
         
         //完成按钮
-        confirmBtn=UIButton(frame: CGRectMake(10, CGRectGetMaxY(textViews.frame)+10, boundsWidth-20, 45))
-        confirmBtn.setTitle("完成", forState: UIControlState.Normal)
-        confirmBtn.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        confirmBtn=UIButton(frame: CGRect(x: 10, y: textViews.frame.maxY+10, width: boundsWidth-20, height: 45))
+        confirmBtn.setTitle("完成", for: UIControlState())
+        confirmBtn.setTitleColor(UIColor.white, for: UIControlState())
         confirmBtn.backgroundColor=UIColor.applicationMainColor()
         confirmBtn.layer.cornerRadius=5
         self.view.addSubview(confirmBtn)
         //添加点击事件
-        confirmBtn.addTarget(self, action: "actionRemark:", forControlEvents: UIControlEvents.TouchUpInside)
+        confirmBtn.addTarget(self, action: "actionRemark:", for: UIControlEvents.touchUpInside)
     }
-    func textViewDidEndEditing(textView: UITextView) {
+    func textViewDidEndEditing(_ textView: UITextView) {
         NSLog("DidEndEditing---\(textView.text)")
     }
     //文本框变化事件
-    func textViewDidChange(textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         //接收textView的值
         textLbl=textView.text
         NSLog("DidChange---\(textView.text)")
@@ -66,14 +66,14 @@ class SellerRemark:BaseViewController,UITextViewDelegate{
     
     - parameter sender: 当前完成按钮
     */
-    func actionRemark(sender:UIButton){
+    func actionRemark(_ sender:UIButton){
         //发送通知
-        NSNotificationCenter.defaultCenter().postNotificationName("remarkNotification", object: textLbl)
-        self.navigationController?.popViewControllerAnimated(true)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "remarkNotification"), object: textLbl)
+        self.navigationController?.popViewController(animated: true)
         
     }
     //点击view隐藏键盘
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
     

@@ -12,8 +12,8 @@ import UIKit
    返回一个网络异常提示view
 */
 func networkAnomaliesView() ->UIView{
-    let view=UIView(frame:CGRectMake(0,0,260,253));
-    let imgView=UIImageView(frame:CGRectMake(0,0,260,253));
+    let view=UIView(frame:CGRect(x: 0,y: 0,width: 260,height: 253));
+    let imgView=UIImageView(frame:CGRect(x: 0,y: 0,width: 260,height: 253));
     imgView.image=UIImage(named:"network.png")
     view.addSubview(imgView);
     return view;

@@ -11,7 +11,7 @@ import UIKit
 import ObjectMapper
 import SVProgressHUD
 import Alamofire
-
+import SwiftyJSON
 /// 下单页面(传入Dictionary<String,GoodDetailEntity>,totalPirce)
 class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewDelegate{
     /// 接收购物车传过来选中的商品
@@ -21,37 +21,37 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
     /// 接收传入商品总数
     var sumCount:Int?
     /// 保存地址数组
-    private var addressArr=NSMutableArray()
+    fileprivate var addressArr=NSMutableArray()
     /// table
-    private var table:UITableView?
+    fileprivate var table:UITableView?
     /// 接收买家附言
-    private var buyerRemark:String?
+    fileprivate var buyerRemark:String?
     
-    private var updateViewFlag=false
+    fileprivate var updateViewFlag=false
     
     /// 展示总价lbl
-    private var lblTotalPrice:UILabel?
+    fileprivate var lblTotalPrice:UILabel?
     
     /// 下单按钮
-    private var btnOrdering:UIButton?
+    fileprivate var btnOrdering:UIButton?
     
     /// 保存收获地址
-    private var addressEntity:AddressEntity?
+    fileprivate var addressEntity:AddressEntity?
     
     //保存代金券使用下限
-    private var cashcouponLowerLimitOfUse=0
+    fileprivate var cashcouponLowerLimitOfUse=0
     //保存是否开启可以使用代金券 默认2关闭,1开启
-    private var cashcouponStatu=2
+    fileprivate var cashcouponStatu=2
     //保存代金券信息
-    private var vouchersEntity:VouchersEntity?
+    fileprivate var vouchersEntity:VouchersEntity?
     
-    private let storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as! String
+    fileprivate let storeId=UserDefaults.standard.object(forKey: "storeId") as! String
     
-    private let memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as! String
-    private let substationId=userDefaults.objectForKey("substationId") as! String
+    fileprivate let memberId=UserDefaults.standard.object(forKey: "memberId") as! String
+    fileprivate let substationId=userDefaults.object(forKey: "substationId") as! String
     
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         //每次进入页面刷新页面
         if updateViewFlag{
@@ -64,20 +64,19 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="确认订单"
-        self.view.backgroundColor=UIColor.whiteColor()
-        if IJReachability.isConnectedToNetwork(){
-            table=UITableView(frame:CGRectMake(0,0,boundsWidth,boundsHeight-50), style: UITableViewStyle.Plain)
+        self.view.backgroundColor=UIColor.white
+            table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-50), style: UITableViewStyle.plain)
             table!.dataSource=self
             table!.delegate=self
             self.view.addSubview(table!)
             //移除空单元格
-            table!.tableFooterView = UIView(frame:CGRectZero)
+            table!.tableFooterView = UIView(frame:CGRect.zero)
             //设置cell下边线全屏
-            if(table!.respondsToSelector("setLayoutMargins:")){
-                table?.layoutMargins=UIEdgeInsetsZero
+        if(table!.responds(to: #selector(setter: UIView.layoutMargins))){
+                table?.layoutMargins=UIEdgeInsets.zero
             }
-            if(table!.respondsToSelector("setSeparatorInset:")){
-                table?.separatorInset=UIEdgeInsetsZero;
+        if(table!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
+                table?.separatorInset=UIEdgeInsets.zero;
             }
             buildOrderingView()
             //请求地址信息
@@ -85,19 +84,16 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
             //请求代金券是否可以使用
             requestSubStationCC()
             //监听附言通知
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateRemark:", name: "remarkNotification", object: nil)
-        }else{
-            SVProgressHUD.showErrorWithStatus("无网络连接")
-        }
+        NotificationCenter.default.addObserver(self, selector: Selector("updateRemark:"), name: NSNotification.Name(rawValue: "remarkNotification"), object: nil)
     }
     
     /**
      请代金券是否可以使用
      */
     func requestSubStationCC(){
-        request(.GET,URLIMG+"/cc/querySubStationCC", parameters:["substationId":substationId]).responseJSON{ response in
+        request(URLIMG+"/cc/querySubStationCC",method:.get,parameters:["substationId":substationId]).responseJSON{ response in
             if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+                SVProgressHUD.showError(withStatus: response.result.error!.localizedDescription)
             }
             if response.result.value != nil{
                 let json=JSON(response.result.value!)
@@ -112,21 +108,21 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
      */
     func buildOrderingView(){
         /// 订单视图
-        let orderingView=UIView(frame:CGRectMake(0,boundsHeight-50,boundsWidth,50))
+        let orderingView=UIView(frame:CGRect(x: 0,y: boundsHeight-50,width: boundsWidth,height: 50))
         orderingView.backgroundColor=UIColor(red:32/255, green: 32/255, blue: 32/255, alpha: 1)
-        lblTotalPrice=UILabel(frame:CGRectMake(15,15,boundsWidth/2,20))
+        lblTotalPrice=UILabel(frame:CGRect(x: 15,y: 15,width: boundsWidth/2,height: 20))
         lblTotalPrice!.text="总价 : ￥\(totalPirce!)"
-        lblTotalPrice!.textColor=UIColor.whiteColor()
-        lblTotalPrice!.font=UIFont.systemFontOfSize(14)
+        lblTotalPrice!.textColor=UIColor.white
+        lblTotalPrice!.font=UIFont.systemFont(ofSize: 14)
         orderingView.addSubview(lblTotalPrice!)
         
         //下单按钮
-        btnOrdering=UIButton(frame:CGRectMake(orderingView.frame.width/3*2,0,orderingView.frame.width/3,50))
+        btnOrdering=UIButton(frame:CGRect(x: orderingView.frame.width/3*2,y: 0,width: orderingView.frame.width/3,height: 50))
         btnOrdering!.backgroundColor=UIColor.applicationMainColor()
-        btnOrdering!.setTitle("提交订单", forState: UIControlState.Normal)
-        btnOrdering!.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
-        btnOrdering!.titleLabel!.font=UIFont.systemFontOfSize(15)
-        btnOrdering!.addTarget(self, action:"submitOrder:", forControlEvents: UIControlEvents.TouchUpInside);
+        btnOrdering!.setTitle("提交订单", for: UIControlState())
+        btnOrdering!.setTitleColor(UIColor.white, for: UIControlState())
+        btnOrdering!.titleLabel!.font=UIFont.systemFont(ofSize: 15)
+        btnOrdering!.addTarget(self, action:Selector(("submitOrder:")), for: UIControlEvents.touchUpInside);
         orderingView.addSubview(btnOrdering!)
         
         
@@ -137,15 +133,15 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
      
      - parameter sender:UIButton
      */
-    func submitOrder(sender:UIButton){
-        if IJReachability.isConnectedToNetwork(){
+    func submitOrder(_ sender:UIButton){
+        
             if self.addressArr.count > 0{//查看用户是否有收获地址信息
                 self.buyerRemark=self.buyerRemark ?? ""
                 //详细地址
                 let detailAddress=addressEntity!.province!+addressEntity!.city!+addressEntity!.county!+addressEntity!.detailAddress!;
                 /// 把字典中的entity转换成json格式的字符串
                 let goodsList=toJSONString(arr)
-                SVProgressHUD.showWithStatus("数据加载中", maskType: .Clear)
+                SVProgressHUD.show(withStatus: "数据加载中", maskType: .clear)
                 var cashCouponId:Int?
                 if self.vouchersEntity != nil{
                    cashCouponId=self.vouchersEntity!.cashCouponId
@@ -155,36 +151,36 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                     let success=json["success"].stringValue
                     if success == "success"{
                         var badgeCount=0
-                        for(var i=0;i<self.arr.count;i++){
+                        for i in 0...self.arr.count{
                             
                             let entity=self.arr[i] as! GoodDetailEntity
                             badgeCount+=entity.carNumber!
                         }
                         //发送通知更新角标
-                        NSNotificationCenter.defaultCenter().postNotificationName("postBadgeValue",object:3, userInfo:["carCount":badgeCount])
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "postBadgeValue"),object:3, userInfo:["carCount":badgeCount])
                         
-                        let alert=UIAlertController(title:"点单即到", message:"下单成功,您的货物会在24小时内送货上门,请注意查收。", preferredStyle: UIAlertControllerStyle.Alert)
-                        let ok=UIAlertAction(title:"查看订单", style: UIAlertActionStyle.Default, handler:{ Void in
+                        let alert=UIAlertController(title:"点单即到", message:"下单成功,您的货物会在24小时内送货上门,请注意查收。", preferredStyle: UIAlertControllerStyle.alert)
+                        let ok=UIAlertAction(title:"查看订单", style: UIAlertActionStyle.default, handler:{ Void in
                             //弹出订单页面
                             let vc=StockOrderManage()
                             vc.flag=2
                             let nav=UINavigationController(rootViewController:vc)
-                            self.presentViewController(nav, animated:true, completion:nil)
-                            self.navigationController!.popToRootViewControllerAnimated(true);
+                            self.present(nav, animated:true, completion:nil)
+                            self.navigationController!.popToRootViewController(animated: true);
                         })
-                        let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.Cancel, handler:{ Void in
-                            self.navigationController!.popToRootViewControllerAnimated(true);
+                        let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.cancel, handler:{ Void in
+                            self.navigationController!.popToRootViewController(animated: true);
                         })
                         alert.addAction(cancel)
                         alert.addAction(ok)
-                        self.presentViewController(alert, animated:true, completion:nil)
+                        self.present(alert, animated:true, completion:nil)
                     }else if success == "info"{
                         let info=json["info"].stringValue
                         UIAlertController.showAlertYes(self, title:"点单即到", message:info, okButtonTitle:"确定", okHandler: { (UIAlertAction) -> Void in
-                            self.navigationController!.popToRootViewControllerAnimated(true);
+                            self.navigationController!.popToRootViewController(animated: true);
                         })
                     }else{
-                        SVProgressHUD.showErrorWithStatus("提交订单失败")
+                        SVProgressHUD.showError(withStatus: "提交订单失败")
                         if self.buyerRemark == "无附言"{
                             self.buyerRemark=nil
                         }
@@ -192,14 +188,11 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                     SVProgressHUD.dismiss()
 
                     }, failClosure: { (errorMsg) -> Void in
-                        SVProgressHUD.showErrorWithStatus(errorMsg)
+                        SVProgressHUD.showError(withStatus: errorMsg)
                 })
             }else{
-                SVProgressHUD.showInfoWithStatus("请先添加收货地址")
+                SVProgressHUD.showInfo(withStatus: "请先添加收货地址")
             }
-        }else{
-            SVProgressHUD.showErrorWithStatus("无网络连接")
-        }
     }
     /**
      请求地址信息
@@ -208,41 +201,41 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStoreShippAddressforAndroid(storeId: storeId), successClosure: { (result) -> Void in
             let json=JSON(result)
             for(_,value) in json{
-                let entity=Mapper<AddressEntity>().map(value.object)
+                let entity=Mapper<AddressEntity>().map(JSONObject:value.object)
                 entity?.detailAddress=entity?.detailAddress ?? ""
                 entity?.phoneNumber=entity?.phoneNumber ?? ""
                 entity?.shippName=entity?.shippName ?? ""
-                self.addressArr.addObject(entity!)
+                self.addressArr.add(entity!)
             }
             self.table?.reloadData()
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
     //给每个组的尾部添加视图
-    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let view=UIView(frame:CGRectZero)
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view=UIView(frame:CGRect.zero)
         view.backgroundColor=UIColor.viewBackgroundColor()
         return view
     }
     //给每个分组的尾部设置10高度
-    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 5
     }
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellId="cell id"
-        var cell=tableView.dequeueReusableCellWithIdentifier(cellId)
+        var cell=tableView.dequeueReusableCell(withIdentifier: cellId)
         if cell == nil{
-            cell=UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: cellId)
+            cell=UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: cellId)
         }else{
-            cell=UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: cellId)
+            cell=UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: cellId)
         }
         //设置cell下边线全屏
-        if(cell!.respondsToSelector("setLayoutMargins:")){
-            cell!.layoutMargins=UIEdgeInsetsZero
+        if(cell!.responds(to: #selector(setter: UIView.layoutMargins))){
+            cell!.layoutMargins=UIEdgeInsets.zero
         }
-        if(cell!.respondsToSelector("setSeparatorInset:")){
-            cell!.separatorInset=UIEdgeInsetsZero;
+        if(cell!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
+            cell!.separatorInset=UIEdgeInsets.zero;
         }
         switch indexPath.section{
         case 0:
@@ -252,16 +245,17 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 var goodViewX:CGFloat=15
                 /// 计算数组加载了几次
                 var count=0
-                for(var i=0;i<arr.count;i++){//循环集合
+                for i in 0...arr.count{
                     let entity=arr[i] as! GoodDetailEntity
-                    count++
+                    count+=1
                     ///创建商品图片view
-                    let goodView=UIView(frame:CGRectMake(goodViewX,10,60,60))
+                    let goodView=UIView(frame:CGRect(x: goodViewX,y: 10,width: 60,height: 60))
                     goodView.layer.borderWidth=1
-                    goodView.layer.borderColor=UIColor.viewBackgroundColor().CGColor
+                    goodView.layer.borderColor=UIColor.viewBackgroundColor().cgColor
                     /// 创建商品图片
-                    let goodImgView=UIImageView(frame:CGRectMake(0,0,60,60))
-                    goodImgView.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
+                    let goodImgView=UIImageView(frame:CGRect(x: 0,y: 0,width: 60,height: 60))
+                    entity.goodPic=entity.goodPic ?? ""
+                    goodImgView.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
                     goodView.addSubview(goodImgView)
                     cell!.contentView.addSubview(goodView)
                     goodViewX+=70
@@ -270,8 +264,8 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                     }
                 }
                 cell!.detailTextLabel!.text="共计\(sumCount!)件商品"
-                cell!.detailTextLabel!.font=UIFont.systemFontOfSize(14)
-                cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
+                cell!.detailTextLabel!.font=UIFont.systemFont(ofSize: 14)
+                cell!.accessoryType=UITableViewCellAccessoryType.disclosureIndicator
                 break
             default:
                 break
@@ -281,21 +275,21 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
             if self.addressArr.count > 0{
                 cell!.textLabel!.text=nil
                 /// 姓名手机号码
-                let lblNameAndPhone=UILabel(frame:CGRectMake(15,10,boundsWidth-30,20))
+                let lblNameAndPhone=UILabel(frame:CGRect(x: 15,y: 10,width: boundsWidth-30,height: 20))
                 lblNameAndPhone.textColor=UIColor.textColor()
-                lblNameAndPhone.font=UIFont.systemFontOfSize(14)
+                lblNameAndPhone.font=UIFont.systemFont(ofSize: 14)
                 cell!.contentView.addSubview(lblNameAndPhone)
                 /// 省市区
-                let lblAddress=UILabel(frame:CGRectMake(15,CGRectGetMaxY(lblNameAndPhone.frame)+10,boundsWidth-60,20))
+                let lblAddress=UILabel(frame:CGRect(x: 15,y: lblNameAndPhone.frame.maxY+10,width: boundsWidth-60,height: 20))
                 lblAddress.textColor=UIColor.textColor()
-                lblAddress.font=UIFont.systemFontOfSize(14)
+                lblAddress.font=UIFont.systemFont(ofSize: 14)
                 cell!.contentView.addSubview(lblAddress)
                 /// 详细地址
-                let lblDetailAddress=UILabel(frame:CGRectMake(15,CGRectGetMaxY(lblAddress.frame)+10,boundsWidth-30,20))
+                let lblDetailAddress=UILabel(frame:CGRect(x: 15,y: lblAddress.frame.maxY+10,width: boundsWidth-30,height: 20))
                 lblDetailAddress.textColor=UIColor.textColor()
-                lblDetailAddress.font=UIFont.systemFontOfSize(14)
+                lblDetailAddress.font=UIFont.systemFont(ofSize: 14)
                 cell!.contentView.addSubview(lblDetailAddress)
-                for(var i=0;i<self.addressArr.count;i++){//循环所有地址信息
+                for i in 0...self.addressArr.count{//循环所有地址信息
                     let entity=self.addressArr[i] as! AddressEntity
                     if entity.defaultFlag == 1{//如果有默认地址的加载默认地址
                         addressEntity=entity
@@ -312,19 +306,19 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 lblDetailAddress.text=addressEntity!.detailAddress
             }else{
                 cell!.textLabel!.text="+添加收货地址"
-                cell!.textLabel!.font=UIFont.systemFontOfSize(15)
-                cell!.textLabel!.textColor=UIColor.redColor()
+                cell!.textLabel!.font=UIFont.systemFont(ofSize: 15)
+                cell!.textLabel!.textColor=UIColor.red
             }
-            cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
+            cell!.accessoryType=UITableViewCellAccessoryType.disclosureIndicator
             break
         case 2:
-            let name=UILabel(frame:CGRectMake(15,15,70,20))
+            let name=UILabel(frame:CGRect(x: 15,y: 15,width: 70,height: 20))
             name.textColor=UIColor.textColor()
-            name.font=UIFont.systemFontOfSize(14)
+            name.font=UIFont.systemFont(ofSize: 14)
             cell!.contentView.addSubview(name)
-            let nameValue=UILabel(frame:CGRectMake(CGRectGetMaxX(name.frame),15,100,20))
-            nameValue.font=UIFont.systemFontOfSize(14)
-            nameValue.textColor=UIColor.redColor()
+            let nameValue=UILabel(frame:CGRect(x: name.frame.maxX,y: 15,width: 100,height: 20))
+            nameValue.font=UIFont.systemFont(ofSize: 14)
+            nameValue.textColor=UIColor.red
             cell!.contentView.addSubview(nameValue)
             switch indexPath.row{
             case 0:
@@ -340,15 +334,15 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 if self.buyerRemark == nil{
                     nameValue.text="+点击添加附言"
                 }else{
-                    cell!.detailTextLabel!.font=UIFont.systemFontOfSize(14)
+                    cell!.detailTextLabel!.font=UIFont.systemFont(ofSize: 14)
                     cell!.detailTextLabel!.text=self.buyerRemark
                 }
-                cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
+                cell!.accessoryType=UITableViewCellAccessoryType.disclosureIndicator
                 break
             case 3:
                 name.text="代金券:"
-                cell!.detailTextLabel!.font=UIFont.systemFontOfSize(14)
-                cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
+                cell!.detailTextLabel!.font=UIFont.systemFont(ofSize: 14)
+                cell!.accessoryType=UITableViewCellAccessoryType.disclosureIndicator
                 if vouchersEntity == nil{
                     cell!.detailTextLabel!.text="满\(cashcouponLowerLimitOfUse)元可以使用代金券"
                 }else{
@@ -364,11 +358,11 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
         }
         return cell!
     }
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 3
     }
     //返回tabview的行数
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         switch section{
             case 0:
                 return 1
@@ -386,7 +380,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
         return 0
     }
     //返回tabview的高度
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
         switch indexPath.section{
         case 0:
             return 80
@@ -403,9 +397,9 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
         }
         return 0;
     }
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //取消选中的样式
-        tableView.deselectRowAtIndexPath(indexPath, animated: true);
+        tableView.deselectRow(at: indexPath, animated: true);
         switch indexPath.section{
         case 0://跳转到购物清单
             let vc=OrderGoodViewController()
@@ -440,7 +434,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                     }
                     self.navigationController?.pushViewController(vc, animated:true)
                 }else{
-                   SVProgressHUD.showInfoWithStatus("订单金额要满\(cashcouponLowerLimitOfUse)元才能使用代金券")
+                    SVProgressHUD.showInfo(withStatus: "订单金额要满\(cashcouponLowerLimitOfUse)元才能使用代金券")
                 }
                 break
             default:
@@ -456,7 +450,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
      
      - parameter obj: 传入的参数
      */
-    func updateRemark(obj:NSNotification){
+    func updateRemark(_ obj:Notification){
         var str=obj.object as? String
         if str == nil || str == ""{
             str=nil

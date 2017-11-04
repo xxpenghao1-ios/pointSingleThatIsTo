@@ -10,29 +10,30 @@ import Foundation
 import UIKit
 import SVProgressHUD
 import ObjectMapper
+import SwiftyJSON
 /// 兑换记录
 class RecordOfConversionViewController:BaseViewController{
     /// table视图
-    private var table:UITableView?
+    fileprivate var table:UITableView?
     /// 空视图提示
-    private var lblNilTitle:UILabel?
+    fileprivate var lblNilTitle:UILabel?
     /// 数据源
-    private var arr=NSMutableArray()
+    fileprivate var arr=NSMutableArray()
     /// 第几页
-    private var currentPage:Int=0
+    fileprivate var currentPage:Int=0
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="兑换记录"
-        self.view.backgroundColor=UIColor.whiteColor()
-        table=UITableView(frame:self.view.bounds, style: UITableViewStyle.Plain)
+        self.view.backgroundColor=UIColor.white
+        table=UITableView(frame:self.view.bounds, style: UITableViewStyle.plain)
         table!.dataSource=self
         table!.delegate=self
         self.view.addSubview(table!)
         //设置cell下边线全屏
-        table?.layoutMargins=UIEdgeInsetsZero
-        table?.separatorInset=UIEdgeInsetsZero
+        table?.layoutMargins=UIEdgeInsets.zero
+        table?.separatorInset=UIEdgeInsets.zero
         //移除空单元格
-        table!.tableFooterView = UIView(frame:CGRectZero)
+        table!.tableFooterView = UIView(frame:CGRect.zero)
         table!.addHeaderWithCallback{
             self.currentPage=1
             self.httpQueryIntegralMallExchangeRecord(self.currentPage,isRefresh:true)
@@ -42,38 +43,38 @@ class RecordOfConversionViewController:BaseViewController{
             self.httpQueryIntegralMallExchangeRecord(self.currentPage,isRefresh:false)
         }
         //加载等待视图
-        SVProgressHUD.showWithStatus("数据加载中")
+        SVProgressHUD.show(withStatus: "数据加载中")
         table!.headerBeginRefreshing()
     }
 }
 // MARK: - 实现table协议
 extension RecordOfConversionViewController:UITableViewDelegate,UITableViewDataSource{
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell=tableView.dequeueReusableCellWithIdentifier("ExchangeRecordId") as? ExchangeRecordTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell=tableView.dequeueReusableCell(withIdentifier: "ExchangeRecordId") as? ExchangeRecordTableViewCell
         if cell == nil{
             //加载xib
-            cell=NSBundle.mainBundle().loadNibNamed("ExchangeRecordTableViewCell", owner:self, options: nil).last as? ExchangeRecordTableViewCell
+            cell=Bundle.main.loadNibNamed("ExchangeRecordTableViewCell", owner:self, options: nil)?.last as? ExchangeRecordTableViewCell
         }
         //设置cell下边线全屏
-        cell?.layoutMargins=UIEdgeInsetsZero
-        cell?.separatorInset=UIEdgeInsetsZero
+        cell?.layoutMargins=UIEdgeInsets.zero
+        cell?.separatorInset=UIEdgeInsets.zero
         if arr.count > 0{
             let entity=arr[indexPath.row] as! ExchangeRecordEntity
             cell!.updateCell(entity)
         }
         return cell!
     }
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return arr.count
     }
 }
 
 // MARK: - 网络请求
 extension RecordOfConversionViewController{
-    func httpQueryIntegralMallExchangeRecord(currentPage:Int,isRefresh:Bool){
+    func httpQueryIntegralMallExchangeRecord(_ currentPage:Int,isRefresh:Bool){
         var count=0
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryIntegralMallExchangeRecord(memberId: IS_NIL_MEMBERID()!, pageSize: 10, currentPage: currentPage), successClosure: { (result) -> Void in
             let json=JSON(result)
@@ -81,9 +82,9 @@ extension RecordOfConversionViewController{
                 self.arr.removeAllObjects()
             }
             for(_,value) in json{
-                count++
-                let entity=Mapper<ExchangeRecordEntity>().map(value.object)
-                self.arr.addObject(entity!)
+                count+=1
+                let entity=Mapper<ExchangeRecordEntity>().map(JSONObject:value.object)
+                self.arr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
                 self.table?.setFooterHidden(true)
@@ -111,7 +112,7 @@ extension RecordOfConversionViewController{
                 self.table?.headerEndRefreshing()
                 //关闭加载状态
                 self.table?.footerEndRefreshing()
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
 }

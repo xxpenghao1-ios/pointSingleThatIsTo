@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import SVProgressHUD
+import SwiftyJSON
 class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
     /// 文本视图容器
     var textViews:UITextView!
@@ -19,7 +20,7 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="问题反馈"
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         self.automaticallyAdjustsScrollViewInsets = false
         creatUI()
     }
@@ -28,34 +29,34 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
      */
     func creatUI(){
         //文本容器
-        textViews=UITextView(frame: CGRectMake(10, 84, boundsWidth-20, 100));
-        textViews.font=UIFont.systemFontOfSize(14)
+        textViews=UITextView(frame: CGRect(x: 10, y: 84, width: boundsWidth-20, height: 100));
+        textViews.font=UIFont.systemFont(ofSize: 14)
         textViews.layer.borderWidth=0.5
-        textViews.layer.borderColor=UIColor.borderColor().CGColor
+        textViews.layer.borderColor=UIColor.borderColor().cgColor
         textViews.layer.cornerRadius=5
         textViews.placeholder="感谢您能在百忙之中给我们提供宝贵的意见"
         textViews.text=textLbl
         //textView响应弹出键盘
         textViews.resignFirstResponder();
-        textViews.hidden = false
+        textViews.isHidden = false
         textViews.delegate=self
         self.view.addSubview(textViews)
         
         //完成按钮
-        confirmBtn=UIButton(frame: CGRectMake(10, CGRectGetMaxY(textViews.frame)+20, boundsWidth-20,40))
-        confirmBtn.setTitle("完成", forState: UIControlState.Normal)
-        confirmBtn.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        confirmBtn=UIButton(frame: CGRect(x: 10, y: textViews.frame.maxY+20, width: boundsWidth-20,height: 40))
+        confirmBtn.setTitle("完成", for: UIControlState())
+        confirmBtn.setTitleColor(UIColor.white, for: UIControlState())
         confirmBtn.backgroundColor=UIColor.applicationMainColor()
         confirmBtn.layer.cornerRadius=5
         self.view.addSubview(confirmBtn)
         //添加点击事件
-        confirmBtn.addTarget(self, action: "actionRemark:", forControlEvents: UIControlEvents.TouchUpInside)
+        confirmBtn.addTarget(self, action: "actionRemark:", for: UIControlEvents.touchUpInside)
     }
-    func textViewDidEndEditing(textView: UITextView) {
+    func textViewDidEndEditing(_ textView: UITextView) {
         NSLog("DidEndEditing---\(textView.text)")
     }
     //文本框变化事件
-    func textViewDidChange(textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         //接收textView的值
         textLbl=textView.text
         NSLog("DidChange---\(textView.text)")
@@ -65,28 +66,28 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
      
      - parameter sender: 当前完成按钮
      */
-    func actionRemark(sender:UIButton){
-        let storeId=userDefaults.objectForKey("storeId") as! String
+    func actionRemark(_ sender:UIButton){
+        let storeId=userDefaults.object(forKey: "storeId") as! String
         if textLbl.characters.count==0{
-            SVProgressHUD.showInfoWithStatus("内容为空")
+            SVProgressHUD.showInfo(withStatus: "内容为空")
         }else{
-            SVProgressHUD.showWithStatus("正在提交",maskType: SVProgressHUDMaskType.Gradient)
+            SVProgressHUD.show(withStatus: "正在提交",maskType: SVProgressHUDMaskType.gradient)
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.complaintsAndSuggestions(complaint:textLbl.pregReplace(), storeId:storeId), successClosure: { (result) -> Void in
                 let json=JSON(result)
                 let success=json["success"].stringValue
                 if success == "success"{
-                    SVProgressHUD.showSuccessWithStatus("提交成功")
-                    self.navigationController?.popViewControllerAnimated(true)
+                    SVProgressHUD.showSuccess(withStatus: "提交成功")
+                    self.navigationController?.popViewController(animated: true)
                 }else{
-                    SVProgressHUD.showErrorWithStatus("提交失败")
+                    SVProgressHUD.showError(withStatus: "提交失败")
                 }
                 }) { (errorMsg) -> Void in
-                    SVProgressHUD.showErrorWithStatus(errorMsg)
+                    SVProgressHUD.showError(withStatus: errorMsg)
             }
         }
     }
     //点击view隐藏键盘
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
 

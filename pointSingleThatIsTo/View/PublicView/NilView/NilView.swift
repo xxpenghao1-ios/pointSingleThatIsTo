@@ -15,15 +15,15 @@ import UIKit
  
  - returns: 返回View
  */
-func nilPromptView(str:String) ->UIView{
-    let promptView=UIView(frame:CGRectMake(0,0,boundsWidth,80));
-    let promptImgView=UIImageView(frame:CGRectMake((promptView.frame.width-50)/2,0,50,50))
+func nilPromptView(_ str:String) ->UIView{
+    let promptView=UIView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: 80));
+    let promptImgView=UIImageView(frame:CGRect(x: (promptView.frame.width-50)/2,y: 0,width: 50,height: 50))
     promptImgView.image=UIImage(named:"nildd")
     promptView.addSubview(promptImgView)
-    let lblPrompt=UILabel(frame:CGRectMake(0,50+5,promptView.frame.width,20));
-    lblPrompt.textAlignment=NSTextAlignment.Center;
+    let lblPrompt=UILabel(frame:CGRect(x: 0,y: 50+5,width: promptView.frame.width,height: 20));
+    lblPrompt.textAlignment=NSTextAlignment.center;
     lblPrompt.text=str;
-    lblPrompt.font=UIFont.systemFontOfSize(14);
+    lblPrompt.font=UIFont.systemFont(ofSize: 14);
     lblPrompt.textColor=UIColor.textColor();
     promptView.addSubview(lblPrompt);
     return promptView
@@ -35,30 +35,30 @@ func nilPromptView(str:String) ->UIView{
  
  - returns: 返回UILabel
  */
-func nilTitle(str:String) ->UILabel{
-    let lbl=UILabel(frame:CGRectMake(0,0,boundsWidth,20))
+func nilTitle(_ str:String) ->UILabel{
+    let lbl=UILabel(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: 20))
     lbl.text=str
     lbl.textColor=UIColor.textColor()
-    lbl.font=UIFont.boldSystemFontOfSize(14)
-    lbl.textAlignment = .Center
+    lbl.font=UIFont.boldSystemFont(ofSize: 14)
+    lbl.textAlignment = .center
     return lbl
 }
-public func buildTxt(font:CGFloat,placeholder:String,tintColor:UIColor,keyboardType:UIKeyboardType) -> UITextField{
+public func buildTxt(_ font:CGFloat,placeholder:String,tintColor:UIColor,keyboardType:UIKeyboardType) -> UITextField{
     let txt=UITextField()
-    txt.font=UIFont.systemFontOfSize(font)
-    txt.attributedPlaceholder=NSAttributedString(string:placeholder, attributes: [NSForegroundColorAttributeName:UIColor.RGBFromHexColor("#999999")])
-    txt.backgroundColor=UIColor.whiteColor()
-    txt.clearButtonMode=UITextFieldViewMode.WhileEditing
+    txt.font=UIFont.systemFont(ofSize: font)
+    txt.attributedPlaceholder=NSAttributedString(string:placeholder, attributes: [NSAttributedStringKey.foregroundColor:UIColor.RGBFromHexColor("#999999")])
+    txt.backgroundColor=UIColor.white
+    txt.clearButtonMode=UITextFieldViewMode.whileEditing
     txt.tintColor=tintColor
     txt.keyboardType=keyboardType
     return txt
 }
 /// 文本
 
-public func buildLabel(textColor:UIColor,font:CGFloat,textAlignment:NSTextAlignment) -> UILabel{
+public func buildLabel(_ textColor:UIColor,font:CGFloat,textAlignment:NSTextAlignment) -> UILabel{
     let lbl=UILabel()
     lbl.textColor=textColor
-    lbl.font=UIFont.systemFontOfSize(font)
+    lbl.font=UIFont.systemFont(ofSize: font)
     lbl.textAlignment=textAlignment
     return lbl
 }
@@ -70,9 +70,9 @@ public enum ButtonType {
 }
 
 /// 按钮
-public class ButtonControl {
+open class ButtonControl {
     
-    public func button(type:ButtonType,text:String,textColor:UIColor,font:CGFloat,backgroundColor:UIColor,cornerRadius:CGFloat?) -> UIButton{
+    open func button(_ type:ButtonType,text:String,textColor:UIColor,font:CGFloat,backgroundColor:UIColor,cornerRadius:CGFloat?) -> UIButton{
         switch type {
         case .button:
             return buildButton(text, textColor: textColor, font: font, backgroundColor: backgroundColor)
@@ -81,20 +81,20 @@ public class ButtonControl {
         }
     }
     
-    private func buildCornerRadiusButton(text:String,textColor:UIColor,font:CGFloat,backgroundColor:UIColor,cornerRadius:CGFloat) -> UIButton{
+    fileprivate func buildCornerRadiusButton(_ text:String,textColor:UIColor,font:CGFloat,backgroundColor:UIColor,cornerRadius:CGFloat) -> UIButton{
         let btn=UIButton()
-        btn.setTitle(text, forState: UIControlState.Normal)
-        btn.setTitleColor(textColor,forState: UIControlState.Normal)
-        btn.titleLabel!.font=UIFont.systemFontOfSize(font)
+        btn.setTitle(text, for: UIControlState())
+        btn.setTitleColor(textColor,for: UIControlState())
+        btn.titleLabel!.font=UIFont.systemFont(ofSize: font)
         btn.backgroundColor=backgroundColor
         btn.layer.cornerRadius=cornerRadius
         return btn
     }
-    private func buildButton(text:String,textColor:UIColor,font:CGFloat,backgroundColor:UIColor) -> UIButton{
+    fileprivate func buildButton(_ text:String,textColor:UIColor,font:CGFloat,backgroundColor:UIColor) -> UIButton{
         let btn=UIButton()
-        btn.setTitle(text, forState: UIControlState.Normal)
-        btn.setTitleColor(textColor,forState: UIControlState.Normal)
-        btn.titleLabel!.font=UIFont.systemFontOfSize(font)
+        btn.setTitle(text, for: UIControlState())
+        btn.setTitleColor(textColor,for: UIControlState())
+        btn.titleLabel!.font=UIFont.systemFont(ofSize: font)
         btn.backgroundColor=backgroundColor
         return btn
     }

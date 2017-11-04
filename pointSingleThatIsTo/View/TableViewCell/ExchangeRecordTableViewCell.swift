@@ -30,8 +30,9 @@ class ExchangeRecordTableViewCell: UITableViewCell {
      
      - parameter entity:ExchangeRecordEntity
      */
-    func updateCell(entity:ExchangeRecordEntity){
-        imgGood.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodsPic!), placeholderImage:UIImage(named: "def_nil"))
+    func updateCell(_ entity:ExchangeRecordEntity){
+        entity.goodsPic=entity.goodsPic ?? ""
+        imgGood.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodsPic!), placeholderImage:UIImage(named: "def_nil"))
         lblGoodName.text=entity.goodsName
         if entity.exchangeStatu == 1{
             lblStatu.text="已提交"
@@ -43,7 +44,7 @@ class ExchangeRecordTableViewCell: UITableViewCell {
         }
         lblTime.text=entity.addTime
     }
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

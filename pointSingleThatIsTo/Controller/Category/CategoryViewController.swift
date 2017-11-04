@@ -15,65 +15,65 @@ class CategoryViewController:UIViewController,UITableViewDelegate,UITableViewDat
     var rightLine:UILabel!;
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         creatLeftView()
     }
     //左边Table视图
     func creatLeftView(){
-        leftTable=UITableView(frame: CGRectMake(0, 0, 100,boundsHeight-147), style: UITableViewStyle.Plain)
+        leftTable=UITableView(frame: CGRect(x: 0, y: 0, width: 100,height: boundsHeight-147), style: UITableViewStyle.plain)
         leftTable?.dataSource=self
         leftTable?.delegate=self
         leftTable?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
         self.view.addSubview(leftTable!)
         //去掉15px空白
-        if(leftTable!.respondsToSelector("setLayoutMargins:")){
-            leftTable?.layoutMargins=UIEdgeInsetsZero
+        if(leftTable!.responds(to: "setLayoutMargins:")){
+            leftTable?.layoutMargins=UIEdgeInsets.zero
         }
-        if(leftTable!.respondsToSelector("setSeparatorInset:")){
-            leftTable!.separatorInset=UIEdgeInsetsZero;
+        if(leftTable!.responds(to: "setSeparatorInset:")){
+            leftTable!.separatorInset=UIEdgeInsets.zero;
         }
         leftTable?.separatorColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
     }
     //MARK - Table的代理
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 20
     }
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 44
     }
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let Identifier="MultilevelTableViewCell";
-        var cell=tableView.dequeueReusableCellWithIdentifier(Identifier);
+        var cell=tableView.dequeueReusableCell(withIdentifier: Identifier);
         if(cell == nil){
-            cell=UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier:Identifier)
+            cell=UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier:Identifier)
         }
         cell?.textLabel?.text="\(indexPath.row)行"
         cell?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
-        cell?.selectionStyle=UITableViewCellSelectionStyle.None
-        if(cell!.respondsToSelector("setLayoutMargins:")){
-            cell!.layoutMargins=UIEdgeInsetsZero
+        cell?.selectionStyle=UITableViewCellSelectionStyle.none
+        if(cell!.responds(to: "setLayoutMargins:")){
+            cell!.layoutMargins=UIEdgeInsets.zero
         }
-        if(cell!.respondsToSelector("setSeparatorInset:")){
-            cell!.separatorInset=UIEdgeInsetsZero;
+        if(cell!.responds(to: "setSeparatorInset:")){
+            cell!.separatorInset=UIEdgeInsets.zero;
         }
         //创建分割线
-        rightLine=UILabel(frame: CGRectMake(leftTable!.frame.width-0.5, 0, 0.5, cell!.contentView.frame.height))
+        rightLine=UILabel(frame: CGRect(x: leftTable!.frame.width-0.5, y: 0, width: 0.5, height: cell!.contentView.frame.height))
         rightLine.backgroundColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
         cell!.contentView.addSubview(rightLine)
         return cell!
     }
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell=tableView.cellForRowAtIndexPath(indexPath)
-        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
-        rightLine.backgroundColor=UIColor.whiteColor()
-        cell?.backgroundColor=UIColor.whiteColor()
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cell=tableView.cellForRow(at: indexPath)
+        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+        rightLine.backgroundColor=UIColor.white
+        cell?.backgroundColor=UIColor.white
     }
-    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell=tableView.cellForRowAtIndexPath(indexPath)
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        let cell=tableView.cellForRow(at: indexPath)
         cell?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
         rightLine.backgroundColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
     }

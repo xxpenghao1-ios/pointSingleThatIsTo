@@ -44,10 +44,10 @@ class SKScNavViewController: UIViewController, SKScNavBarDelegate, UIScrollViewD
     var launchMenuHeight:CGFloat!
     
     //MARK: -- 私有属性
-    private var currentIndex:Int!       //当前显示的页面的下标
-    private var titles:NSMutableArray!  //子视图控制器的title数组
-    private var scNavBar:SKScNavBar!    //导航栏视图
-    private var mainView:UIScrollView!  //主页面的ScrollView
+    fileprivate var currentIndex:Int!       //当前显示的页面的下标
+    fileprivate var titles:NSMutableArray!  //子视图控制器的title数组
+    fileprivate var scNavBar:SKScNavBar!    //导航栏视图
+    fileprivate var mainView:UIScrollView!  //主页面的ScrollView
     
     //MARK: ----- 方法 -----
     
@@ -96,9 +96,9 @@ class SKScNavViewController: UIViewController, SKScNavBarDelegate, UIScrollViewD
      * 添加父视图控制器的方法
      * @param viewController 父视图控制器
      */
-    func addParentController(viewcontroller:UIViewController) {
-        if viewcontroller.respondsToSelector("edgesForExtendedLayout") {
-            viewcontroller.edgesForExtendedLayout = UIRectEdge.None
+    func addParentController(_ viewcontroller:UIViewController) {
+        if viewcontroller.responds(to: #selector(getter: UIViewController.edgesForExtendedLayout)) {
+            viewcontroller.edgesForExtendedLayout = UIRectEdge()
         }
         
         viewcontroller.addChildViewController(self)
@@ -120,7 +120,7 @@ class SKScNavViewController: UIViewController, SKScNavBarDelegate, UIScrollViewD
     //MARK: -- 私有方法
     
     //初始化一些属性
-    private func initParamConfig() {
+    fileprivate func initParamConfig() {
         //初始化一些变量
         currentIndex = 1
         scNavBarColor = scNavBarColor != nil ? scNavBarColor : kNavColor
@@ -136,63 +136,63 @@ class SKScNavViewController: UIViewController, SKScNavBarDelegate, UIScrollViewD
         //获取所有子视图控制器上的title
         titles = NSMutableArray(capacity: subViewControllers.count)
         for vc in subViewControllers {
-            titles.addObject(vc.navigationItem.title!)
+            titles.add((vc as AnyObject).navigationItem.title!)
         }
     }
     
     //初始化视图
-    private func initWithScNavBarAndMainView() {
-        scNavBar = SKScNavBar(frame: CGRectMake(0, 0, kScreenWidth, kScNavBarHeight), show: showArrowButton, image: scNavBarArrowImage)
+    fileprivate func initWithScNavBarAndMainView() {
+        scNavBar = SKScNavBar(frame: CGRect(x: 0, y: 0, width: kScreenWidth, height: kScNavBarHeight), show: showArrowButton, image: scNavBarArrowImage)
         scNavBar.delegate = self
         scNavBar.backgroundColor = scNavBarColor
         scNavBar.itemsTitles = titles
         scNavBar.lineColor = lineColor
         scNavBar.setItemsData()
         
-        mainView = UIScrollView(frame: CGRectMake(0, scNavBar.frame.origin.y + scNavBar.frame.size.height, kScreenWidth, kScreenHeight - scNavBar.frame.origin.y - scNavBar.frame.size.height))
+        mainView = UIScrollView(frame: CGRect(x: 0, y: scNavBar.frame.origin.y + scNavBar.frame.size.height, width: kScreenWidth, height: kScreenHeight - scNavBar.frame.origin.y - scNavBar.frame.size.height))
         mainView.delegate = self
-        mainView.pagingEnabled = true
+        mainView.isPagingEnabled = true
         mainView.bounces = false
         mainView.showsHorizontalScrollIndicator = false
-        mainView.contentSize = CGSizeMake(kScreenWidth * CGFloat(subViewControllers.count), 0)
+        mainView.contentSize = CGSize(width: kScreenWidth * CGFloat(subViewControllers.count), height: 0)
         view.addSubview(mainView)
         view.addSubview(scNavBar)
     }
     
     //配置视图参数
-    private func viewParamConfig() {
+    fileprivate func viewParamConfig() {
         
         initWithScNavBarAndMainView()
         
         //将子视图控制器的view添加到mainView上
-        subViewControllers.enumerateObjectsUsingBlock { (_, index:Int, _) -> Void in
+        subViewControllers.enumerateObjects { (_, index:Int, _) -> Void in
             let vc = self.subViewControllers[index] as! UIViewController
-            vc.view.frame = CGRectMake(CGFloat(index) * kScreenWidth, 0, kScreenWidth, self.mainView.frame.size.height)
+            vc.view.frame = CGRect(x: CGFloat(index) * kScreenWidth, y: 0, width: kScreenWidth, height: self.mainView.frame.size.height)
             self.mainView.addSubview(vc.view)
-            self.mainView.backgroundColor = UIColor.cyanColor()
+            self.mainView.backgroundColor = UIColor.cyan
             self.addChildViewController(vc)
         }
     }
     
     //MARK: -- ScrollView Delegate 方法
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         currentIndex = Int(scrollView.contentOffset.x / kScreenWidth)
         scNavBar.setViewWithItemIndex = currentIndex
     }
     
     //MARK: -- SKScNavBarDelegate 中的方法
-    func didSelectedWithIndex(index: Int) {
-        mainView.setContentOffset(CGPointMake(CGFloat(index) * kScreenWidth, 0), animated: true)
+    func didSelectedWithIndex(_ index: Int) {
+        mainView.setContentOffset(CGPoint(x: CGFloat(index) * kScreenWidth, y: 0), animated: true)
     }
     
-    func isShowScNavBarItemMenu(show: Bool, height: CGFloat) {
+    func isShowScNavBarItemMenu(_ show: Bool, height: CGFloat) {
         if show {
-            UIView.animateWithDuration(0.5) { () -> Void in
-                self.scNavBar.frame = CGRectMake(self.scNavBar.frame.origin.x, self.scNavBar.frame.origin.y, kScreenWidth, height)
-            }
+            UIView.animate(withDuration: 0.5, animations: { () -> Void in
+                self.scNavBar.frame = CGRect(x: self.scNavBar.frame.origin.x, y: self.scNavBar.frame.origin.y, width: kScreenWidth, height: height)
+            }) 
         }else{
-            UIView.animateWithDuration(0.5, animations: { () -> Void in
-                self.scNavBar.frame = CGRectMake(self.scNavBar.frame.origin.x, self.scNavBar.frame.origin.y, kScreenWidth, kScNavBarHeight)
+            UIView.animate(withDuration: 0.5, animations: { () -> Void in
+                self.scNavBar.frame = CGRect(x: self.scNavBar.frame.origin.x, y: self.scNavBar.frame.origin.y, width: kScreenWidth, height: kScNavBarHeight)
             })
         }
         scNavBar.refreshAll()

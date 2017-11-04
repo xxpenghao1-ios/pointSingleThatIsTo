@@ -7,6 +7,30 @@
 //
 
 import UIKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func <= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l <= r
+  default:
+    return !(rhs < lhs)
+  }
+}
+
 /**
  计算剩余时间
  
@@ -14,7 +38,7 @@ import UIKit
  
  - returns: 字符
  */
-func lessSecondToDay(seconds:Int) -> String{
+func lessSecondToDay(_ seconds:Int) -> String{
     let day=seconds/(24*3600)
     let hour=(seconds%(24*3600))/3600
     let min=(seconds%(3600))/60
@@ -51,13 +75,13 @@ protocol GoodSpecialPriceTableCellAddShoppingCartsDelegate:NSObjectProtocol{
      
      - parameter entity:商品entity
      */
-    func pushGoodSpecialPriceDetail(entity:GoodDetailEntity)
+    func pushGoodSpecialPriceDetail(_ entity:GoodDetailEntity)
     /**
      加入购物车
      
      - parameter entity: 商品entity
      */
-    func addCar(entity:GoodDetailEntity)
+    func addCar(_ entity:GoodDetailEntity)
 }
 /// 特价cell
 class GoodSpecialPriceTableCell: UITableViewCell {
@@ -95,7 +119,7 @@ class GoodSpecialPriceTableCell: UITableViewCell {
     var img:UIImageView?
     
     /// 行索引
-    var indexPath:NSIndexPath?
+    var indexPath:IndexPath?
     
     var goodEntity:GoodDetailEntity?
     
@@ -113,21 +137,21 @@ class GoodSpecialPriceTableCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        TJImg.hidden=true
-        CXImg.hidden=true
+        TJImg.isHidden=true
+        CXImg.isHidden=true
         //倒计时控件颜色
         lblTime.textColor=UIColor.applicationMainColor()
         
         //现价
         lblUprice=UILabel()
-        lblUprice!.textColor=UIColor.redColor()
-        lblUprice!.font=UIFont.systemFontOfSize(20)
+        lblUprice!.textColor=UIColor.red
+        lblUprice!.font=UIFont.systemFont(ofSize: 20)
         upriceView.addSubview(lblUprice!)
         
         //原价
         lblOldPrice=UILabel()
         lblOldPrice!.textColor=UIColor.textColor()
-        lblOldPrice!.font=UIFont.systemFontOfSize(12)
+        lblOldPrice!.font=UIFont.systemFont(ofSize: 12)
         upriceView.addSubview(lblOldPrice!)
         
         //原价view
@@ -138,26 +162,26 @@ class GoodSpecialPriceTableCell: UITableViewCell {
         //销量
         lblSalesCount=UILabel()
         lblSalesCount!.textColor=UIColor.textColor()
-        lblSalesCount!.font=UIFont.systemFontOfSize(12)
+        lblSalesCount!.font=UIFont.systemFont(ofSize: 12)
         upriceView.addSubview(lblSalesCount!)
         
         //设置商品图片view
         goodImgView.layer.masksToBounds=true
         goodImgView.layer.cornerRadius=3
-        goodImgView.userInteractionEnabled=true
-        goodImgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushGoodSpecialPriceDetail"))
+        goodImgView.isUserInteractionEnabled=true
+        goodImgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("pushGoodSpecialPriceDetail")))
         
         lblPromotionText.textColor=UIColor.applicationMainColor()
         
         lblUcode.textColor=UIColor.textColor()
         lblGoodStock.textColor=UIColor.textColor()
         
-        addCarView.userInteractionEnabled=true
-        addCarView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"addShoppingCarts"))
+        addCarView.isUserInteractionEnabled=true
+        addCarView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("addShoppingCarts")))
         
         
         //去掉选中背景
-        self.selectionStyle=UITableViewCellSelectionStyle.None;
+        self.selectionStyle=UITableViewCellSelectionStyle.none;
     }
     /**
      加入购物车
@@ -177,38 +201,37 @@ class GoodSpecialPriceTableCell: UITableViewCell {
      - parameter entity: 商品entity
      flag 1特价 2促销
      */
-    func updateCell(entity:GoodDetailEntity,flag:Int){
+    func updateCell(_ entity:GoodDetailEntity,flag:Int){
         img?.removeFromSuperview()
         goodEntity=entity
-        print(entity.goodsDes)
         //商品名称
-        if entity.eachCount <= 0{
+        if entity.eachCount == nil{
             lblGoodName.text=entity.goodInfoName
         }else{
             
             lblGoodName.text=entity.goodInfoName!+"(限购~~\(entity.eachCount!)\(entity.goodUnit!))"
         }
-        
+        entity.goodPic=entity.goodPic ?? ""
         //商品图片
-        goodImg.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
+        goodImg.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
         lblSalesCount!.text="销量\(entity.salesCount!)"
-        let salesCountSize=lblSalesCount!.text!.textSizeWithFont(lblSalesCount!.font, constrainedToSize:CGSizeMake(100,20))
+        let salesCountSize=lblSalesCount!.text!.textSizeWithFont(lblSalesCount!.font, constrainedToSize:CGSize(width: 100,height: 20))
         if flag == 1{//如果是特价
             lblUprice!.text="￥\(entity.preferentialPrice!)"
             lblOldPrice!.text="￥\(entity.oldPrice!)"
             
-            let upriceSize=lblUprice!.text!.textSizeWithFont(lblUprice!.font, constrainedToSize:CGSizeMake(200,20))
-            let oldPriceSize=lblOldPrice!.text!.textSizeWithFont(lblOldPrice!.font, constrainedToSize:CGSizeMake(100,20))
+            let upriceSize=lblUprice!.text!.textSizeWithFont(lblUprice!.font, constrainedToSize:CGSize(width: 200,height: 20))
+            let oldPriceSize=lblOldPrice!.text!.textSizeWithFont(lblOldPrice!.font, constrainedToSize:CGSize(width: 100,height: 20))
         
-            lblUprice!.frame=CGRectMake(0,0,upriceSize.width,20)
-            lblOldPrice!.frame=CGRectMake(CGRectGetMaxX(lblUprice!.frame)+5,0,oldPriceSize.width,20)
-            oldPriceView!.frame=CGRectMake(CGRectGetMaxX(lblUprice!.frame)+2,9.75,oldPriceSize.width+6,0.5)
-            lblSalesCount!.frame=CGRectMake(CGRectGetMaxX(lblOldPrice!.frame)+5,0,salesCountSize.width,20)
+            lblUprice!.frame=CGRect(x: 0,y: 0,width: upriceSize.width,height: 20)
+            lblOldPrice!.frame=CGRect(x: lblUprice!.frame.maxX+5,y: 0,width: oldPriceSize.width,height: 20)
+            oldPriceView!.frame=CGRect(x: lblUprice!.frame.maxX+2,y: 9.75,width: oldPriceSize.width+6,height: 0.5)
+            lblSalesCount!.frame=CGRect(x: lblOldPrice!.frame.maxX+5,y: 0,width: salesCountSize.width,height: 20)
         }else{//如果是促销
             lblUprice!.text="￥\(entity.uprice!)"
-            let upriceSize=lblUprice!.text!.textSizeWithFont(lblUprice!.font, constrainedToSize:CGSizeMake(200,20))
-            lblUprice!.frame=CGRectMake(0,0,upriceSize.width,20)
-            lblSalesCount!.frame=CGRectMake(CGRectGetMaxX(lblUprice!.frame)+5,0,salesCountSize.width,20)
+            let upriceSize=lblUprice!.text!.textSizeWithFont(lblUprice!.font, constrainedToSize:CGSize(width: 200,height: 20))
+            lblUprice!.frame=CGRect(x: 0,y: 0,width: upriceSize.width,height: 20)
+            lblSalesCount!.frame=CGRect(x: lblUprice!.frame.maxX+5,y: 0,width: salesCountSize.width,height: 20)
             lblPromotionText.text=entity.goodsDes
         }
         //商品单位
@@ -235,17 +258,17 @@ class GoodSpecialPriceTableCell: UITableViewCell {
             addImg("to_sell_out")
             disablePushDetailsView()
             if flag == 1{
-                TJImg.hidden=false
+                TJImg.isHidden=false
             }else{
-                CXImg.hidden=false
+                CXImg.isHidden=false
             }
         }else{
             var time=0
             if flag == 1{//如果是特价
-                TJImg.hidden=false
+                TJImg.isHidden=false
                 time=Int(entity.endTime!)!
             }else{
-                CXImg.hidden=false
+                CXImg.isHidden=false
                 time=Int(entity.promotionEndTime!)!
             }
             if time <= 0{//如果剩余时间小于等于0 表示活动已经结束
@@ -274,17 +297,17 @@ class GoodSpecialPriceTableCell: UITableViewCell {
      禁止进入商品详情页面
      */
     func disablePushDetailsView(){
-        goodImgView.userInteractionEnabled=false
-        lblTime.hidden=true
-        addCarView.hidden=true
+        goodImgView.isUserInteractionEnabled=false
+        lblTime.isHidden=true
+        addCarView.isHidden=true
     }
     /**
      可以进入商品详情页面
      */
-    func okPushDetailsView(time:Int){
-        goodImgView.userInteractionEnabled=true
-        lblTime.hidden=false
-        addCarView.hidden=false
+    func okPushDetailsView(_ time:Int){
+        goodImgView.isUserInteractionEnabled=true
+        lblTime.isHidden=false
+        addCarView.isHidden=false
         //剩余时间
         lblTime.text=lessSecondToDay(time)
     }
@@ -293,13 +316,13 @@ class GoodSpecialPriceTableCell: UITableViewCell {
      
      - parameter imgName:图片名称
      */
-    func addImg(imgName:String){
+    func addImg(_ imgName:String){
         /// 展示活动已购满
-        img=UIImageView(frame:CGRectMake(boundsWidth-70,50,60,60))
+        img=UIImageView(frame:CGRect(x: boundsWidth-70,y: 50,width: 60,height: 60))
         img!.image=UIImage(named:imgName)
         self.contentView.addSubview(img!)
     }
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

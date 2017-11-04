@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
+import SwiftyJSON
 ///登录跳转后的页面（1为注册，2为修改密码）
 class RegisterViewController:UIViewController{
     ///接收登录页面传过来的值（1为注册，2为修改密码）
@@ -28,7 +29,7 @@ class RegisterViewController:UIViewController{
         //显示导航栏
         self.navigationController?.setNavigationBarHidden(false, animated:true)
         //设置背景色
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         
         initFunc()
     }
@@ -54,49 +55,49 @@ class RegisterViewController:UIViewController{
     func uiView(){
         ///提示标签
         lblremind=UILabel()
-        lblremind?.frame=CGRectMake(0, 64, boundsWidth, 60)
-        lblremind?.textAlignment=NSTextAlignment.Center
+        lblremind?.frame=CGRect(x: 0, y: 64, width: boundsWidth, height: 60)
+        lblremind?.textAlignment=NSTextAlignment.center
         lblremind?.backgroundColor=UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
-        lblremind?.font=UIFont.systemFontOfSize(14)
+        lblremind?.font=UIFont.systemFont(ofSize: 14)
         self.view.addSubview(lblremind!)
         //加边框线的uiview
         let lian=UIView()
-        lian.frame=CGRectMake(-1, CGRectGetMaxY(lblremind!.frame), boundsWidth+2, 50)
+        lian.frame=CGRect(x: -1, y: lblremind!.frame.maxY, width: boundsWidth+2, height: 50)
         lian.layer.borderWidth=1
-        lian.backgroundColor=UIColor.whiteColor()
-        lian.layer.borderColor=UIColor.borderColor().CGColor
+        lian.backgroundColor=UIColor.white
+        lian.layer.borderColor=UIColor.borderColor().cgColor
         self.view.addSubview(lian)
         ///手机号码输入框
         feildPhone=UITextField()
-        feildPhone?.frame=CGRectMake(5, CGRectGetMaxY(lblremind!.frame)+15, boundsWidth-10, 20)
+        feildPhone?.frame=CGRect(x: 5, y: lblremind!.frame.maxY+15, width: boundsWidth-10, height: 20)
         feildPhone?.placeholder="请输入手机号码"
-        feildPhone?.font=UIFont.systemFontOfSize(16)
-        feildPhone?.keyboardType=UIKeyboardType.NumberPad
-        feildPhone?.clearButtonMode=UITextFieldViewMode.Always
-        feildPhone?.backgroundColor=UIColor.whiteColor()
+        feildPhone?.font=UIFont.systemFont(ofSize: 16)
+        feildPhone?.keyboardType=UIKeyboardType.numberPad
+        feildPhone?.clearButtonMode=UITextFieldViewMode.always
+        feildPhone?.backgroundColor=UIColor.white
         self.view.addSubview(feildPhone!)
         /// 下一步按钮
         btnNext=UIButton()
-        btnNext?.frame=CGRectMake(30, CGRectGetMaxY(feildPhone!.frame)+50, boundsWidth-60, 40)
-        btnNext?.backgroundColor=UIColor.redColor()
+        btnNext?.frame=CGRect(x: 30, y: feildPhone!.frame.maxY+50, width: boundsWidth-60, height: 40)
+        btnNext?.backgroundColor=UIColor.red
         btnNext?.layer.cornerRadius=20
-        btnNext?.setTitle("下一步", forState: UIControlState.Normal)
-        btnNext?.addTarget(self, action: "clickBtn:", forControlEvents: UIControlEvents.TouchUpInside)
+        btnNext?.setTitle("下一步", for: UIControlState())
+        btnNext?.addTarget(self, action: Selector("clickBtn:"), for: UIControlEvents.touchUpInside)
         self.view.addSubview(btnNext!)
         
         
     }
     
     //点击下一步触发
-    func clickBtn(sender:UIButton){
+    func clickBtn(_ sender:UIButton){
         //要求手机号为11位数
         if feildPhone?.text?.characters.count==11{
             //发送请求（手机验证）
             httpPhone()
         }else if feildPhone?.text?.characters.count==0&&feildPhone?.text==nil{
-            SVProgressHUD.showInfoWithStatus("手机号不能为空", maskType: .Clear)
+            SVProgressHUD.showInfo(withStatus: "手机号不能为空", maskType: .clear)
         }else{
-            SVProgressHUD.showInfoWithStatus("请输入正确的手机号", maskType: .Clear)
+            SVProgressHUD.showInfo(withStatus: "请输入正确的手机号", maskType: .clear)
         }
     }
     
@@ -115,12 +116,12 @@ class RegisterViewController:UIViewController{
                     self.view.endEditing(true)
                     
                 }else if self.flag==2{//2为 没有被注册就不存在修改密码
-                    SVProgressHUD.showErrorWithStatus("账号不存在")
+                    SVProgressHUD.showError(withStatus: "账号不存在")
                 }
                 
             }else if JSONres["success"].stringValue == "success"{
                 if self.flag==1{//账号已经被注册
-                    SVProgressHUD.showInfoWithStatus("该账号已经被注册", maskType: .Clear)
+                    SVProgressHUD.showInfo(withStatus: "该账号已经被注册", maskType: .clear)
                 }else if self.flag==2{// 已经被注册就可以修改密码
                     let vc=RegisterValidationViewController();
                     vc.phone=phone
@@ -130,14 +131,14 @@ class RegisterViewController:UIViewController{
                 }
             }
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
     //点其他区域关闭键盘
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         //隐藏导航栏
         self.navigationController?.setNavigationBarHidden(true, animated:true)

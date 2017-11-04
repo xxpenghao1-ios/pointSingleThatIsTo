@@ -18,12 +18,12 @@ class ShowAddressViewController:UIViewController,UITableViewDataSource,UITableVi
     var selectedProvince:String?
     var selectedCity:String?
     var selectedArea:String?
-    var selectedIndexPath:NSIndexPath?
+    var selectedIndexPath:IndexPath?
     var selectedStr:UILabel?
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="地区选择"
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         configureData()
         configureViews()
 
@@ -31,19 +31,19 @@ class ShowAddressViewController:UIViewController,UITableViewDataSource,UITableVi
     func configureData(){
         if (self.displayType == 0) {
             //从文件读取地址字典
-            let addressPath=NSBundle.mainBundle().pathForResource("address", ofType:"plist")
+            let addressPath=Bundle.main.path(forResource: "address", ofType:"plist")
             let dict=NSMutableDictionary(contentsOfFile:addressPath!)
-            self.provinces=dict!.objectForKey("address") as! NSArray
+            self.provinces=dict!.object(forKey: "address") as! NSArray
         }
     }
     func configureViews(){
-        self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Stop, target:self, action:"cancel")
+        self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.stop, target:self, action:Selector("cancel"))
         self.table = UITableView(frame:self.view.bounds)
         self.table!.delegate = self;
         self.table!.dataSource = self;
         self.view.addSubview(self.table!)
     }
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.displayType == 0{
             return self.provinces.count
         }else if self.displayType == 1{
@@ -53,25 +53,25 @@ class ShowAddressViewController:UIViewController,UITableViewDataSource,UITableVi
         }
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellid="cityCell"
-        var cell=tableView.dequeueReusableCellWithIdentifier(cellid)
+        var cell=tableView.dequeueReusableCell(withIdentifier: cellid)
         if cell == nil{
-            cell=UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier:cellid)
+            cell=UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier:cellid)
             if self.displayType == 2{
-                cell!.accessoryType=UITableViewCellAccessoryType.None
+                cell!.accessoryType=UITableViewCellAccessoryType.none
             }else{
-                cell!.accessoryType=UITableViewCellAccessoryType.DisclosureIndicator
+                cell!.accessoryType=UITableViewCellAccessoryType.disclosureIndicator
             }
         }
         if self.displayType == 0{
             let province:NSDictionary=self.provinces[indexPath.row] as! NSDictionary
-            let provinceName=province.objectForKey("name") as! String
+            let provinceName=province.object(forKey: "name") as! String
             cell!.textLabel!.text=provinceName
             
         }else if self.displayType == 1{
             let city=self.citys[indexPath.row] as! NSDictionary
-            let cityName=city.objectForKey("name") as! String
+            let cityName=city.object(forKey: "name") as! String
             cell!.textLabel!.text=cityName
         }else{
            cell!.textLabel!.text=self.areas[indexPath.row] as? String
@@ -79,11 +79,11 @@ class ShowAddressViewController:UIViewController,UITableViewDataSource,UITableVi
         }
         return cell!
     }
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if self.displayType == 0{
             let province=self.provinces[indexPath.row] as! NSDictionary
-            let citys=province.objectForKey("sub") as! NSArray
-            self.selectedProvince=province.objectForKey("name") as? String
+            let citys=province.object(forKey: "sub") as! NSArray
+            self.selectedProvince=province.object(forKey: "name") as? String
             //构建下一级视图控制器
             let cityVC=ShowAddressViewController()
             cityVC.displayType=1//显示模式为城市
@@ -92,8 +92,8 @@ class ShowAddressViewController:UIViewController,UITableViewDataSource,UITableVi
             self.navigationController!.pushViewController(cityVC, animated:true)
         }else if self.displayType == 1{
             let city=self.citys[indexPath.row] as! NSDictionary
-            self.selectedCity=city.objectForKey("name") as? String
-            let areas=city.objectForKey("sub") as! NSArray
+            self.selectedCity=city.object(forKey: "name") as? String
+            let areas=city.object(forKey: "sub") as! NSArray
             //构建下一级视图控制器
             let areaVC=ShowAddressViewController()
             areaVC.displayType=2
@@ -104,32 +104,32 @@ class ShowAddressViewController:UIViewController,UITableViewDataSource,UITableVi
         }else{
             if self.selectedIndexPath != nil{
                 //取消上一次选定状态
-                let oldCell=table?.cellForRowAtIndexPath(self.selectedIndexPath!)
+                let oldCell=table?.cellForRow(at: self.selectedIndexPath!)
                 oldCell?.imageView?.image=UIImage(named:"unchecked")
             }
             //勾选当前选定状态
-            let newCell=table?.cellForRowAtIndexPath(indexPath)
+            let newCell=table?.cellForRow(at: indexPath)
             newCell!.imageView!.image=UIImage(named:"checked")
             //保存
             self.selectedArea=self.areas[indexPath.row] as? String
             self.selectedIndexPath=indexPath
             let msg=self.selectedProvince!+"-"+self.selectedCity!+"-"+self.selectedArea!
-            let alert=UIAlertController(title:"地区选择", message:msg, preferredStyle: UIAlertControllerStyle.Alert)
-            let ok=UIAlertAction(title:"确定", style: UIAlertActionStyle.Default, handler:{ Void in
+            let alert=UIAlertController(title:"地区选择", message:msg, preferredStyle: UIAlertControllerStyle.alert)
+            let ok=UIAlertAction(title:"确定", style: UIAlertActionStyle.default, handler:{ Void in
                 //通知上一页面刷新数据
-                NSNotificationCenter.defaultCenter().postNotificationName("postUpdateAddress", object:msg)
-                self.dismissViewControllerAnimated(true, completion:nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "postUpdateAddress"), object:msg)
+                self.dismiss(animated: true, completion:nil)
                 
             })
-            let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.Cancel, handler:nil)
+            let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.cancel, handler:nil)
             alert.addAction(cancel)
             alert.addAction(ok)
-            self.presentViewController(alert, animated:true, completion:nil)
+            self.present(alert, animated:true, completion:nil)
         }
-        self.table?.deselectRowAtIndexPath(self.table!.indexPathForSelectedRow!, animated:true)
+        self.table?.deselectRow(at: self.table!.indexPathForSelectedRow!, animated:true)
     }
     func cancel(){
-        self.dismissViewControllerAnimated(true, completion:nil)
+        self.dismiss(animated: true, completion:nil)
     }
 
 }

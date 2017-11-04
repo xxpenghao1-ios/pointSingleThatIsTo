@@ -35,8 +35,8 @@ class StoreEntity:Mappable {
     
     
     init(){}
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         memberId <- map["memberId"]

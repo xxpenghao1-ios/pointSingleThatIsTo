@@ -29,8 +29,8 @@ class AddressEntity:Mappable {
     /// 电话号码
     var phoneNumber:String?
     init(){}
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         county <- map["county"]

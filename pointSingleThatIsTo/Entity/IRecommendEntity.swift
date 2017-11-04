@@ -24,8 +24,8 @@ class IRecommendEntity:Mappable {
     var recommendedQrcode:String?
     
     init(){}
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         bindingRecommendedTime <- map["bindingRecommendedTime"]

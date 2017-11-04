@@ -37,6 +37,7 @@ extern NSString *const kRealReachabilityChangedNotification;
 
 typedef NS_ENUM(NSInteger, ReachabilityStatus) {
     ///Direct match with Apple networkStatus, just a force type convert.
+    RealStatusUnknown = -1,
     RealStatusNotReachable = 0,
     RealStatusViaWWAN = 1,
     RealStatusViaWiFi = 2
@@ -51,11 +52,15 @@ typedef NS_ENUM(NSInteger, WWANAccessType) {
 
 @interface RealReachability : NSObject
 
-/// Please make sure this host is available for pinging! default host:www.baidu.com
+/// Please make sure this host is available for pinging! default host:www.apple.com
 @property (nonatomic, copy) NSString *hostForPing;
 
-/// Interval in minutes; default is 2.0f
+/// Interval in minutes; default is 2.0f, suggest value from 0.3f to 60.0f;
+/// If exceeded, the value will be reset to 0.3f or 60.0f (the closer one).
 @property (nonatomic, assign) float autoCheckInterval;
+
+// Timeout used for ping. Default is 2 seconds
+@property (nonatomic, assign) NSTimeInterval pingTimeout;
 
 + (instancetype)sharedInstance;
 
@@ -69,7 +74,7 @@ typedef NS_ENUM(NSInteger, WWANAccessType) {
  *
  *  @param asyncHandler async request handler, return in 2 seconds(max limit).
  */
-- (void)reachabilityWithBlock:(void (^)(ReachabilityStatus))asyncHandler;
+- (void)reachabilityWithBlock:(void (^)(ReachabilityStatus status))asyncHandler;
 
 /**
  *  Return current reachability immediately.
@@ -77,6 +82,13 @@ typedef NS_ENUM(NSInteger, WWANAccessType) {
  *  @return see enum LocalConnectionStatus
  */
 - (ReachabilityStatus)currentReachabilityStatus;
+
+/**
+ *  Return previous reachability status.
+ *
+ *  @return see enum LocalConnectionStatus
+ */
+- (ReachabilityStatus)previousReachabilityStatus;
 
 /**
  *  Return current WWAN type immediately.

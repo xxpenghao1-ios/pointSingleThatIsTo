@@ -28,14 +28,14 @@ class OrderGoodTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        goodView.layer.borderColor=UIColor.goodDetailBorderColor().CGColor
+        goodView.layer.borderColor=UIColor.goodDetailBorderColor().cgColor
         goodView.layer.borderWidth=0.5
         
         lblName.textColor=UIColor.textColor()
         
-        lblPrice.textColor=UIColor.redColor()
+        lblPrice.textColor=UIColor.red
         //去掉选中背景
-        self.selectionStyle=UITableViewCellSelectionStyle.None;
+        self.selectionStyle=UITableViewCellSelectionStyle.none;
         
         // Initialization code
     }
@@ -44,8 +44,9 @@ class OrderGoodTableViewCell: UITableViewCell {
      
      - parameter entity: 商品entity
      */
-    func updateCell(entity:GoodDetailEntity){
-        goodImgView.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
+    func updateCell(_ entity:GoodDetailEntity){
+        entity.goodPic=entity.goodPic ?? ""
+        goodImgView.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
         lblName.text=entity.goodInfoName
         if entity.flag == 1{//如果是特价 显示特价价格
             lblPrice.text="￥"+entity.prefertialPrice!
@@ -54,7 +55,7 @@ class OrderGoodTableViewCell: UITableViewCell {
         }
         lblCount.text="x\(entity.carNumber!)"
     }
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

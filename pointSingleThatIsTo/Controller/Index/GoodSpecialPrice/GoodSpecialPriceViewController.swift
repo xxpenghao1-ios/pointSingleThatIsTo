@@ -31,7 +31,7 @@ class  GoodSpecialPriceViewController:BaseViewController{
         }else{
             self.title="促销商品"
         }
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         buildView(0)
         
         
@@ -41,7 +41,7 @@ class  GoodSpecialPriceViewController:BaseViewController{
      
      - parameter categoryId: 分类id
      */
-    func buildView(categoryId:Int){
+    func buildView(_ categoryId:Int){
         salesVC.title="销量"
         salesVC.flag=flag
         salesVC.categoryId=categoryId

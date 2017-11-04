@@ -10,54 +10,55 @@ import Foundation
 import UIKit
 import SVProgressHUD
 import ObjectMapper
+import SwiftyJSON
 /// 积分记录
 class IntegralRecordViewController:BaseViewController{
     /// table
-    private var table:UITableView?
+    fileprivate var table:UITableView?
     /// table头部视图
-    private var tableHeaderView:UIView?
+    fileprivate var tableHeaderView:UIView?
     /// 数据源
-    private var arr=NSMutableArray()
+    fileprivate var arr=NSMutableArray()
     /// 空视图提示
-    private var lblNilTitle:UILabel?
+    fileprivate var lblNilTitle:UILabel?
     /// 积分余额
-    private var lblIntegral:UILabel?
+    fileprivate var lblIntegral:UILabel?
     /// 加载页数
-    private var currentPage=0
+    fileprivate var currentPage=0
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="点单币记录"
-        self.view.backgroundColor=UIColor.whiteColor()
-        tableHeaderView=UIView(frame:CGRectMake(0,64,boundsWidth,120))
+        self.view.backgroundColor=UIColor.white
+        tableHeaderView=UIView(frame:CGRect(x: 0,y: 64,width: boundsWidth,height: 120))
         self.view.addSubview(tableHeaderView!)
         
         let imgView=UIImageView(frame:tableHeaderView!.bounds)
         imgView.image=UIImage(named: "jf_jl_bj")
         tableHeaderView!.addSubview(imgView)
         
-        let lblSurplusIntegral=UILabel(frame:CGRectMake(0,50,boundsWidth/2,20))
+        let lblSurplusIntegral=UILabel(frame:CGRect(x: 0,y: 50,width: boundsWidth/2,height: 20))
         lblSurplusIntegral.text="剩余点单币"
-        lblSurplusIntegral.textColor=UIColor.whiteColor()
-        lblSurplusIntegral.font=UIFont.boldSystemFontOfSize(18)
-        lblSurplusIntegral.textAlignment = .Center
+        lblSurplusIntegral.textColor=UIColor.white
+        lblSurplusIntegral.font=UIFont.boldSystemFont(ofSize: 18)
+        lblSurplusIntegral.textAlignment = .center
         tableHeaderView!.addSubview(lblSurplusIntegral)
         
-        lblIntegral=UILabel(frame:CGRectMake(boundsWidth/2,50,boundsWidth/2,20))
-        lblIntegral!.text=userDefaults.objectForKey("balance") as? String
-        lblIntegral!.textColor=UIColor.whiteColor()
-        lblIntegral!.font=UIFont.boldSystemFontOfSize(18)
-        lblIntegral!.textAlignment = .Center
+        lblIntegral=UILabel(frame:CGRect(x: boundsWidth/2,y: 50,width: boundsWidth/2,height: 20))
+        lblIntegral!.text=userDefaults.object(forKey: "balance") as? String
+        lblIntegral!.textColor=UIColor.white
+        lblIntegral!.font=UIFont.boldSystemFont(ofSize: 18)
+        lblIntegral!.textAlignment = .center
         tableHeaderView!.addSubview(lblIntegral!)
         
-        table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(tableHeaderView!.frame),boundsWidth,boundsHeight-64-120), style: UITableViewStyle.Plain)
+        table=UITableView(frame:CGRect(x: 0,y: tableHeaderView!.frame.maxY,width: boundsWidth,height: boundsHeight-64-120), style: UITableViewStyle.plain)
         table!.dataSource=self
         table!.delegate=self
         self.view.addSubview(table!)
         //设置cell下边线全屏
-        table?.layoutMargins=UIEdgeInsetsZero
-        table?.separatorInset=UIEdgeInsetsZero
+        table?.layoutMargins=UIEdgeInsets.zero
+        table?.separatorInset=UIEdgeInsets.zero
         //移除空单元格
-        table!.tableFooterView = UIView(frame:CGRectZero)
+        table!.tableFooterView = UIView(frame:CGRect.zero)
         table!.addHeaderWithCallback{
             self.currentPage=1
             self.httpIntegralRecord(self.currentPage,isRefresh:true)
@@ -67,30 +68,30 @@ class IntegralRecordViewController:BaseViewController{
             self.httpIntegralRecord(self.currentPage,isRefresh:false)
         }
         //加载等待视图
-        SVProgressHUD.showWithStatus("数据加载中")
+        SVProgressHUD.show(withStatus: "数据加载中")
         table!.headerBeginRefreshing()
         httpQueryMemberIntegral()
     }
 }
 // MARK: - 实现table协议
 extension IntegralRecordViewController:UITableViewDelegate,UITableViewDataSource{
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return arr.count
     }
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell=tableView.dequeueReusableCellWithIdentifier("IntegralRecordId") as? IntegralRecordTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell=tableView.dequeueReusableCell(withIdentifier: "IntegralRecordId") as? IntegralRecordTableViewCell
         if cell == nil{
-            cell=NSBundle.mainBundle().loadNibNamed("IntegralRecordTableViewCell", owner:self, options:nil).last as? IntegralRecordTableViewCell
+            cell=Bundle.main.loadNibNamed("IntegralRecordTableViewCell", owner:self, options:nil)?.last as? IntegralRecordTableViewCell
         }
-        cell?.layoutMargins=UIEdgeInsetsZero
-        cell?.separatorInset=UIEdgeInsetsZero
+        cell?.layoutMargins=UIEdgeInsets.zero
+        cell?.separatorInset=UIEdgeInsets.zero
         if arr.count > 0{
             let entity=arr[indexPath.row] as! MemberIntegralEntity
             cell!.updateCell(entity)
         }
         return cell!
     }
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
 }
@@ -102,7 +103,7 @@ extension IntegralRecordViewController{
      - parameter currentPage: 第几页
      - parameter isRefresh:   是否刷新true是
      */
-    private func httpIntegralRecord(currentPage:Int,isRefresh:Bool){
+    fileprivate func httpIntegralRecord(_ currentPage:Int,isRefresh:Bool){
         var count=0
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeQueryMemberIntegralV1(memberId: IS_NIL_MEMBERID()!, currentPage: currentPage, pageSize: 10), successClosure: { (result) -> Void in
             let json=JSON(result)
@@ -111,9 +112,9 @@ extension IntegralRecordViewController{
                 self.arr.removeAllObjects()
             }
             for(_,value) in json{
-                count++
-                let entity=Mapper<MemberIntegralEntity>().map(value.object)
-                self.arr.addObject(entity!)
+                count+=1
+                let entity=Mapper<MemberIntegralEntity>().map(JSONObject:value.object)
+                self.arr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
                 self.table?.setFooterHidden(true)
@@ -141,7 +142,7 @@ extension IntegralRecordViewController{
                 self.table?.headerEndRefreshing()
                 //关闭加载状态
                 self.table?.footerEndRefreshing()
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
     /**
@@ -153,7 +154,7 @@ extension IntegralRecordViewController{
             let integral=json["success"].intValue
             self.lblIntegral!.text="\(integral)"
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
 }

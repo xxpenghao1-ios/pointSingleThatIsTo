@@ -8,8 +8,8 @@
 
 import UIKit
 
-let kScreenWidth = UIScreen.mainScreen().bounds.size.width
-let kScreenHeight = UIScreen.mainScreen().bounds.size.height
+let kScreenWidth = UIScreen.main.bounds.size.width
+let kScreenHeight = UIScreen.main.bounds.size.height
 /**
 * 屏幕状态栏的高度
 */
@@ -29,7 +29,7 @@ let kScNavBarHeight = kArrowButtonWidth
 /**
 * 自定义导航栏的颜色
 */
-let kNavColor = UIColor.whiteColor()   //这个是在不设置自定义导航栏的颜色时的默认颜色
+let kNavColor = UIColor.white   //这个是在不设置自定义导航栏的颜色时的默认颜色
 
 class SKMacros: NSObject {
 

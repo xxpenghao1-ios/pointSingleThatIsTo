@@ -26,21 +26,21 @@ class IRecommendViewControllerCell:UITableViewCell {
     func uibuju(){
         /// 推荐的人 名称
         recommendedMemberName=UILabel()
-        recommendedMemberName?.font=UIFont.systemFontOfSize(14)
+        recommendedMemberName?.font=UIFont.systemFont(ofSize: 14)
         self.contentView.addSubview(recommendedMemberName!)
         /// 查看二维码标签
         seeIR=UILabel()
-        seeIR?.font=UIFont.systemFontOfSize(14)
+        seeIR?.font=UIFont.systemFont(ofSize: 14)
         seeIR?.text="查看二维码"
-        seeIR?.frame=CGRectMake(boundsWidth-111, 20, 90, 20)
+        seeIR?.frame=CGRect(x: boundsWidth-111, y: 20, width: 90, height: 20)
         self.contentView.addSubview(seeIR!)
         
         
     }
     //插入数据
-    func dateshow(enetity:IRecommendEntity){
+    func dateshow(_ enetity:IRecommendEntity){
         /// 推荐的人 名称
-        recommendedMemberName?.frame=CGRectMake(15, 20, boundsWidth-130, 20)
+        recommendedMemberName?.frame=CGRect(x: 15, y: 20, width: boundsWidth-130, height: 20)
         recommendedMemberName?.text=enetity.recommendedMemberName!
         
     }

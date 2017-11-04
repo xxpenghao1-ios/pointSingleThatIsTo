@@ -64,14 +64,14 @@ class StockOrderManageTableViewCell: UITableViewCell {
         
         //设置图片边框
         goodImg1.layer.borderWidth=0.5
-        goodImg1.layer.borderColor=UIColor.borderColor().CGColor
-        goodImg1.hidden=true
+        goodImg1.layer.borderColor=UIColor.borderColor().cgColor
+        goodImg1.isHidden=true
         goodImg2.layer.borderWidth=0.5
-        goodImg2.layer.borderColor=UIColor.borderColor().CGColor
-        goodImg2.hidden=true
+        goodImg2.layer.borderColor=UIColor.borderColor().cgColor
+        goodImg2.isHidden=true
         goodImg3.layer.borderWidth=0.5
-        goodImg3.layer.borderColor=UIColor.borderColor().CGColor
-        goodImg3.hidden=true
+        goodImg3.layer.borderColor=UIColor.borderColor().cgColor
+        goodImg3.isHidden=true
         
         
         
@@ -82,7 +82,7 @@ class StockOrderManageTableViewCell: UITableViewCell {
      
      - parameter entity:订单entity
      */
-    func updateCell(entity:OrderListEntity){
+    func updateCell(_ entity:OrderListEntity){
         //订单号
         lblOrderId.text=entity.orderSN
         //供应商名称
@@ -97,30 +97,31 @@ class StockOrderManageTableViewCell: UITableViewCell {
         if entity.orderPrice != nil{
             let str="总价:￥\(entity.orderPrice!)"
             let strs:NSMutableAttributedString=NSMutableAttributedString(string:str);
-            strs.addAttribute(NSForegroundColorAttributeName, value:UIColor.redColor(), range:NSMakeRange(4,str.characters.count-4));
+            strs.addAttribute(NSAttributedStringKey.foregroundColor, value:UIColor.red, range:NSMakeRange(4,str.characters.count-4));
             lblSumPrice.attributedText=strs
         }else{
             lblSumPrice.text=""
         }
-        goodImg1.hidden=true
-        goodImg2.hidden=true
-        goodImg3.hidden=true
+        goodImg1.isHidden=true
+        goodImg2.isHidden=true
+        goodImg3.isHidden=true
         //判断商品集合是否为空
         if entity.list != nil{
-            for(var i=0;i<entity.list!.count;i++){
+            for i in 0...entity.list!.count{
                     let entity=entity.list![i] as! GoodDetailEntity
+                    entity.goodPic=entity.goodPic ?? ""
                     switch i{
                     case 0:
-                        goodImg1.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
-                        goodImg1.hidden=false
+                        goodImg1.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
+                        goodImg1.isHidden=false
                         break
                     case 1:
-                        goodImg2.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
-                        goodImg2.hidden=false
+                        goodImg2.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
+                        goodImg2.isHidden=false
                         break
                     case 2:
-                        goodImg3.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
-                        goodImg3.hidden=false
+                        goodImg3.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
+                        goodImg3.isHidden=false
                         return
                     default:
                         break
@@ -129,7 +130,7 @@ class StockOrderManageTableViewCell: UITableViewCell {
         }
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

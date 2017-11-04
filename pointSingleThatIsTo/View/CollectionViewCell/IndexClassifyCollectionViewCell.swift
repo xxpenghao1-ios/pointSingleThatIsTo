@@ -19,18 +19,19 @@ class IndexClassifyCollectionViewCell:UICollectionViewCell {
     var index:Int?;
     override init(frame: CGRect){
         super.init(frame:frame);
-        imgView=UIImageView(frame:CGRectMake(10,0,frame.size.width-20,frame.size.height-20));
+        imgView=UIImageView(frame:CGRect(x: 10,y: 0,width: frame.size.width-20,height: frame.size.height-20));
         self.contentView.addSubview(imgView);
         
-        name=UILabel(frame:CGRectMake(0,frame.height-20,frame.width,20));
-        name.font=UIFont.systemFontOfSize(13);
-        name.textAlignment=NSTextAlignment.Center;
+        name=UILabel(frame:CGRect(x: 0,y: frame.height-20,width: frame.width,height: 20));
+        name.font=UIFont.systemFont(ofSize: 13);
+        name.textAlignment=NSTextAlignment.center;
         self.contentView.addSubview(name);
     }
     //传入数据
-    func updaeCell(entity:GoodsCategoryEntity){
+    func updaeCell(_ entity:GoodsCategoryEntity){
         name.text=entity.goodsCategoryName!;
-        imgView.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodsCategoryIco!), placeholderImage:UIImage(named:"def_fl"));
+        entity.goodsCategoryIco=entity.goodsCategoryIco ?? ""
+        imgView.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodsCategoryIco!), placeholderImage:UIImage(named:"def_fl"));
         
     }
     /**
@@ -39,7 +40,7 @@ class IndexClassifyCollectionViewCell:UICollectionViewCell {
      - parameter str: 名称
      - parameter pic: 图片
      */
-    func updateCell1(str:String,pic:String){
+    func updateCell1(_ str:String,pic:String){
         name.text=str
         imgView.image=UIImage(named:pic)
         

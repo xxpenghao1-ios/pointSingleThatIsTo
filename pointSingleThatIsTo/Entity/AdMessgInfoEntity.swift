@@ -28,8 +28,8 @@ class AdMessgInfoEntity:Mappable{
     var pushStatu:Int?;		//推送状态；1等待审核；2已推送；
     var pushReason:Int?;		//推送原因； 1促销活动；2特价活动；3新品推荐；4系统消息
     init(){}
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         adMessgInfo <- map["adMessgInfo"]

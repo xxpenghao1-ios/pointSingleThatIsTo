@@ -14,14 +14,14 @@ class SKLaunchMenuItem: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        titleLabel = UILabel(frame: CGRectMake(0, 0, kScreenWidth / 5, 30))
-        titleLabel.backgroundColor = UIColor.groupTableViewBackgroundColor()
-        titleLabel.font = UIFont.systemFontOfSize(14)
-        titleLabel.textAlignment = NSTextAlignment.Center
+        titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: kScreenWidth / 5, height: 30))
+        titleLabel.backgroundColor = UIColor.groupTableViewBackground
+        titleLabel.font = UIFont.systemFont(ofSize: 14)
+        titleLabel.textAlignment = NSTextAlignment.center
         
         self.layer.masksToBounds = true
         self.layer.cornerRadius = 5
-        self.layer.borderColor = UIColor.lightGrayColor().CGColor
+        self.layer.borderColor = UIColor.lightGray.cgColor
         self.layer.borderWidth = 0.2
         self.contentView.addSubview(titleLabel)
     }

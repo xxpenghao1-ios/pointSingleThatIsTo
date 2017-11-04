@@ -56,13 +56,13 @@ let URLIMG="http://www.hnddjd.com";
 let URL="http://www.hnddjd.com/front/";
 
 /// 屏幕宽
-let boundsWidth=UIScreen.mainScreen().bounds.width
+let boundsWidth=UIScreen.main.bounds.width
 
 /// 屏幕高
-let boundsHeight=UIScreen.mainScreen().bounds.height
+let boundsHeight=UIScreen.main.bounds.height
 
 /// 全局缓存
-let userDefaults=NSUserDefaults.standardUserDefaults()
+let userDefaults=UserDefaults.standard
 
 ///// 计算代码执行时间
 //let startTime:NSDate = NSDate()
@@ -79,10 +79,10 @@ let userDefaults=NSUserDefaults.standardUserDefaults()
 
 - returns: 返回UIViewController
 */
-func storyboardPushView(storyboardId:String) -> UIViewController{
+func storyboardPushView(_ storyboardId:String) -> UIViewController{
     //先拿到main文件
     let storyboard=UIStoryboard(name:"Main", bundle:nil);
-    let vc=storyboard.instantiateViewControllerWithIdentifier(storyboardId) as UIViewController;
+    let vc=storyboard.instantiateViewController(withIdentifier: storyboardId) as UIViewController;
     return vc
 }
 /**
@@ -92,12 +92,12 @@ func storyboardPushView(storyboardId:String) -> UIViewController{
  
  - returns:String
  */
-func chineISInitials(str:String)->String{
-    let str1:CFMutableString = CFStringCreateMutableCopy(nil, 0, str);
+func chineISInitials(_ str:String)->String{
+    let str1:CFMutableString = CFStringCreateMutableCopy(nil, 0, str as CFString);
     CFStringTransform(str1, nil, kCFStringTransformToLatin, false)
     CFStringTransform(str1, nil, kCFStringTransformStripCombiningMarks, false)
     let str2 = CFStringCreateWithSubstring(nil, str1, CFRangeMake(0, 1))
-    return str2 as String
+    return str2! as String
 }
 /**
  递归数据 把数据根据首字母分组
@@ -135,13 +135,13 @@ extension UIButton{
     
     /// 实现按钮半透明+不可点效果
     func disable(){
-        self.enabled = false
+        self.isEnabled = false
         self.alpha = 0.5
         
     }
     /// 正常按钮+可点击效果
     func enable(){
-        self.enabled = true
+        self.isEnabled = true
         self.alpha = 1
     }
     
@@ -153,7 +153,7 @@ extension UIButton{
  
  - returns: 结果(true表示不为空)
  */
-func isStringNil(str:String?) -> Bool{
+func isStringNil(_ str:String?) -> Bool{
     var b=true
     if str == nil{
        b=false
@@ -173,7 +173,7 @@ func isStringNil(str:String?) -> Bool{
 - returns: 返回Optional对象 自行判断
 */
 func IS_NIL_MEMBERID() -> String?{
-    return userDefaults.objectForKey("memberId") as? String
+    return userDefaults.object(forKey: "memberId") as? String
 }
 /**
  计算缓存  计算MB
@@ -181,25 +181,25 @@ func IS_NIL_MEMBERID() -> String?{
  */
 func folderSizeAtPath() -> Float{
     var folderSize:Float
-    folderSize=Float(SDImageCache.sharedImageCache().getSize())/1024.0/1024.0
+    folderSize=Float(SDImageCache.shared().getSize())/1024.0/1024.0
     return folderSize
 }
 /**
  清除图片缓存
  */
 func clearCache(){
-    SDImageCache.sharedImageCache().clearDisk()
+    SDImageCache.shared().clearDisk()
 }
 /**
  截取Double小数点后2位
  */
-func toDecimalNumberTwo(float:Double) ->String{
+func toDecimalNumberTwo(_ float:Double) ->String{
     let str=NSString(format:"%.2f",float)
     return "\(str.doubleValue)";
     
 }
 //截取小数点后1位
-func toFloatTwo(float:Float) ->String{
+func toFloatTwo(_ float:Float) ->String{
     let str=NSString(format:"%.1f",float)
     return "\(str.floatValue)"
 }
@@ -208,7 +208,7 @@ extension Double{
     /**
      截取Double小数点后2位
      */
-    func toDecimalNumberTwo(float:Double) ->Double{
+    func toDecimalNumberTwo(_ float:Double) ->Double{
         let str=NSString(format:"%.2f",float)
         return str.doubleValue;
         
@@ -225,15 +225,14 @@ extension String {
      
      - returns: 当前文本所占的宽高
      */
-    func textSizeWithFont(font: UIFont, constrainedToSize size:CGSize) -> CGSize {
+    func textSizeWithFont(_ font: UIFont, constrainedToSize size:CGSize) -> CGSize {
         var textSize:CGSize!
-        if CGSizeEqualToSize(size, CGSizeZero) {
-            let attributes = NSDictionary(object: font, forKey: NSFontAttributeName)
-            textSize = self.sizeWithAttributes(attributes as? [String : AnyObject])
-        } else {
-            let option = NSStringDrawingOptions.UsesLineFragmentOrigin
-            let attributes = NSDictionary(object: font, forKey: NSFontAttributeName)
-            let stringRect = self.boundingRectWithSize(size, options: option, attributes: attributes as? [String : AnyObject], context: nil)
+        if __CGSizeEqualToSize(size,CGSize.zero){
+            let attributes=NSDictionary(object: font, forKey: NSAttributedStringKey.font as NSCopying)
+            textSize=self.size(withAttributes:attributes as? [NSAttributedStringKey : Any])
+        }else{
+            let attributes=NSDictionary(object: font, forKey: NSAttributedStringKey.font as NSCopying)
+            let stringRect = self.boundingRect(with:size, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes:attributes as? [NSAttributedStringKey : Any], context: nil)
             textSize = stringRect.size
         }
         return textSize
@@ -245,13 +244,13 @@ extension String {
      
      - returns: bool
      */
-    func IsChinese(str:String) ->Bool{
+    func IsChinese(_ str:String) ->Bool{
         var flag=false;
         let length=NSString(string: str).length;
-        for(var i=0;i<length;i++){
+        for i in 0...length{
             let range=NSMakeRange(i,1);
-            let subString:NSString=NSString(string: str).substringWithRange(range);
-            let char=subString.UTF8String;
+            let subString:NSString=NSString(string: str).substring(with: range) as NSString
+            let char=subString.utf8String;
             if strlen(char) == 3{
                 flag=true;
             }
@@ -268,40 +267,40 @@ extension String {
  
  - returns:返回时间差
  */
-func stringDate(dateStr:String)->String{
+func stringDate(_ dateStr:String)->String{
     //转换成日期格式
-    let inputFormatter=NSDateFormatter();
+    let inputFormatter=DateFormatter();
     inputFormatter.dateFormat="yyyy-MM-dd HH:mm:ss"
-    let date=inputFormatter.dateFromString(dateStr)
+    let date=inputFormatter.date(from: dateStr)
 
-    let now = NSDate()
+    let now = Date()
     //now即为现在的时间，由于后面的NSCalendar可以匹配系统日期所以不用设置local
-    let das = NSCalendar.currentCalendar()
-    let flags: NSCalendarUnit = [.Year,.Month,.Day,.Hour,.Minute]
+    let das = Calendar.current
+    let flags: NSCalendar.Unit = [.year,.month,.day,.hour,.minute]
     //设置格式
-    let nowCom = das.components(flags, fromDate: now)
-    let timeCom = das.components(flags, fromDate: date!)
+    let nowCom = (das as NSCalendar).components(flags, from: now)
+    let timeCom = (das as NSCalendar).components(flags, from: date!)
     if timeCom.year == nowCom.year{
         if timeCom.month == nowCom.month {
             if timeCom.day == nowCom.day{
                 if timeCom.hour == nowCom.hour{
-                    return "\(nowCom.minute - timeCom.minute)分钟前"
+                    return "\(nowCom.minute! - timeCom.minute!)分钟前"
                 }else{
-                    return "今天\(timeCom.hour):\(timeCom.minute)"
+                    return "今天\(timeCom.hour!):\(timeCom.minute!)"
                 }
             }else{
-                if nowCom.day - timeCom.day == 1{
-                    return "昨天\(timeCom.hour):\(timeCom.minute)"
+                if nowCom.day! - timeCom.day! == 1{
+                    return "昨天\(timeCom.hour!):\(timeCom.minute!)"
                 }else{
-                    return "\(nowCom.day - timeCom.day)天前"
+                    return "\(nowCom.day! - timeCom.day!)天前"
                 }
             }
         }else{
-            return "\(nowCom.month - timeCom.month)月前"
+            return "\(nowCom.month! - timeCom.month!)月前"
         }
         
     }else{
-        return "\(timeCom.year)-\(timeCom.month)-\(timeCom.day)"
+        return "\(timeCom.year!)-\(timeCom.month!)-\(timeCom.day!)"
     }
     
 }
@@ -315,13 +314,13 @@ extension UIAlertController {
      - parameter message:           弹出内容
      - parameter okButtonTitle:     按钮名称
      */
-    class func showAlertYes(presentController: UIViewController!,title: String!,message: String!,okButtonTitle: String?) {
-            let alert = UIAlertController(title: title!, message: message!, preferredStyle: UIAlertControllerStyle.Alert)
+    class func showAlertYes(_ presentController: UIViewController!,title: String!,message: String!,okButtonTitle: String?) {
+            let alert = UIAlertController(title: title!, message: message!, preferredStyle: UIAlertControllerStyle.alert)
             if (okButtonTitle != nil) {
-                alert.addAction(UIAlertAction(title: okButtonTitle!, style: UIAlertActionStyle.Default, handler: nil))
+                alert.addAction(UIAlertAction(title: okButtonTitle!, style: UIAlertActionStyle.default, handler: nil))
             }
             
-            presentController!.presentViewController(alert, animated: true, completion: nil)
+            presentController!.present(alert, animated: true, completion: nil)
     }
     /**
     弹出单个按钮(需要传入一个闭包参数)
@@ -332,13 +331,13 @@ extension UIAlertController {
      - parameter okButtonTitle:     按钮名称
      - parameter okHandler:         闭包参数
      */
-    class func showAlertYes(presentController: UIViewController!,title: String!,message: String!,okButtonTitle: String? ,okHandler: ((UIAlertAction!) -> Void)!) {
-            let alert = UIAlertController(title: title!, message: message!, preferredStyle: UIAlertControllerStyle.Alert)
+    class func showAlertYes(_ presentController: UIViewController!,title: String!,message: String!,okButtonTitle: String? ,okHandler: ((UIAlertAction?) -> Void)!) {
+            let alert = UIAlertController(title: title!, message: message!, preferredStyle: UIAlertControllerStyle.alert)
             if (okButtonTitle != nil) {
-                alert.addAction(UIAlertAction(title: okButtonTitle!, style: UIAlertActionStyle.Default, handler: okHandler))
+                alert.addAction(UIAlertAction(title: okButtonTitle!, style: UIAlertActionStyle.default, handler: okHandler))
             }
             
-            presentController!.presentViewController(alert, animated: true, completion: nil)
+            presentController!.present(alert, animated: true, completion: nil)
     }
     /**
      弹出带确定取消的按钮
@@ -349,16 +348,16 @@ extension UIAlertController {
      - parameter okButtonTitle:     确定按钮名称
      - parameter cancelButtonTitle: 取消按钮名称
      */
-    class func showAlertYesNo(presentController: UIViewController!,title: String!,message: String!,cancelButtonTitle: String?,okButtonTitle: String?) {
-            let alert = UIAlertController(title: title!, message: message!, preferredStyle: UIAlertControllerStyle.Alert)
+    class func showAlertYesNo(_ presentController: UIViewController!,title: String!,message: String!,cancelButtonTitle: String?,okButtonTitle: String?) {
+            let alert = UIAlertController(title: title!, message: message!, preferredStyle: UIAlertControllerStyle.alert)
             if (cancelButtonTitle != nil) {
-                alert.addAction(UIAlertAction(title: cancelButtonTitle!, style: UIAlertActionStyle.Default, handler: nil))
+                alert.addAction(UIAlertAction(title: cancelButtonTitle!, style: UIAlertActionStyle.default, handler: nil))
             }
             if (okButtonTitle != nil) {
-                alert.addAction(UIAlertAction(title: okButtonTitle!, style: UIAlertActionStyle.Default, handler: nil))
+                alert.addAction(UIAlertAction(title: okButtonTitle!, style: UIAlertActionStyle.default, handler: nil))
             }
             
-            presentController!.presentViewController(alert, animated: true, completion: nil)
+            presentController!.present(alert, animated: true, completion: nil)
     }
     /**
      弹出带确定取消的按钮(需要传入一个闭包参数)
@@ -370,15 +369,15 @@ extension UIAlertController {
      - parameter cancelButtonTitle: 取消按钮名称
      - parameter okHandler:         闭包参数
      */
-    class func showAlertYesNo(presentController: UIViewController!,title: String!,message: String!,cancelButtonTitle: String? ,okButtonTitle: String? ,okHandler: ((UIAlertAction!) -> Void)!) {
-            let alert = UIAlertController(title: title!, message: message!, preferredStyle: UIAlertControllerStyle.Alert)
+    class func showAlertYesNo(_ presentController: UIViewController!,title: String!,message: String!,cancelButtonTitle: String? ,okButtonTitle: String? ,okHandler: ((UIAlertAction?) -> Void)!) {
+            let alert = UIAlertController(title: title!, message: message!, preferredStyle: UIAlertControllerStyle.alert)
             if (cancelButtonTitle != nil) {
-                alert.addAction(UIAlertAction(title: cancelButtonTitle!, style: UIAlertActionStyle.Default, handler: nil))
+                alert.addAction(UIAlertAction(title: cancelButtonTitle!, style: UIAlertActionStyle.default, handler: nil))
             }
             if (okButtonTitle != nil) {
-                alert.addAction(UIAlertAction(title: okButtonTitle!, style: UIAlertActionStyle.Default, handler: okHandler))
+                alert.addAction(UIAlertAction(title: okButtonTitle!, style: UIAlertActionStyle.default, handler: okHandler))
             }
-            presentController!.presentViewController(alert, animated: true, completion: nil)
+            presentController!.present(alert, animated: true, completion: nil)
     }
 }
 

@@ -10,11 +10,11 @@ import UIKit
 /// 积分记录cell
 class IntegralRecordTableViewCell: UITableViewCell {
     /// 积分
-    @IBOutlet weak private var lblIntegral: UILabel!
+    @IBOutlet weak fileprivate var lblIntegral: UILabel!
     /// 标题
-    @IBOutlet weak private var lblTitle: UILabel!
+    @IBOutlet weak fileprivate var lblTitle: UILabel!
     /// 时间
-    @IBOutlet weak private var lblTime: UILabel!
+    @IBOutlet weak fileprivate var lblTime: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         lblTime.textColor=UIColor.textColor()
@@ -24,7 +24,7 @@ class IntegralRecordTableViewCell: UITableViewCell {
      
      - parameter entity:MemberIntegralEntity
      */
-    func updateCell(entity:MemberIntegralEntity){
+    func updateCell(_ entity:MemberIntegralEntity){
         lblTime.text=entity.time
         lblIntegral.text=entity.integral
         switch entity.integralType!{
@@ -45,7 +45,7 @@ class IntegralRecordTableViewCell: UITableViewCell {
         }
         
     }
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

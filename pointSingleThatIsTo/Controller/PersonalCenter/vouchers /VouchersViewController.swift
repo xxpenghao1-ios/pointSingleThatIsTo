@@ -11,6 +11,42 @@ import UIKit
 import Alamofire
 import SVProgressHUD
 import ObjectMapper
+import SwiftyJSON
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func <= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l <= r
+  default:
+    return !(rhs < lhs)
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 //定义闭包类型
 typealias closureVouchersEntity = (VouchersEntity) -> Void
 /// 代金券
@@ -18,30 +54,30 @@ class VouchersViewController:UIViewController{
     //如果不等于空 表示用户正在选择代金券消费
     var flag:Int?
     var vouchersEntity:closureVouchersEntity?
-    private let storeId=userDefaults.objectForKey("storeId") as! String
-    private var arr=[VouchersEntity]()
-    private var table:UITableView!
-    private var currentPage=1
+    fileprivate let storeId=userDefaults.object(forKey: "storeId") as! String
+    fileprivate var arr=[VouchersEntity]()
+    fileprivate var table:UITableView!
+    fileprivate var currentPage=1
     /// 没有数据加载该视图
-    private var nilView:UIView?
+    fileprivate var nilView:UIView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="代金券"
-        self.view.backgroundColor=UIColor.whiteColor()
-        let textTitleBorderView=UIView(frame:CGRectMake(10,84,boundsWidth-20,1))
+        self.view.backgroundColor=UIColor.white
+        let textTitleBorderView=UIView(frame:CGRect(x: 10,y: 84,width: boundsWidth-20,height: 1))
         textTitleBorderView.backgroundColor=UIColor.borderColor()
         self.view.addSubview(textTitleBorderView)
-        let textTitle=buildLabel(UIColor.RGBFromHexColor("#999999"), font:13, textAlignment: NSTextAlignment.Center)
+        let textTitle=buildLabel(UIColor.RGBFromHexColor("#999999"), font:13, textAlignment: NSTextAlignment.center)
         textTitle.text="全部代金券"
-        textTitle.frame=CGRectMake((boundsWidth-100)/2,74,100,20)
-        textTitle.backgroundColor=UIColor.whiteColor()
+        textTitle.frame=CGRect(x: (boundsWidth-100)/2,y: 74,width: 100,height: 20)
+        textTitle.backgroundColor=UIColor.white
         self.view.addSubview(textTitle)
-        table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(textTitle.frame)+10,boundsWidth,boundsHeight-104))
+        table=UITableView(frame:CGRect(x: 0,y: textTitle.frame.maxY+10,width: boundsWidth,height: boundsHeight-104))
         table.dataSource=self
         table.delegate=self
-        table.tableFooterView=UIView(frame:CGRectZero)
-        table.separatorStyle = .None
+        table.tableFooterView=UIView(frame:CGRect.zero)
+        table.separatorStyle = .none
         self.view.addSubview(table)
         table.addHeaderWithCallback { () -> Void in
             self.currentPage=1
@@ -52,31 +88,31 @@ class VouchersViewController:UIViewController{
             self.requestVouchersList(self.currentPage,isRefresh:false)
         }
         self.table.headerBeginRefreshing()
-        SVProgressHUD.showWithStatus("正在加载")
+        SVProgressHUD.show(withStatus: "正在加载")
     }
 }
 // MARK: - table协议
 extension VouchersViewController:UITableViewDelegate,UITableViewDataSource{
     //返回tabview每一行显示什么
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         //定义标示符
         let cells:String="cellid";
-        var cell=tableView.dequeueReusableCellWithIdentifier(cells);
+        var cell=tableView.dequeueReusableCell(withIdentifier: cells);
         if cell == nil{
-            cell=UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier:cells)
+            cell=UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier:cells)
         }
-        cell!.selectionStyle = .None
+        cell!.selectionStyle = .none
         if arr.count > 0{
             let entity=arr[indexPath.row]
-            let img=UIImageView(frame:CGRectMake(10,0,boundsWidth-20,90))
+            let img=UIImageView(frame:CGRect(x: 10,y: 0,width: boundsWidth-20,height: 90))
             img.image=UIImage(named:"vouchers")
-            let name=buildLabel(UIColor.RGBFromHexColor("#ff3399"), font:18, textAlignment: NSTextAlignment.Left)
-            name.frame=CGRectMake(100,35,100,20)
+            let name=buildLabel(UIColor.RGBFromHexColor("#ff3399"), font:18, textAlignment: NSTextAlignment.left)
+            name.frame=CGRect(x: 100,y: 35,width: 100,height: 20)
             name.text="\(entity.cashCouponAmountOfMoney!)元"
-            let date=buildLabel(UIColor.RGBFromHexColor("#666666"), font:14, textAlignment: NSTextAlignment.Right)
-            date.frame=CGRectMake(boundsWidth-150,35,110,20)
+            let date=buildLabel(UIColor.RGBFromHexColor("#666666"), font:14, textAlignment: NSTextAlignment.right)
+            date.frame=CGRect(x: boundsWidth-150,y: 35,width: 110,height: 20)
             date.numberOfLines=2
-            date.lineBreakMode = .ByWordWrapping
+            date.lineBreakMode = .byWordWrapping
             if entity.cashCouponExpirationDateInt <= 0{
                 date.text="已过期"
             }else{
@@ -89,32 +125,32 @@ extension VouchersViewController:UITableViewDelegate,UITableViewDataSource{
         return cell!
     }
     //返回tabview的行数
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return arr.count
     }
     //返回tabview的高度
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
         return 92
     }
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //取消选中的样式
-        tableView.deselectRowAtIndexPath(indexPath, animated: true);
+        tableView.deselectRow(at: indexPath, animated: true);
         let entity=arr[indexPath.row]
         if flag != nil{
             if entity.cashCouponExpirationDateInt > 0{
                 self.vouchersEntity?(entity)
-                self.navigationController?.popViewControllerAnimated(true)
+                self.navigationController?.popViewController(animated: true)
             }
         }
     }
 }
 // MARK: - 网络请求
 extension VouchersViewController{
-    func requestVouchersList(currentPage:Int,isRefresh:Bool){
+    func requestVouchersList(_ currentPage:Int,isRefresh:Bool){
         var count=0
-        request(.GET,URLIMG+"/cc/queryStoreCashCoupon", parameters:["storeId":storeId,"pageSize":10,"currentPage":currentPage]).responseJSON{ response in
+        request(URLIMG+"/cc/queryStoreCashCoupon",method:.get,parameters:["storeId":storeId,"pageSize":10,"currentPage":currentPage]).responseJSON{ response in
             if response.result.error != nil{
-                SVProgressHUD.showErrorWithStatus(response.result.error!.localizedDescription)
+                SVProgressHUD.showError(withStatus: response.result.error!.localizedDescription)
                 //关闭刷新状态
                 self.table.headerEndRefreshing()
                 //关闭加载状态
@@ -126,8 +162,8 @@ extension VouchersViewController{
                 }
                 let json=JSON(response.result.value!)
                 for(_,value) in json{
-                    count++
-                    let entity=Mapper<VouchersEntity>().map(value.object)
+                    count+=1
+                    let entity=Mapper<VouchersEntity>().map(JSONObject:value.object)
                     entity!.cashCouponExpirationDateInt=value["cashCouponExpirationDateInt"].intValue
                     self.arr.append(entity!)
                 }

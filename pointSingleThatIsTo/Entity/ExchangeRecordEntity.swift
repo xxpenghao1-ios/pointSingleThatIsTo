@@ -20,8 +20,8 @@ class ExchangeRecordEntity:Mappable{
     var addTime:String?
     /// 兑换数量
     var exchangeCount:Int?
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map:map)
     }
     func mapping(map: Map) {
         goodsName <- map["goodsName"]

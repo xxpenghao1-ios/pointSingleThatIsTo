@@ -10,10 +10,11 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
+import SwiftyJSON
 ///已发货
 class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITableViewDelegate {
     //实例化存储用户信息的单例
-    var userDefaults=NSUserDefaults.standardUserDefaults()
+    var userDefaults=UserDefaults.standard
     
     //已完成订单Table
     var completeListTable:UITableView?
@@ -28,19 +29,19 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
     var currentPage=0
     
     //网络连接状态码,true表示有网络
-    private var isNetWork:Bool=true
+    fileprivate var isNetWork:Bool=true
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="完成订单"
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         creatCompleteListTable()
         self.nilView=nilPromptView("还木有抢到过订单哦^ - ^")
         self.nilView!.center=self.completeListTable!.center
         self.view.addSubview(self.nilView!)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
 //        //若无网络,改变状态码下次进来直接刷新
 //        if(!IJReachability.isConnectedToNetwork()){
@@ -58,11 +59,11 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
     创建已完成订单
     */
     func creatCompleteListTable(){
-        completeListTable=UITableView(frame: CGRectMake(0, 0, boundsWidth, boundsHeight-153), style: UITableViewStyle.Plain)
+        completeListTable=UITableView(frame: CGRect(x: 0, y: 0, width: boundsWidth, height: boundsHeight-153), style: UITableViewStyle.plain)
         completeListTable?.delegate=self
         completeListTable?.dataSource=self
-        completeListTable?.backgroundColor=UIColor.whiteColor()
-        completeListTable?.separatorStyle=UITableViewCellSeparatorStyle.None
+        completeListTable?.backgroundColor=UIColor.white
+        completeListTable?.separatorStyle=UITableViewCellSeparatorStyle.none
         self.view.addSubview(completeListTable!)
         
 //        completeListTable!.addHeaderWithCallback({//下拉重新加载数据
@@ -84,47 +85,47 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
     }
     //MARK -------------实现Table的一些协议----------------------------
     //返回几组
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     //返回行高
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 170
     }
     //返回行数
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return completeListEntityArray.count
     }
     //返回数据源
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let Identifier="completeListTableCell"
-        var cell=tableView.dequeueReusableCellWithIdentifier(Identifier) as? GrabASingleDetailsCell
+        var cell=tableView.dequeueReusableCell(withIdentifier: Identifier) as? GrabASingleDetailsCell
         if(cell == nil){
-            cell=GrabASingleDetailsCell(style: UITableViewCellStyle.Default, reuseIdentifier: Identifier)
+            cell=GrabASingleDetailsCell(style: UITableViewCellStyle.default, reuseIdentifier: Identifier)
         }else{
             for subview:UIView in cell!.contentView.subviews{
                 subview.removeFromSuperview()
-                cell=GrabASingleDetailsCell(style: UITableViewCellStyle.Default, reuseIdentifier: Identifier)
+                cell=GrabASingleDetailsCell(style: UITableViewCellStyle.default, reuseIdentifier: Identifier)
             }
         }
         if(completeListEntityArray.count > 0){
             cell?.loadGrabASingleData(completeListEntityArray[indexPath.row])
             //添加中间视图交互单击事件
-            cell?.viewMiddle.userInteractionEnabled=true
+            cell?.viewMiddle.isUserInteractionEnabled=true
             cell?.viewMiddle.tag=indexPath.row
-            let viewMiddleTap=UITapGestureRecognizer(target: self, action: "actionCompleteDetails:")
+            let viewMiddleTap=UITapGestureRecognizer(target: self, action: Selector("actionCompleteDetails:"))
             cell?.viewMiddle.addGestureRecognizer(viewMiddleTap)
         }
-        cell!.selectionStyle=UITableViewCellSelectionStyle.None
+        cell!.selectionStyle=UITableViewCellSelectionStyle.none
         return cell!
     }
     //tableview开始载入的动画
-    func tableView(tableView: UITableView, willDisplayCell cell:UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath){
+    func tableView(_ tableView: UITableView, willDisplay cell:UITableViewCell, forRowAt indexPath: IndexPath){
         //设置cell的显示动画为3D缩放
         //xy方向缩放的初始值为0.1
         cell.layer.transform = CATransform3DMakeScale(0.1, 0.1, 1)
         //设置动画时间为0.25秒,xy方向缩放的最终值为1
-        UIView.animateWithDuration(0.25, animations: { () -> Void in
+        UIView.animate(withDuration: 0.25, animations: { () -> Void in
             cell.layer.transform = CATransform3DMakeScale(1, 1, 1)
         })
     }
@@ -132,23 +133,21 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
     actionGrabASingleDetails   跳转到抢单详情页面
     - parameter sender: 当前点击的视图
     */
-    func actionCompleteDetails(sender:UITapGestureRecognizer){
-        let GrabASingleDetailsVC=GrabASingleDetailsView()
-        GrabASingleDetailsVC.hidesBottomBarWhenPushed=true
-        GrabASingleDetailsVC.orderList=completeListEntityArray[sender.view!.tag]
-        self.navigationController?.pushViewController(GrabASingleDetailsVC, animated: true)
+    func actionCompleteDetails(_ sender:UITapGestureRecognizer){
+//        let GrabASingleDetailsVC=GrabASingleDetailsView()
+//        GrabASingleDetailsVC.hidesBottomBarWhenPushed=true
+//        GrabASingleDetailsVC.orderList=completeListEntityArray[sender.view!.tag]
+//        self.navigationController?.pushViewController(GrabASingleDetailsVC, animated: true)
     }
     /**
     queryStoreAllRobOrderForList   查询已完成订单
     
     - parameter currentPage: 当前页
     */
-    func queryStoreAllRobOrderForList(currentPage:Int){
-        let storeId=userDefaults.objectForKey("storeId") as! String;
-        //判断有无网络
-        if(IJReachability.isConnectedToNetwork()){
+    func queryStoreAllRobOrderForList(_ currentPage:Int){
+        let storeId=userDefaults.object(forKey: "storeId") as! String;
             //加载等待视图
-            SVProgressHUD.showWithStatus("数据加载中", maskType: .Clear)
+        SVProgressHUD.show(withStatus: "数据加载中", maskType: .clear)
             //统计订单数，每次发请求先置空
             var count=0
             //开始发送已抢订单查询请求(robflag状态为4)
@@ -158,16 +157,16 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
                         //释放菊花图
                         SVProgressHUD.dismiss()
                         // 每次循环加1
-                        count++
+                        count+=1
                         //储存json一键转entity的值
-                        let robbedEntity=Mapper<OrderListEntity>().map(robbedListValue.object)
+                        let robbedEntity=Mapper<OrderListEntity>().map(JSONObject: robbedListValue.object)
                         //获取"list"的value
                         let list=robbedListValue["list"]
                         //临时储存商品数组
                         let GoodsArray=NSMutableArray()
                         for(_,GoodsDetailsValue)in list{//取出商品entity
-                            let GoodsDetailsEntity=Mapper<GoodDetailEntity>().map(GoodsDetailsValue.object)
-                            GoodsArray.addObject(GoodsDetailsEntity!)
+                            let GoodsDetailsEntity=Mapper<GoodDetailEntity>().map(JSONObject:GoodsDetailsValue.object)
+                            GoodsArray.add(GoodsDetailsEntity!)
                         }
                         //将临时的商品数组赋值给订单实体类中的"list"
                         robbedEntity?.list=GoodsArray
@@ -202,10 +201,7 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
                     self.completeListTable?.headerEndRefreshing()
                     //关闭加载状态
                     self.completeListTable?.footerEndRefreshing()
-                    SVProgressHUD.showErrorWithStatus(errorMsg)
+                    SVProgressHUD.showError(withStatus: errorMsg)
             })
-        }else{
-            SVProgressHUD.showErrorWithStatus("无网络连接")
-        }
     }
 }

@@ -17,8 +17,8 @@ class SignEntity:Mappable {
     var storeSignDate:String?
     var storeSignTime:String?
     init(){}
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         storeSignId <- map["storeSignId"]

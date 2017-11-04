@@ -21,8 +21,8 @@ class ShoppingCarVo:Mappable{
     /// 是否选中(1选中2未选中)
     var isSelected:Int?
     var subSupplier:Int?
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         lowestMoney <- map["lowestMoney"]

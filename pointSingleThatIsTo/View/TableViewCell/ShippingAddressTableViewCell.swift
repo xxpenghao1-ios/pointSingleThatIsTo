@@ -27,22 +27,22 @@ class ShippingAddressTableViewCell: UITableViewCell {
         lblAddress.textColor=UIColor.textColor()
         lblDetailAddress.textColor=UIColor.textColor()
         lblDefaultAddress.textColor=UIColor.textColor()
-        lblDefaultAddress.hidden=true
+        lblDefaultAddress.isHidden=true
     }
     /**
      更新cell
      
      - parameter entity: 地址entity
      */
-    func updateCell(entity:AddressEntity){
+    func updateCell(_ entity:AddressEntity){
         lblNameAndPhone.text=entity.shippName!+"  "+entity.phoneNumber!
         lblAddress.text=entity.province!+entity.city!+entity.county!
         lblDetailAddress.text=entity.detailAddress
         if entity.defaultFlag == 1{
-            lblDefaultAddress.hidden=false
+            lblDefaultAddress.isHidden=false
         }
     }
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

@@ -10,19 +10,20 @@ import UIKit
 import Alamofire
 import ObjectMapper
 import SVProgressHUD
+import SwiftyJSON
 /// 个人中心
 class PersonalCenterViewContorller:BaseViewController{
     //标题文字
-    private var titleArr=["进货订单","购物车","点单币记录","点单商城","我的收藏","我的消息","代金券","联系客服","投诉与建议"]
+    fileprivate var titleArr=["进货订单","购物车","点单币记录","点单商城","我的收藏","我的消息","代金券","联系客服","投诉与建议"]
     //标题图标
-    private var imgArr=["img1","img2","img3","img4","img5","img6","img7","img8","img9"]
+    fileprivate var imgArr=["img1","img2","img3","img4","img5","img6","img7","img8","img9"]
     
     ///个人中心视图table
-    private var collectionView:UICollectionView!
-    private var scrollView:UIScrollView!
-    private var substationEntity:SubstationEntity?
+    fileprivate var collectionView:UICollectionView!
+    fileprivate var scrollView:UIScrollView!
+    fileprivate var substationEntity:SubstationEntity?
     //每次进页面都会加载
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         querySubstationInfo()
     }
@@ -36,7 +37,7 @@ class PersonalCenterViewContorller:BaseViewController{
         self.view.backgroundColor=UIColor.viewBackgroundColor()
         buildView()
         //监听通知
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:"isHiddenMessageBadgeView:", name:"postIsHiddenMessageBadgeView", object:nil)
+        NotificationCenter.default.addObserver(self, selector:"isHiddenMessageBadgeView:", name:NSNotification.Name(rawValue: "postIsHiddenMessageBadgeView"), object:nil)
     }
     
     
@@ -138,16 +139,16 @@ class PersonalCenterViewContorller:BaseViewController{
 //        tableView.deselectRowAtIndexPath(indexPath, animated: true);
 //    }
     deinit{
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 }
 // MARK: - 构建页面
 extension PersonalCenterViewContorller{
     func buildView(){
         
-        let imgView=UIImageView(frame:CGRectMake(0,0,25,25))
+        let imgView=UIImageView(frame:CGRect(x: 0,y: 0,width: 25,height: 25))
         imgView.image=UIImage(named:"settings")
-        imgView.userInteractionEnabled=true
+        imgView.isUserInteractionEnabled=true
         imgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushSettings"))
         let item=UIBarButtonItem(customView:imgView)
         self.navigationItem.rightBarButtonItem=item
@@ -161,7 +162,7 @@ extension PersonalCenterViewContorller{
         self.view.addSubview(scrollView)
         //初始化头部视图
         let headerView=UIView()
-        headerView.frame=CGRectMake(0,0,boundsWidth,150)
+        headerView.frame=CGRect(x: 0,y: 0,width: boundsWidth,height: 150)
         scrollView.addSubview(headerView)
         //给头部视图添加背景图
         let Img=UIImageView(image: UIImage(named: "member_bg"));
@@ -169,51 +170,51 @@ extension PersonalCenterViewContorller{
         headerView.addSubview(Img)
         
         //二维码图片
-        let codePic=UIImageView(frame: CGRectMake(0,0,80,80))
+        let codePic=UIImageView(frame: CGRect(x: 0,y: 0,width: 80,height: 80))
         codePic.center=Img.center
-        let qrcode=userDefaults.objectForKey("qrcode") as? String
+        let qrcode=userDefaults.object(forKey: "qrcode") as? String
         if qrcode != nil{
-            codePic.sd_setImageWithURL(NSURL(string:URLIMG+qrcode!), placeholderImage:UIImage(named:"def_nil"))
+            codePic.sd_setImage(with: Foundation.URL(string:URLIMG+qrcode!), placeholderImage:UIImage(named:"def_nil"))
         }
         headerView.addSubview(codePic)
         
         //店铺名称
         let lblstoreName=UILabel()
-        lblstoreName.frame=CGRectMake(0,150-30, boundsWidth, 20)
-        lblstoreName.text=userDefaults.objectForKey("storeName") as? String
-        lblstoreName.textColor=UIColor.whiteColor()
-        lblstoreName.font=UIFont.systemFontOfSize(14)
-        lblstoreName.textAlignment=NSTextAlignment.Center
+        lblstoreName.frame=CGRect(x: 0,y: 150-30, width: boundsWidth, height: 20)
+        lblstoreName.text=userDefaults.object(forKey: "storeName") as? String
+        lblstoreName.textColor=UIColor.white
+        lblstoreName.font=UIFont.systemFont(ofSize: 14)
+        lblstoreName.textAlignment=NSTextAlignment.center
         headerView.addSubview(lblstoreName)
         
         let layout=UICollectionViewFlowLayout()
         let cellWidth=boundsWidth/3
         layout.itemSize=CGSize(width:cellWidth,height:cellWidth)
-        layout.scrollDirection = UICollectionViewScrollDirection.Vertical//设置垂直显示
+        layout.scrollDirection = UICollectionViewScrollDirection.vertical//设置垂直显示
         layout.minimumLineSpacing = 0;//每个相邻layout的上下
         layout.minimumInteritemSpacing = 0;//每个相邻layout的左右
-        collectionView=UICollectionView(frame:CGRectMake(0,CGRectGetMaxY(headerView.frame)+15,boundsWidth,boundsWidth), collectionViewLayout:layout)
+        collectionView=UICollectionView(frame:CGRect(x: 0,y: headerView.frame.maxY+15,width: boundsWidth,height: boundsWidth), collectionViewLayout:layout)
         collectionView.dataSource=self
         collectionView.delegate=self
-        collectionView.scrollEnabled=false
-        collectionView.backgroundColor=UIColor.clearColor()
-        collectionView.registerClass(PersonalCenterCollectionViewCell.self,forCellWithReuseIdentifier:"PersonalCenterCollectionViewCell")
+        collectionView.isScrollEnabled=false
+        collectionView.backgroundColor=UIColor.clear
+        collectionView.register(PersonalCenterCollectionViewCell.self,forCellWithReuseIdentifier:"PersonalCenterCollectionViewCell")
         self.scrollView.addSubview(collectionView)
 
         ///初始化退出登录按钮
-        let btnExitLogin=UIButton(frame: CGRectMake(0,CGRectGetMaxY(collectionView.frame)+30,boundsWidth,50));
+        let btnExitLogin=UIButton(frame: CGRect(x: 0,y: collectionView.frame.maxY+30,width: boundsWidth,height: 50));
         btnExitLogin.backgroundColor=UIColor.applicationMainColor()
-        btnExitLogin.setTitle("退出当前账号", forState: UIControlState.Normal);
-        btnExitLogin.addTarget(self, action: "btnAction:", forControlEvents: UIControlEvents.TouchUpInside);
+        btnExitLogin.setTitle("退出当前账号", for: UIControlState());
+        btnExitLogin.addTarget(self, action: "btnAction:", for: UIControlEvents.touchUpInside);
         self.scrollView.addSubview(btnExitLogin)
         
-        self.scrollView.contentSize=CGSizeMake(boundsWidth,CGRectGetMaxY(btnExitLogin.frame)+30)
+        self.scrollView.contentSize=CGSize(width: boundsWidth,height: btnExitLogin.frame.maxY+30)
     }
 }
 // MARK: - 实现协议
 extension PersonalCenterViewContorller:UICollectionViewDelegate,UICollectionViewDataSource{
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell=collectionView.dequeueReusableCellWithReuseIdentifier("PersonalCenterCollectionViewCell", forIndexPath:indexPath) as! PersonalCenterCollectionViewCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell=collectionView.dequeueReusableCell(withReuseIdentifier: "PersonalCenterCollectionViewCell", for:indexPath) as! PersonalCenterCollectionViewCell
         let imgStr=imgArr[indexPath.row]
         let str=titleArr[indexPath.row]
         switch indexPath.item / 3 {
@@ -230,13 +231,13 @@ extension PersonalCenterViewContorller:UICollectionViewDelegate,UICollectionView
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return imgArr.count
     }
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.row == 0{//订单
             let actionVC=StockOrderManage()
             actionVC.hidesBottomBarWhenPushed=true
@@ -251,7 +252,7 @@ extension PersonalCenterViewContorller:UICollectionViewDelegate,UICollectionView
                 vc.hidesBottomBarWhenPushed=true
                 self.navigationController?.pushViewController(vc, animated:true);
             }else{
-                SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
+                SVProgressHUD.showInfo(withStatus: "该区域暂未开放,请联系业务员申请开通")
             }
             
         }else if indexPath.row == 3{
@@ -261,7 +262,7 @@ extension PersonalCenterViewContorller:UICollectionViewDelegate,UICollectionView
                 vc.hidesBottomBarWhenPushed=true
                 self.navigationController?.pushViewController(vc, animated:true)
             }else{
-                SVProgressHUD.showInfoWithStatus("该区域暂未开放,请联系业务员申请开通")
+                SVProgressHUD.showInfo(withStatus: "该区域暂未开放,请联系业务员申请开通")
             }
         }else if indexPath.row == 4{
             let vc=CollectListViewController()
@@ -281,9 +282,9 @@ extension PersonalCenterViewContorller:UICollectionViewDelegate,UICollectionView
             //客服电话   点击事件
             UIAlertController.showAlertYesNo(self, title:"点单即到", message:"您确定要拨打客服吗？", cancelButtonTitle:"取消", okButtonTitle:"确定", okHandler: {  Void in
                     //拨打电话
-                    var tel=userDefaults.objectForKey("subStationPhoneNumber") as? String
+                    var tel=userDefaults.object(forKey: "subStationPhoneNumber") as? String
                     tel=tel ?? "0731-82562729"
-                    UIApplication.sharedApplication().openURL(NSURL(string :"tel://\(tel!)")!)
+                    UIApplication.shared.openURL(Foundation.URL(string :"tel://\(tel!)")!)
             })
         }else if indexPath.row == 8{
             let vc=FeedbackOnProblemsViewController()
@@ -298,13 +299,13 @@ extension PersonalCenterViewContorller{
      请求分站信息和推荐人
      */
     func querySubstationInfo(){
-        let storeId=userDefaults.objectForKey("storeId") as! String
+        let storeId=userDefaults.object(forKey: "storeId") as! String
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStoreMember(storeId: storeId, memberId: IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
             //解析json
             let json=JSON(result)
-            self.substationEntity=Mapper<SubstationEntity>().map(json["substationEntity"].object)
+            self.substationEntity=Mapper<SubstationEntity>().map(JSONObject: json["substationEntity"].object)
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
 
@@ -316,25 +317,25 @@ extension PersonalCenterViewContorller{
      
      - parameter sender: UIButton
      */
-    func btnAction(sender:UIButton){
-        let alert=UIAlertController(title:"点单即到", message:"您确定要退出登录吗?,退出登录后将收不到任何订单", preferredStyle: UIAlertControllerStyle.ActionSheet)
-        let ok=UIAlertAction(title:"退出登录", style: UIAlertActionStyle.Default, handler:{
+    func btnAction(_ sender:UIButton){
+        let alert=UIAlertController(title:"点单即到", message:"您确定要退出登录吗?,退出登录后将收不到任何订单", preferredStyle: UIAlertControllerStyle.actionSheet)
+        let ok=UIAlertAction(title:"退出登录", style: UIAlertActionStyle.default, handler:{
             Void in
             //设置极光推送 别名为空
             JPUSHService.setAlias("",callbackSelector:nil, object:nil)
             JPUSHService.setTags([], callbackSelector:nil, object:nil)
-            request(.GET,URL+"outLoginForStore.xhtml,", parameters:["memebrId":IS_NIL_MEMBERID()!])
+            request(URL+"outLoginForStore.xhtml",method:.get, parameters:["memebrId":IS_NIL_MEMBERID()!])
             //清除缓存中会员id
-            userDefaults.removeObjectForKey("memberId")
+            userDefaults.removeObject(forKey: "memberId")
             userDefaults.synchronize();
             //切换根视图
-            let app=UIApplication.sharedApplication().delegate as! AppDelegate
+            let app=UIApplication.shared.delegate as! AppDelegate
             app.window?.rootViewController=UINavigationController(rootViewController:LoginViewController());
         })
-        let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.Cancel, handler:nil)
+        let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.cancel, handler:nil)
         alert.addAction(ok)
         alert.addAction(cancel)
-        self.presentViewController(alert, animated:true, completion:nil)
+        self.present(alert, animated:true, completion:nil)
         
     }
 
@@ -350,13 +351,9 @@ extension PersonalCenterViewContorller{
      跳转到签到页面
      */
     func pushSign(){
-        if self.substationEntity?.storeSignStatu == 1{
-            let vc=SignViewController()
-            vc.hidesBottomBarWhenPushed=true
-            self.navigationController?.pushViewController(vc, animated:true)
-        }else{
-            SVProgressHUD.showInfoWithStatus("当前区域暂未开通签到功能")
-        }
+        
+        SVProgressHUD.showInfo(withStatus:"当前区域暂未开通签到功能")
+        
     }
 }
 

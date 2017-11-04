@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
+import SwiftyJSON
 /// 特价商品销量
 class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDataSource,UITableViewDelegate,GoodSpecialPriceTableCellAddShoppingCartsDelegate {
     
@@ -18,36 +19,36 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
     var categoryId:Int?;
     
     /// 用于分页
-    private var currentPage=0
+    fileprivate var currentPage=0
     
     /// 数据源
-    private var arr=NSMutableArray()
+    fileprivate var arr=NSMutableArray()
     /// table
-    private var table:UITableView?
+    fileprivate var table:UITableView?
     
     /// 没有数据加载该视图
-    private var nilView:UIView?
+    fileprivate var nilView:UIView?
     
     
     ///保存cell entity
-    private var goodDeatilEntity:GoodDetailEntity?
+    fileprivate var goodDeatilEntity:GoodDetailEntity?
     
     /// 定时器
-    private var timer:NSTimer?
+    fileprivate var timer:Timer?
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         table?.headerBeginRefreshing()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="销量"
-        self.view.backgroundColor=UIColor.whiteColor()
-        let countyId=NSUserDefaults.standardUserDefaults().objectForKey("countyId") as! String
-        let storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as! String
+        self.view.backgroundColor=UIColor.white
+        let countyId=UserDefaults.standard.object(forKey: "countyId") as! String
+        let storeId=UserDefaults.standard.object(forKey: "storeId") as! String
         
 
-        table=UITableView(frame:CGRectMake(0,0,boundsWidth,boundsHeight-64-40), style: UITableViewStyle.Plain)
+        table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-64-40), style: UITableViewStyle.plain)
         table!.dataSource=self
         table!.delegate=self
         table!.rowHeight = UITableViewAutomaticDimension;
@@ -55,13 +56,13 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
         table!.estimatedRowHeight = 120;
         self.view.addSubview(table!)
         //移除空单元格
-        table!.tableFooterView = UIView(frame:CGRectZero)
+        table!.tableFooterView = UIView(frame:CGRect.zero)
         //设置cell下边线全屏
-        if(table!.respondsToSelector("setLayoutMargins:")){
-            table?.layoutMargins=UIEdgeInsetsZero
+        if(table!.responds(to: #selector(setter: UIView.layoutMargins))){
+            table?.layoutMargins=UIEdgeInsets.zero
         }
-        if(table!.respondsToSelector("setSeparatorInset:")){
-            table?.separatorInset=UIEdgeInsetsZero;
+        if(table!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
+            table?.separatorInset=UIEdgeInsets.zero;
         }
         table!.addHeaderWithCallback({//刷新
             //从第一页开始
@@ -85,20 +86,20 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
             }
         })
         //加载视图
-        SVProgressHUD.showWithStatus("数据加载中")
+        SVProgressHUD.show(withStatus: "数据加载中")
         table!.headerBeginRefreshing()
         
         //监听通知
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:"updateGoodSpecialPriceView:", name:"selectedCategory", object:nil)
+        NotificationCenter.default.addObserver(self, selector:Selector("updateGoodSpecialPriceView:"), name:NSNotification.Name(rawValue: "selectedCategory"), object:nil)
         
     }
 
     //返回tabview每一行显示什么
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
-        var cell=tableView.dequeueReusableCellWithIdentifier("GoodSpecialPriceTableCellId") as? GoodSpecialPriceTableCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+        var cell=tableView.dequeueReusableCell(withIdentifier: "GoodSpecialPriceTableCellId") as? GoodSpecialPriceTableCell
         if cell == nil{
             //加载xib
-            cell=NSBundle.mainBundle().loadNibNamed("GoodSpecialPriceTableCell", owner:self, options: nil).last as? GoodSpecialPriceTableCell
+            cell=Bundle.main.loadNibNamed("GoodSpecialPriceTableCell", owner:self, options: nil)?.last as? GoodSpecialPriceTableCell
         }
         if arr.count > 0{//进行判断  防止没有数据 程序崩溃
             let entity=arr[indexPath.row] as! GoodDetailEntity
@@ -112,7 +113,7 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
         
     }
     //返回tabview的行数
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return arr.count
     }
 //    //返回tabview的高度
@@ -130,12 +131,12 @@ class GoodSpecialPriceSalesViewController:AddShoppingCartAnimation,UITableViewDa
 //        }
 //
 //    }
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         removeTimer()
     }
     deinit{
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 }
 // MARK: - 页面逻辑
@@ -145,12 +146,12 @@ extension GoodSpecialPriceSalesViewController{
      
      - parameter obj:NSNotification
      */
-    func updateGoodSpecialPriceView(obj:NSNotification){
+    func updateGoodSpecialPriceView(_ obj:Notification){
         categoryId=obj.object as? Int
-        let countyId=NSUserDefaults.standardUserDefaults().objectForKey("countyId") as! String
-        let storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as! String
+        let countyId=UserDefaults.standard.object(forKey: "countyId") as! String
+        let storeId=UserDefaults.standard.object(forKey: "storeId") as! String
         //加载视图
-        SVProgressHUD.showWithStatus("数据加载中")
+        SVProgressHUD.show(withStatus: "数据加载中")
         //默认从第1页开始
         currentPage=1
         //发送网络请求
@@ -170,7 +171,7 @@ extension GoodSpecialPriceSalesViewController{
      - parameter currentPage: 展示的页数
      - parameter isRefresh:   是否刷新true是
      */
-    func httpSpecialPrice(categoryId:Int,countyId:String,storeId:String,currentPage:Int,isRefresh:Bool){
+    func httpSpecialPrice(_ categoryId:Int,countyId:String,storeId:String,currentPage:Int,isRefresh:Bool){
         var count=0
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryPreferentialAndGoods4Store(countyId: countyId, categoryId: categoryId, storeId: storeId, pageSize: 10, currentPage: currentPage, order: "count"), successClosure: { (result) -> Void in
             let json=JSON(result)
@@ -178,8 +179,8 @@ extension GoodSpecialPriceSalesViewController{
                 self.arr.removeAllObjects()
             }
             for(_,value) in json{
-                count++
-                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                count+=1
+                let entity=Mapper<GoodDetailEntity>().map(JSONObject:value.object)
                 
                 //如果销量为空
                 if entity!.salesCount == nil{
@@ -189,7 +190,7 @@ extension GoodSpecialPriceSalesViewController{
                 if entity!.endTime == nil{
                     entity!.endTime="0"
                 }else{
-                    entity!.endTime=entity!.endTime!.componentsSeparatedByString(".")[0]
+                    entity!.endTime=entity!.endTime!.components(separatedBy:".")[0]
                 }
                 //如果库存为空
                 if entity!.goodsStock == nil{
@@ -205,7 +206,7 @@ extension GoodSpecialPriceSalesViewController{
                 }
                 entity!.flag=1
                 entity!.goodsbasicinfoId=value["goodsId"].intValue
-                self.arr.addObject(entity!)
+                self.arr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
                 self.table?.setFooterHidden(true)
@@ -238,7 +239,7 @@ extension GoodSpecialPriceSalesViewController{
                 //关闭加载状态
                 self.table?.footerEndRefreshing()
                 //关闭加载等待视图
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus:errorMsg)
         }
     }
     /**
@@ -247,7 +248,7 @@ extension GoodSpecialPriceSalesViewController{
      - parameter currentPage: 展示到第几页
      - parameter isRefresh:   是否刷新true是
      */
-    func httpQueryStorePromotionGoodsList(currentPage:Int,isRefresh:Bool,order:String,storeId:String){
+    func httpQueryStorePromotionGoodsList(_ currentPage:Int,isRefresh:Bool,order:String,storeId:String){
         /// 定义一个int类型的值 用于判断是否还有数据加载
         var count=0
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryStorePromotionGoodsList(storeId:storeId, order:order, pageSize:7, currentPage: currentPage), successClosure: { (result) -> Void in
@@ -257,8 +258,8 @@ extension GoodSpecialPriceSalesViewController{
             }
             for(_,value) in json{
                 // 每次循环加1
-                count++
-                let entity=Mapper<GoodDetailEntity>().map(value.object)
+                count+=1
+                let entity=Mapper<GoodDetailEntity>().map(JSONObject:value.object)
                 //如果销量为空
                 if entity!.salesCount == nil{
                     entity!.salesCount=0
@@ -284,7 +285,7 @@ extension GoodSpecialPriceSalesViewController{
                 if entity!.goodsBaseCount == nil{
                     entity!.goodsBaseCount=1
                 }
-                self.arr.addObject(entity!)
+                self.arr.add(entity!)
             }
             if count < 7{//判断count是否小于5  如果小于表示没有可以加载了 隐藏加载状态
                 self.table!.setFooterHidden(true)
@@ -316,7 +317,7 @@ extension GoodSpecialPriceSalesViewController{
                 //关闭加载状态
                 self.table!.footerEndRefreshing()
                 //关闭加载等待视图
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
 }
@@ -327,7 +328,7 @@ extension GoodSpecialPriceSalesViewController{
      
      - parameter sender:UIButton
      */
-    func pushChoppingView(sender:UIButton){
+    func pushChoppingView(_ sender:UIButton){
         let vc=ShoppingCarViewContorller()
         vc.hidesBottomBarWhenPushed=true
         self.navigationController!.pushViewController(vc, animated:true)
@@ -337,10 +338,10 @@ extension GoodSpecialPriceSalesViewController{
      
      - parameter entity:商品entity
      */
-    func addCar(entity: GoodDetailEntity) {
+    func addCar(_ entity: GoodDetailEntity) {
         //拿到会员id
-        let memberId=NSUserDefaults.standardUserDefaults().objectForKey("memberId") as! String
-        let storeId=userDefaults.objectForKey("storeId") as! String
+        let memberId=UserDefaults.standard.object(forKey: "memberId") as! String
+        let storeId=userDefaults.object(forKey: "storeId") as! String
         var promotionNumber:Int?=nil
         if flag == 3{//如果是促销
             promotionNumber=entity.promotionNumber
@@ -349,23 +350,23 @@ extension GoodSpecialPriceSalesViewController{
             let json=JSON(result)
             let success=json["success"].stringValue
             if success == "success"{
-                SVProgressHUD.showSuccessWithStatus("成功加入购物车")
+                SVProgressHUD.showSuccess(withStatus: "成功加入购物车")
             }else if success == "tjxgbz"{
-                SVProgressHUD.showInfoWithStatus("已超过该商品限购数")
+                SVProgressHUD.showInfo(withStatus: "已超过该商品限购数")
             }else if success == "tjbz"{
-                SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+                SVProgressHUD.showInfo(withStatus:"已超过该商品库存数")
             }else if success == "zcbz"{
-                SVProgressHUD.showInfoWithStatus("已超过该商品库存数")
+                SVProgressHUD.showInfo(withStatus:"已超过该商品库存数")
             }else if success == "grxgbz"{
-                SVProgressHUD.showInfoWithStatus("个人限购不足")
+                SVProgressHUD.showInfo(withStatus:"个人限购不足")
             }else if success == "xgysq"{
-                SVProgressHUD.showInfoWithStatus("促销限购已售罄")
+                SVProgressHUD.showInfo(withStatus:"促销限购已售罄")
             }else{
-                SVProgressHUD.showErrorWithStatus("加入失败")
+                SVProgressHUD.showError(withStatus:"加入失败")
             }
             
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus:errorMsg)
         }
 
     }
@@ -374,13 +375,13 @@ extension GoodSpecialPriceSalesViewController{
      
      - parameter entity: 商品entity
      */
-    func pushGoodSpecialPriceDetail(entity: GoodDetailEntity) {
+    func pushGoodSpecialPriceDetail(_ entity: GoodDetailEntity) {
         
         let vc=GoodSpecialPriceDetailViewController()
         vc.hidesBottomBarWhenPushed=true
         vc.goodEntity=entity
         vc.flag=flag
-        vc.storeId=NSUserDefaults.standardUserDefaults().objectForKey("storeId") as? String
+        vc.storeId=UserDefaults.standard.object(forKey: "storeId") as? String
         self.navigationController!.pushViewController(vc, animated:true)
        
     }
@@ -392,16 +393,16 @@ extension GoodSpecialPriceSalesViewController{
      */
     func createTimer(){
         if timer == nil{
-            timer=NSTimer(timeInterval:1, target:self, selector:"timerEvent", userInfo:nil, repeats:true)
+            timer=Timer(timeInterval:1, target:self, selector:"timerEvent", userInfo:nil, repeats:true)
             //避免tableView滑动的时候卡死
-            NSRunLoop.currentRunLoop().addTimer(timer!,forMode:NSRunLoopCommonModes)
+            RunLoop.current.add(timer!,forMode:RunLoopMode.commonModes)
         }
     }
     /**
      定时器每次执行
      */
     func timerEvent(){
-        for(var j=0;j<arr.count;j++){//获取数据源所有剩余时间
+        for j in 0...arr.count{//获取数据源所有剩余时间
             let entity=arr[j] as! GoodDetailEntity
             var time=0
             if flag == 1{
@@ -410,7 +411,7 @@ extension GoodSpecialPriceSalesViewController{
                 time=Int(entity.promotionEndTime!)!
             }
             //每次-1
-            --time
+            time-=1
             if flag == 1{
                 //从新赋值保证所有的剩余时间都更新
                 entity.endTime="\(time)"
@@ -419,12 +420,12 @@ extension GoodSpecialPriceSalesViewController{
                 entity.promotionEndTime="\(time)"
             }
             //从新保存到指定位置
-            arr.removeObjectAtIndex(j)
-            arr.insertObject(entity, atIndex:j)
+            arr.removeObject(at: j)
+            arr.insert(entity, at:j)
         }
         //获取屏幕内可见的cell
         let cells=table!.visibleCells
-        for(var i=0;i<cells.count;i++){
+        for i in 0...cells.count{
             let cell=cells[i] as! GoodSpecialPriceTableCell
             let entity=arr[cell.indexPath!.row] as! GoodDetailEntity
             var time=0
@@ -437,13 +438,13 @@ extension GoodSpecialPriceSalesViewController{
                 if time <= 0{//如果剩余时间小于等于0 表示活动已经结束
                     cell.img?.removeFromSuperview()
                     /// 展示活动已结束
-                    cell.img=UIImageView(frame:CGRectMake(boundsWidth-70,30,60,60))
+                    cell.img=UIImageView(frame:CGRect(x: boundsWidth-70,y: 30,width: 60,height: 60))
                     cell.img!.image=UIImage(named: "to_sell_end")
                     cell.contentView.addSubview(cell.img!)
                     //禁止进入商品详情
-                    cell.goodImgView.userInteractionEnabled=false
+                    cell.goodImgView.isUserInteractionEnabled=false
                 }
-                cell.lblTime.hidden=false
+                cell.lblTime.isHidden=false
             }
             cell.lblTime.text=lessSecondToDay(time)
         }

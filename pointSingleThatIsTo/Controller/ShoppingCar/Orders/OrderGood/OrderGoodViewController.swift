@@ -17,28 +17,28 @@ class OrderGoodViewController:UIViewController,UITableViewDataSource,UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="购物清单"
-        self.view.backgroundColor=UIColor.whiteColor()
-        table=UITableView(frame:self.view.bounds, style: UITableViewStyle.Plain)
+        self.view.backgroundColor=UIColor.white
+        table=UITableView(frame:self.view.bounds, style: UITableViewStyle.plain)
         table!.delegate=self
         table!.dataSource=self
         self.view.addSubview(table!)
         //设置cell下边线全屏
-        table?.layoutMargins=UIEdgeInsetsZero
-        table?.separatorInset=UIEdgeInsetsZero;
+        table?.layoutMargins=UIEdgeInsets.zero
+        table?.separatorInset=UIEdgeInsets.zero;
         //移除空单元格
-        table!.tableFooterView = UIView(frame:CGRectZero)
+        table!.tableFooterView = UIView(frame:CGRect.zero)
     }
     //展示每个cell
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        var cell=tableView.dequeueReusableCellWithIdentifier("GoodSpecialPriceTableCellId") as? OrderGoodTableViewCell
+        var cell=tableView.dequeueReusableCell(withIdentifier: "GoodSpecialPriceTableCellId") as? OrderGoodTableViewCell
         if cell == nil{
             //加载xib
-            cell=NSBundle.mainBundle().loadNibNamed("OrderGoodTableViewCell", owner:self, options: nil).last as? OrderGoodTableViewCell
+            cell=Bundle.main.loadNibNamed("OrderGoodTableViewCell", owner:self, options: nil)?.last as? OrderGoodTableViewCell
         }
         //设置cell下边线全屏
-        cell?.layoutMargins=UIEdgeInsetsZero
-        cell?.separatorInset=UIEdgeInsetsZero;
+        cell?.layoutMargins=UIEdgeInsets.zero
+        cell?.separatorInset=UIEdgeInsets.zero;
         if arr.count > 0{
             let entity=arr[indexPath.row] as! GoodDetailEntity
             cell!.updateCell(entity)
@@ -47,11 +47,11 @@ class OrderGoodViewController:UIViewController,UITableViewDataSource,UITableView
         return cell!
     }
     //返回tabview的行数
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return arr.count
     }
     //返回tabview的高度
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
         return 100
     }
 

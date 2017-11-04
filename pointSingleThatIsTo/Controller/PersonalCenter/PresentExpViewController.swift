@@ -10,59 +10,60 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
+import SwiftyJSON
 /// 购物积分
 class PresentExpViewController:BaseViewController{
     /// table视图
-    private var table:UITableView?
+    fileprivate var table:UITableView?
     /// table头部视图
-    private var tableHeaderView:UIView?
+    fileprivate var tableHeaderView:UIView?
     /// 数据源
-    private var arr=NSMutableArray()
+    fileprivate var arr=NSMutableArray()
     /// 空视图提示
-    private var lblNilTitle:UILabel?
+    fileprivate var lblNilTitle:UILabel?
     /// 加载页数
-    private var currentPage=0
+    fileprivate var currentPage=0
     /// 剩余积分
-    private var integral:Int?
+    fileprivate var integral:Int?
     /// 剩余积分
-    private var lblIntegral:UILabel?
+    fileprivate var lblIntegral:UILabel?
     override func viewDidLoad(){
         super.viewDidLoad()
         httpQueryMemberIntegral()
         self.title="点单商城"
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         
-        self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"兑换记录", style: UIBarButtonItemStyle.Plain, target:self, action:"pushRecordOfConversion")
+        self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"兑换记录", style: UIBarButtonItemStyle.plain, target:self, action:"pushRecordOfConversion")
         
-        tableHeaderView=UIView(frame:CGRectMake(0,64,boundsWidth,120))
+        tableHeaderView=UIView(frame:CGRect(x: 0,y: 64,width: boundsWidth,height: 120))
         self.view.addSubview(tableHeaderView!)
         
         let imgView=UIImageView(frame:tableHeaderView!.bounds)
         imgView.image=UIImage(named: "jf_jl_bj")
         tableHeaderView!.addSubview(imgView)
         
-        let lblSurplusIntegral=UILabel(frame:CGRectMake(0,50,boundsWidth/2,20))
+        let lblSurplusIntegral=UILabel(frame:CGRect(x: 0,y: 50,width: boundsWidth/2,height: 20))
         lblSurplusIntegral.text="剩余点单币"
-        lblSurplusIntegral.textColor=UIColor.whiteColor()
-        lblSurplusIntegral.font=UIFont.boldSystemFontOfSize(18)
-        lblSurplusIntegral.textAlignment = .Center
+        lblSurplusIntegral.textColor=UIColor.white
+        lblSurplusIntegral.font=UIFont.boldSystemFont(ofSize: 18)
+        lblSurplusIntegral.textAlignment = .center
         tableHeaderView!.addSubview(lblSurplusIntegral)
         
-        lblIntegral=UILabel(frame:CGRectMake(boundsWidth/2,50,boundsWidth/2,20))
-        lblIntegral!.textColor=UIColor.whiteColor()
-        lblIntegral!.font=UIFont.boldSystemFontOfSize(18)
-        lblIntegral!.textAlignment = .Center
+        lblIntegral=UILabel(frame:CGRect(x: boundsWidth/2,y: 50,width: boundsWidth/2,height: 20))
+        lblIntegral!.textColor=UIColor.white
+        lblIntegral!.font=UIFont.boldSystemFont(ofSize: 18)
+        lblIntegral!.textAlignment = .center
         tableHeaderView!.addSubview(lblIntegral!)
         
-        table=UITableView(frame:CGRectMake(0,CGRectGetMaxY(tableHeaderView!.frame),boundsWidth,boundsHeight-64-120), style: UITableViewStyle.Plain)
+        table=UITableView(frame:CGRect(x: 0,y: tableHeaderView!.frame.maxY,width: boundsWidth,height: boundsHeight-64-120), style: UITableViewStyle.plain)
         table!.dataSource=self
         table!.delegate=self
         self.view.addSubview(table!)
         //设置cell下边线全屏
-        table?.layoutMargins=UIEdgeInsetsZero
-        table?.separatorInset=UIEdgeInsetsZero
+        table?.layoutMargins=UIEdgeInsets.zero
+        table?.separatorInset=UIEdgeInsets.zero
         //移除空单元格
-        table!.tableFooterView = UIView(frame:CGRectZero)
+        table!.tableFooterView = UIView(frame:CGRect.zero)
         table!.addHeaderWithCallback{
             self.currentPage=1
             self.httpQueryIntegralMallForSubStation(self.currentPage,isRefresh:true)
@@ -72,21 +73,21 @@ class PresentExpViewController:BaseViewController{
             self.httpQueryIntegralMallForSubStation(self.currentPage,isRefresh:false)
         }
         //加载等待视图
-        SVProgressHUD.showWithStatus("数据加载中")
+        SVProgressHUD.show(withStatus: "数据加载中")
         table!.headerBeginRefreshing()
     }
 }
 // MARK: - 实现table协议
 extension PresentExpViewController:UITableViewDelegate,UITableViewDataSource,PresentExpTableViewCellDelegate{
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell=tableView.dequeueReusableCellWithIdentifier("PresentExpId") as? PresentExpTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell=tableView.dequeueReusableCell(withIdentifier: "PresentExpId") as? PresentExpTableViewCell
         if cell == nil{
             //加载xib
-            cell=NSBundle.mainBundle().loadNibNamed("PresentExpTableViewCell", owner:self, options: nil).last as? PresentExpTableViewCell
+            cell=Bundle.main.loadNibNamed("PresentExpTableViewCell", owner:self, options: nil)?.last as? PresentExpTableViewCell
         }
         //设置cell下边线全屏
-        cell?.layoutMargins=UIEdgeInsetsZero
-        cell?.separatorInset=UIEdgeInsetsZero
+        cell?.layoutMargins=UIEdgeInsets.zero
+        cell?.separatorInset=UIEdgeInsets.zero
         if arr.count > 0{
             let entity=arr[indexPath.row] as! IntegralGoodExchangeEntity
             cell!.index=indexPath
@@ -95,17 +96,17 @@ extension PresentExpViewController:UITableViewDelegate,UITableViewDataSource,Pre
         }
         return cell!
     }
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return arr.count
     }
 }
 // MARK: - 网络请求
 extension PresentExpViewController{
-    func httpExchangeInfo(entity: IntegralGoodExchangeEntity,index:NSIndexPath) {
-        SVProgressHUD.showWithStatus("正在加载...", maskType: SVProgressHUDMaskType.Clear)
+    func httpExchangeInfo(_ entity: IntegralGoodExchangeEntity,index:IndexPath) {
+        SVProgressHUD.show(withStatus: "正在加载...", maskType: SVProgressHUDMaskType.clear)
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.integralMallExchange(integralMallId: entity.integralMallId!, memberId: IS_NIL_MEMBERID()!, exchangeCount: 1), successClosure: { (result) -> Void in
             let json=JSON(result)
             let success=json["success"].stringValue
@@ -116,44 +117,44 @@ extension PresentExpViewController{
                     SVProgressHUD.dismiss()
                     self.integral!-=entity.exchangeIntegral!
                     self.lblIntegral!.text="\(self.integral!)"
-                    let alert=UIAlertController(title:"点单即到", message:"兑换\(entity.goodsName!)成功,商品将在您下次购买此配送商的商品下单成功后，自动加入订单中", preferredStyle: UIAlertControllerStyle.Alert)
-                    let ok=UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
+                    let alert=UIAlertController(title:"点单即到", message:"兑换\(entity.goodsName!)成功,商品将在您下次购买此配送商的商品下单成功后，自动加入订单中", preferredStyle: UIAlertControllerStyle.alert)
+                    let ok=UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler: { (UIAlertAction) -> Void in
                         //查看剩余积分
                         self.httpQueryMemberIntegral()
                         self.table!.headerBeginRefreshing()
                     })
                     alert.addAction(ok)
-                    self.presentViewController(alert, animated:true, completion:nil)
+                    self.present(alert, animated:true, completion:nil)
                 }else if megInfo == "1"{
-                    SVProgressHUD.showInfoWithStatus("兑换失败")
+                    SVProgressHUD.showInfo(withStatus: "兑换失败")
                 }else if megInfo == "2"{
-                    SVProgressHUD.showInfoWithStatus("商品数量不足")
+                    SVProgressHUD.showInfo(withStatus: "商品数量不足")
                 }else if megInfo == "3"{
-                    SVProgressHUD.showInfoWithStatus("点单币余额不足")
+                    SVProgressHUD.showInfo(withStatus: "点单币余额不足")
                 }
                 break
             case "memberBalance":
-                SVProgressHUD.showInfoWithStatus("点单币余额不足")
+                SVProgressHUD.showInfo(withStatus: "点单币余额不足")
                 break
             case "memberNull":
-                SVProgressHUD.showInfoWithStatus("会员不存在")
+                SVProgressHUD.showInfo(withStatus: "会员不存在")
                 break
             case "goodsNotEnough":
-                SVProgressHUD.showInfoWithStatus("商品数量不足")
+                SVProgressHUD.showInfo(withStatus: "商品数量不足")
                 break
             case "goodsNull":
-                SVProgressHUD.showInfoWithStatus("商品已经下架,不能兑换")
+                SVProgressHUD.showInfo(withStatus: "商品已经下架,不能兑换")
                 break
             case "integralMallIdNull":
-                SVProgressHUD.showInfoWithStatus("点单币商城商品已经不存在了")
+                SVProgressHUD.showInfo(withStatus: "点单币商城商品已经不存在了")
                 break
             default:
-                SVProgressHUD.showInfoWithStatus("发生未知错误")
+                SVProgressHUD.showInfo(withStatus: "发生未知错误")
                 break
             }
 
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
     /**
@@ -165,7 +166,7 @@ extension PresentExpViewController{
             self.integral=json["success"].intValue
             self.lblIntegral!.text="\(self.integral!)"
             }) { (errorMsg) -> Void in
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
     /**
@@ -174,18 +175,18 @@ extension PresentExpViewController{
      - parameter currentPage: 第几页
      - parameter isRefresh:   是否刷新true是
      */
-    func httpQueryIntegralMallForSubStation(currentPage:Int,isRefresh:Bool){
+    func httpQueryIntegralMallForSubStation(_ currentPage:Int,isRefresh:Bool){
         var count=0
-        let subStationId=userDefaults.objectForKey("substationId") as! String
+        let subStationId=userDefaults.object(forKey: "substationId") as! String
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.queryIntegralMallForSubStation(subStationId: subStationId, currentPage: currentPage, pageSize: 10), successClosure: { (result) -> Void in
             let json=JSON(result)
             if isRefresh{//如果是刷新先删除数据
                 self.arr.removeAllObjects()
             }
             for(_,value) in json{
-                count++
-                let entity=Mapper<IntegralGoodExchangeEntity>().map(value.object)
-                self.arr.addObject(entity!)
+                count+=1
+                let entity=Mapper<IntegralGoodExchangeEntity>().map(JSONObject: value.object)
+                self.arr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
                 self.table?.setFooterHidden(true)
@@ -213,7 +214,7 @@ extension PresentExpViewController{
                 self.table?.headerEndRefreshing()
                 //关闭加载状态
                 self.table?.footerEndRefreshing()
-                SVProgressHUD.showErrorWithStatus(errorMsg)
+                SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
 }

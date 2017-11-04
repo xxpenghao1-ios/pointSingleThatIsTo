@@ -86,21 +86,31 @@
 {
     _title = [title copy];
     _titleLabel.text = [NSString stringWithFormat:@"   %@", title];
+    if (_titleLabel.hidden) {
+        _titleLabel.hidden = NO;
+    }
 }
 
+-(void)setTitleLabelTextAlignment:(NSTextAlignment)titleLabelTextAlignment
+{
+    _titleLabelTextAlignment = titleLabelTextAlignment;
+    _titleLabel.textAlignment = titleLabelTextAlignment;
+}
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
     
-    _imageView.frame = self.bounds;
-    
-    CGFloat titleLabelW = self.sd_width;
-    CGFloat titleLabelH = _titleLabelHeight;
-    CGFloat titleLabelX = 0;
-    CGFloat titleLabelY = self.sd_height - titleLabelH;
-    _titleLabel.frame = CGRectMake(titleLabelX, titleLabelY, titleLabelW, titleLabelH);
-    _titleLabel.hidden = !_titleLabel.text;
+    if (self.onlyDisplayText) {
+        _titleLabel.frame = self.bounds;
+    } else {
+        _imageView.frame = self.bounds;
+        CGFloat titleLabelW = self.sd_width;
+        CGFloat titleLabelH = _titleLabelHeight;
+        CGFloat titleLabelX = 0;
+        CGFloat titleLabelY = self.sd_height - titleLabelH;
+        _titleLabel.frame = CGRectMake(titleLabelX, titleLabelY, titleLabelW, titleLabelH);
+    }
 }
 
 @end

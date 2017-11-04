@@ -27,8 +27,8 @@ class CanBeTicketViewControllerEntity:Mappable {
     var supplierShakeGoodsId:Int?
     
     init(){}
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         goodPic <- map["goodPic"]

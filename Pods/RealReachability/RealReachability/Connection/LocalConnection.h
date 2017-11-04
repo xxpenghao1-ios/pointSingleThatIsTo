@@ -15,6 +15,10 @@
 /// then you should invoke currentLocalConnectionStatus method to fetch current status.
 extern NSString *const kLocalConnectionChangedNotification;
 
+/// After start observering, we post this notification once,
+/// you may invoke currentLocalConnectionStatus method to fetch initial status.
+extern NSString *const kLocalConnectionInitializedNotification;
+
 typedef NS_ENUM(NSInteger, LocalConnectionStatus)
 {
     LC_UnReachable = 0,
@@ -24,12 +28,14 @@ typedef NS_ENUM(NSInteger, LocalConnectionStatus)
 
 @interface LocalConnection : NSObject
 
+/// Newly added property for KVO usage:
+/// maybe you only want to observe the local network is available or not.
+@property (nonatomic, assign) BOOL isReachable;
+
 + (instancetype)sharedInstance;
 
 /**
  * Start observering local connection status.
- *
- *  @return success or failure. YES->success
  */
 - (void)startNotifier;
 

@@ -30,8 +30,8 @@ class IntegralGoodExchangeEntity:Mappable{
     var goodsStatu:Int?;
     /// 供应商名称
     var subSupplierName:String?
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         integralMallId <- map["integralMallId"]

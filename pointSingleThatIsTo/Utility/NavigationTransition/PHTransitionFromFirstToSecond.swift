@@ -8,7 +8,7 @@
 
 import Foundation
 /// 定义闭包接收传入的UIViewController返回UIView
-typealias transitionClosure=(viewcontroller:UIViewController) -> UIView?
+typealias transitionClosure=(_ viewcontroller:UIViewController) -> UIView?
 
 /// 保存页面(主页面,跳转页面)
 let transitionDic=NSMutableDictionary()
@@ -46,12 +46,12 @@ extension UINavigationController:UINavigationControllerDelegate{
     /**
      页面加载给导航控制屏幕滑动手势
      */
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         /// 给导航控制器中的view添加屏幕滑动手势
-        let popRecognizer = UIScreenEdgePanGestureRecognizer(target:self,action: Selector("handlePopRecognizer:"))
+        let popRecognizer = UIScreenEdgePanGestureRecognizer(target:self,action: Selector(("handlePopRecognizer:")))
         // 设置为左滑动
-        popRecognizer.edges = UIRectEdge.Left
+        popRecognizer.edges = UIRectEdge.left
         self.view.addGestureRecognizer(popRecognizer)
         
     }
@@ -110,7 +110,7 @@ extension UINavigationController:UINavigationControllerDelegate{
 //        }
 //    }
     //屏幕滑动调用
-    public func navigationController(navigationController: UINavigationController, interactionControllerForAnimationController animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    public func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
        
         return interactivePopTransition
         

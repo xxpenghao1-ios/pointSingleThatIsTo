@@ -10,28 +10,28 @@ import Foundation
 import UIKit
 import ObjectMapper
 import SVProgressHUD
-
+import SwiftyJSON
 ///未发货
 class UnDeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITableViewDelegate{
     
     /// 未发货Table
-    private var unDeliverGoodsTable:UITableView?
+    fileprivate var unDeliverGoodsTable:UITableView?
     
     /// 存放订单entity
-    private var stockOrderEntityArray:[OrderListEntity]=[]
+    fileprivate var stockOrderEntityArray:[OrderListEntity]=[]
     
     /// 没有数据加载该视图
-    private var nilView:UIView?
+    fileprivate var nilView:UIView?
     
     /// 默认从第0页开始
-    private var currentPage=0
+    fileprivate var currentPage=0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="未发货"
-        self.view.backgroundColor=UIColor.whiteColor()
+        self.view.backgroundColor=UIColor.white
         //监听通知 刷新数据
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:"updateOrderList:", name:"postUpdateOrderList", object: nil)
+        NotificationCenter.default.addObserver(self, selector:"updateOrderList:", name:NSNotification.Name(rawValue: "postUpdateOrderList"), object: nil)
         creatUnDeliverGoodsTable()
     }
     /**
@@ -39,18 +39,18 @@ class UnDeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITa
      
      - parameter obj:NSNotification
      */
-    func updateOrderList(obj:NSNotification){
+    func updateOrderList(_ obj:Notification){
         unDeliverGoodsTable?.headerBeginRefreshing()
     }
     /**
     创建未发货Table
     */
     func creatUnDeliverGoodsTable(){
-        unDeliverGoodsTable=UITableView(frame: CGRectMake(0, 0, boundsWidth, boundsHeight-104), style: UITableViewStyle.Plain)
+        unDeliverGoodsTable=UITableView(frame: CGRect(x: 0, y: 0, width: boundsWidth, height: boundsHeight-104), style: UITableViewStyle.plain)
         unDeliverGoodsTable?.delegate=self
         unDeliverGoodsTable?.dataSource=self
-        unDeliverGoodsTable?.backgroundColor=UIColor.whiteColor()
-        unDeliverGoodsTable?.separatorStyle=UITableViewCellSeparatorStyle.None
+        unDeliverGoodsTable?.backgroundColor=UIColor.white
+        unDeliverGoodsTable?.separatorStyle=UITableViewCellSeparatorStyle.none
         self.view.addSubview(unDeliverGoodsTable!)
         
         unDeliverGoodsTable!.addHeaderWithCallback({//下拉重新加载数据
@@ -65,39 +65,39 @@ class UnDeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITa
             self.queryOrderInfo4AndroidStoreByOrderStatus(self.currentPage,isRefresh: false)
         })
         //加载等待视图
-        SVProgressHUD.showWithStatus("数据加载中")
+        SVProgressHUD.show(withStatus: "数据加载中")
         unDeliverGoodsTable!.headerBeginRefreshing()
         
     
     }
     //MARK -------------实现Table的一些协议----------------------------
     //返回几组
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     //返回行高
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 170
     }
     //返回行数
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return stockOrderEntityArray.count
     }
     //返回数据源
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let Identifier="StockOrderManageTableViewCellId"
-        var cell=tableView.dequeueReusableCellWithIdentifier(Identifier) as? StockOrderManageTableViewCell
+        var cell=tableView.dequeueReusableCell(withIdentifier: Identifier) as? StockOrderManageTableViewCell
         if(cell == nil){
-            cell=NSBundle.mainBundle().loadNibNamed("StockOrderManageTableViewCell", owner:self, options: nil).last as? StockOrderManageTableViewCell
+            cell=Bundle.main.loadNibNamed("StockOrderManageTableViewCell", owner:self, options: nil)!.last as! StockOrderManageTableViewCell
         }
         if stockOrderEntityArray.count > 0{
             cell!.updateCell(stockOrderEntityArray[indexPath.row])
-            let viewMiddle=UIView(frame:CGRectMake(0,40,boundsWidth,80))
+            let viewMiddle=UIView(frame:CGRect(x: 0,y: 40,width: boundsWidth,height: 80))
             viewMiddle.tag=indexPath.row
             viewMiddle.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushOrderDetail:"))
             cell!.contentView.addSubview(viewMiddle)
         }
-        cell!.selectionStyle=UITableViewCellSelectionStyle.None
+        cell!.selectionStyle=UITableViewCellSelectionStyle.none
         return cell!
     }
     /**
@@ -105,18 +105,18 @@ class UnDeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITa
      
      - parameter sender:UITapGestureRecognizer
      */
-    func pushOrderDetail(sender:UITapGestureRecognizer){
+    func pushOrderDetail(_ sender:UITapGestureRecognizer){
         let vc=StockOrderDetailsViewController()
         vc.orderList=stockOrderEntityArray[sender.view!.tag]
         self.navigationController!.pushViewController(vc, animated:true)
     }
     //tableview开始载入的动画
-    func tableView(tableView: UITableView, willDisplayCell cell:UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath){
+    func tableView(_ tableView: UITableView, willDisplay cell:UITableViewCell, forRowAt indexPath: IndexPath){
         //设置cell的显示动画为3D缩放
         //xy方向缩放的初始值为0.1
         cell.layer.transform = CATransform3DMakeScale(0.1, 0.1, 1)
         //设置动画时间为0.25秒,xy方向缩放的最终值为1
-        UIView.animateWithDuration(0.25, animations: { () -> Void in
+        UIView.animate(withDuration: 0.25, animations: { () -> Void in
             cell.layer.transform = CATransform3DMakeScale(1, 1, 1)
         })
     }
@@ -126,10 +126,8 @@ class UnDeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITa
     - parameter currentPage: 当前页
     - parameter isRefresh:   是否刷新true是
     */
-    func queryOrderInfo4AndroidStoreByOrderStatus(currentPage:Int,isRefresh:Bool){
-        let storeId=userDefaults.objectForKey("storeId") as! String
-        //判断有无网络
-        if(IJReachability.isConnectedToNetwork()){
+    func queryOrderInfo4AndroidStoreByOrderStatus(_ currentPage:Int,isRefresh:Bool){
+        let storeId=userDefaults.object(forKey: "storeId") as! String
             //统计订单数，每次发请求先置空
             var count=0
             //开始发送未发货订单查询请求(orderStatus状态为1)
@@ -142,16 +140,16 @@ class UnDeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITa
                 }
                 for(_,robbedListValue)in jsonResult{//取出订单entity
                     // 每次循环加1
-                    count++
+                    count+=1
                     //储存json一键转entity的值
-                    let robbedEntity=Mapper<OrderListEntity>().map(robbedListValue.object)
+                    let robbedEntity=Mapper<OrderListEntity>().map(JSONObject: robbedListValue.object)
                     //获取"list"的value
                     let list=robbedListValue["list"]
                     //临时储存商品数组
                     let GoodsArray=NSMutableArray()
                     for(_,GoodsDetailsValue)in list{//取出商品entity
-                        let GoodsDetailsEntity=Mapper<GoodDetailEntity>().map(GoodsDetailsValue.object)
-                        GoodsArray.addObject(GoodsDetailsEntity!)
+                        let GoodsDetailsEntity=Mapper<GoodDetailEntity>().map(JSONObject:GoodsDetailsValue.object)
+                        GoodsArray.add(GoodsDetailsEntity!)
                     }
                     //将临时的商品数组赋值给订单实体类中的"list"
                     robbedEntity?.list=GoodsArray
@@ -182,11 +180,8 @@ class UnDeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITa
                     self.unDeliverGoodsTable?.headerEndRefreshing()
                     //关闭加载状态
                     self.unDeliverGoodsTable?.footerEndRefreshing()
-                    SVProgressHUD.showErrorWithStatus(errorMsg)
+                    SVProgressHUD.showError(withStatus: errorMsg)
             })
-        }else{
-            SVProgressHUD.showErrorWithStatus("无网络连接")
-        }
     }
 
 }

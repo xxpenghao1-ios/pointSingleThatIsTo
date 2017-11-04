@@ -8,6 +8,30 @@
 
 import Foundation
 import UIKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 /**
  *  加入购物车协议
  */
@@ -16,21 +40,21 @@ protocol GoodCategory3TableViewCellAddShoppingCartsDelegate:NSObjectProtocol{
      需要主页面实现的方法
      */
     //加入购物车
-    func goodCategory3TableViewCellAddShoppingCarts(imgView:UIImageView,indexPath:NSIndexPath,count:Int)
+    func goodCategory3TableViewCellAddShoppingCarts(_ imgView:UIImageView,indexPath:IndexPath,count:Int)
     /**
      弹出文本输入框 选择数量
      
      - parameter inventory: 库存数量
      - parameter indexPath: 行索引
      */
-    func purchaseCount(inventory:Int,indexPath:NSIndexPath)
+    func purchaseCount(_ inventory:Int,indexPath:IndexPath)
     
     /**
      跳转到商品详情页
      
      - parameter entity: 商品entity
      */
-    func pushGoodDetailView(entity:GoodDetailEntity)
+    func pushGoodDetailView(_ entity:GoodDetailEntity)
 }
 ///商品3级分类TableViewCell
 class GoodCategory3TableViewCell:UITableViewCell {
@@ -82,7 +106,7 @@ class GoodCategory3TableViewCell:UITableViewCell {
     var img:UIImageView?
     
     /// 保存每行的索引
-    var indexPath:NSIndexPath?
+    var indexPath:IndexPath?
     
     /// 商品数量 默认1
     var count=1;
@@ -97,46 +121,46 @@ class GoodCategory3TableViewCell:UITableViewCell {
         super.awakeFromNib()
         
         //默认隐藏商品促销活动
-        salesPromotionImgView.hidden=true
+        salesPromotionImgView.isHidden=true
         //设置加入购物车view背景颜色
         addShoppingCart.backgroundColor=UIColor.applicationMainColor()
         addShoppingCart.layer.masksToBounds=true
         addShoppingCart.layer.cornerRadius=3
-        addShoppingCart.userInteractionEnabled=true
-        addShoppingCart.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"addShoppingCarts"))
+        addShoppingCart.isUserInteractionEnabled=true
+        addShoppingCart.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("addShoppingCarts")))
         
         //设置商品图片view
         goodImgView.layer.masksToBounds=true
         goodImgView.layer.cornerRadius=3
-        goodImgView.userInteractionEnabled=true
-        goodImgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushGoodDetail"))
+        goodImgView.isUserInteractionEnabled=true
+        goodImgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("pushGoodDetail")))
         
         //设置购物数量view
         shoppingCartCountView.layer.cornerRadius=5
         shoppingCartCountView.layer.borderWidth=1
-        shoppingCartCountView.layer.borderColor=UIColor(red:180/255, green:180/255, blue:180/255, alpha:1).CGColor
+        shoppingCartCountView.layer.borderColor=UIColor(red:180/255, green:180/255, blue:180/255, alpha:1).cgColor
         
         //设置加入购物车数量的边线
-        lblShoppingCartCount.layer.borderColor=UIColor(red:180/255, green:180/255, blue:180/255, alpha:1).CGColor
+        lblShoppingCartCount.layer.borderColor=UIColor(red:180/255, green:180/255, blue:180/255, alpha:1).cgColor
         lblShoppingCartCount.layer.borderWidth=1
         
         //设置文字颜色
-        lblGoodPrice.textColor=UIColor.redColor()
+        lblGoodPrice.textColor=UIColor.red
         lblGoodUcode.textColor=UIColor.textColor()
         lblGoodRetailPrice.textColor=UIColor.textColor()
         lblGoodStock.textColor=UIColor.textColor()
         
         //设置加减数量点击事件
-        btnAddCount.addTarget(self, action:"addCount:", forControlEvents: UIControlEvents.TouchUpInside)
-        btnReduceCount.addTarget(self, action:"reduceCount:", forControlEvents: UIControlEvents.TouchUpInside)
+        btnAddCount.addTarget(self, action:Selector("addCount:"), for: UIControlEvents.touchUpInside)
+        btnReduceCount.addTarget(self, action:Selector("reduceCount:"), for: UIControlEvents.touchUpInside)
         
         //设置数量选择事件
-        lblShoppingCartCount.userInteractionEnabled=true
-        lblShoppingCartCount.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"showCountText"))
+        lblShoppingCartCount.isUserInteractionEnabled=true
+        lblShoppingCartCount.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("showCountText")))
         
         
         //去掉选中背景
-        self.selectionStyle=UITableViewCellSelectionStyle.None;
+        self.selectionStyle=UITableViewCellSelectionStyle.none;
     }
     /**
      跳转到商品详情页
@@ -161,7 +185,7 @@ class GoodCategory3TableViewCell:UITableViewCell {
      
      - parameter sender: UIButton
      */
-    func addCount(sender:UIButton){
+    func addCount(_ sender:UIButton){
         if inventory == -1{//如果库存充足
             count+=goodEntity!.goodsBaseCount!
             lblShoppingCartCount.text="\(count)"
@@ -180,11 +204,11 @@ class GoodCategory3TableViewCell:UITableViewCell {
      
      - parameter sender: UIButton
      */
-    func reduceCount(sender:UIButton){
+    func reduceCount(_ sender:UIButton){
         if count > goodEntity!.miniCount{//数量到最低起送数量不进行操作
             count-=goodEntity!.goodsBaseCount!
             lblShoppingCartCount.text="\(count)"
-            lblShoppingCartCount.textColor=UIColor.redColor()
+            lblShoppingCartCount.textColor=UIColor.red
         }
     }
     /**
@@ -192,20 +216,20 @@ class GoodCategory3TableViewCell:UITableViewCell {
      
      - parameter entity:商品详情entity
      */
-    func updateCell(entity:GoodDetailEntity){
+    func updateCell(_ entity:GoodDetailEntity){
         img?.removeFromSuperview()
         goodEntity=entity
-        inventory=entity.goodsStock!
-        count=entity.miniCount!
+        inventory=entity.goodsStock ?? 0
+        count=entity.miniCount ?? 1
         //设置商品起送数量
         lblShoppingCartCount.text="\(count)"
         
         //商品名称
         lblGoodName.text=entity.goodInfoName
         
-        
+        entity.goodPic=entity.goodPic ?? ""
         //商品图片
-        goodImg.sd_setImageWithURL(NSURL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
+        goodImg.sd_setImage(with: Foundation.URL(string:URLIMG+entity.goodPic!), placeholderImage:UIImage(named: "def_nil"))
         
         //商品零售价
         if entity.uitemPrice != nil{
@@ -250,28 +274,28 @@ class GoodCategory3TableViewCell:UITableViewCell {
         }else if entity.isNewGoodFlag != nil{
             if entity.isNewGoodFlag == 1{
                 //显示新品标识
-                salesPromotionImgView.hidden=false
+                salesPromotionImgView.isHidden=false
                 salesPromotionImgView.image=UIImage(named: "newGood")
             }else{
-                salesPromotionImgView.hidden=true
+                salesPromotionImgView.isHidden=true
             }
         }
         if entity.goodsStock == 0{//库存等于0的时候
             /// 隐藏加入购车 相关控件
-            addShoppingCart.hidden=true
-            shoppingCartCountView.hidden=true
+            addShoppingCart.isHidden=true
+            shoppingCartCountView.isHidden=true
             /// 展示已售
-            img=UIImageView(frame:CGRectMake(boundsWidth-70,30,60,60))
+            img=UIImageView(frame:CGRect(x: boundsWidth-70,y: 30,width: 60,height: 60))
             img!.image=UIImage(named: "to_sell_out")
             self.contentView.addSubview(img!)
-            goodImgView.userInteractionEnabled=false
+            goodImgView.isUserInteractionEnabled=false
         }else{
-            addShoppingCart.hidden=false
-            shoppingCartCountView.hidden=false
-            goodImgView.userInteractionEnabled=true
+            addShoppingCart.isHidden=false
+            shoppingCartCountView.isHidden=false
+            goodImgView.isUserInteractionEnabled=true
         }
     }
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         
         // Configure the view for the selected state

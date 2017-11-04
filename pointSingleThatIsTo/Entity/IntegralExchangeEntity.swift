@@ -11,8 +11,8 @@ import ObjectMapper
 /// 积分兑换
 class IntegralExchangeEntity:Mappable{
     
-    required init?(_ map: Map) {
-        mapping(map)
+    required init?(map: Map) {
+        mapping(map: map)
     }
     func mapping(map: Map) {
         

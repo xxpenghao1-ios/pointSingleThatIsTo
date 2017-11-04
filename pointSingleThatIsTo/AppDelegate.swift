@@ -10,28 +10,7 @@ import UIKit
 import Alamofire
 import IQKeyboardManagerSwift
 import SVProgressHUD
-import XCGLogger
-import RealReachability
-let log: XCGLogger = {
-    let log = XCGLogger.defaultInstance()
-    log.setup(.Debug, showThreadName: true, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile:nil)
-    let dateFormatter = NSDateFormatter()
-    dateFormatter.dateFormat = "yyyy/MM/dd hh:mma"
-    dateFormatter.locale = NSLocale.currentLocale()
-    log.dateFormatter = dateFormatter
-    //使用XCGLogger记录日志 begin
-    log.xcodeColorsEnabled = true // Or set the XcodeColors environment variable in your scheme to YES
-    log.xcodeColors = [
-        .Verbose: .lightGrey,
-        .Debug: .darkGrey,
-        .Info: .darkGreen,
-        .Warning: .orange,
-        .Error: XCGLogger.XcodeColor(fg: UIColor.redColor(), bg: UIColor.whiteColor()), // Optionally use a UIColor
-        .Severe: XCGLogger.XcodeColor(fg: (255, 255, 255), bg: (255, 0, 0)) // Optionally use RGB values directly
-    ]
-    //使用XCGLogger记录日志 end
-    return log
-}()
+import SwiftyJSON
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
     var window: UIWindow?
@@ -42,21 +21,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
     /// 百度地图
     var mapManager: BMKMapManager?
     //程序入口
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         mapManager = BMKMapManager()
-        BaiduMobStat.defaultStat().startWithAppId("ec2fbe36a3")
-        BaiduMobStat.defaultStat().enableDebugOn=true
+        BaiduMobStat.default().start(withAppId: "ec2fbe36a3")
+        BaiduMobStat.default().enableDebugOn=true
         // 如果要关注网络及授权验证事件，请设定generalDelegate参数
         let ret = mapManager?.start("zUKLMiVbDlWfOj7o5vcY3m4XG2E9u3XN", generalDelegate:self)
         if ret == true {
-            log.info("连接百度地图成功")
+            
         }
 //        JPUSHService.setDebugMode()
         //监听极光推送自定义消息(只有在前端运行的时候才能收到自定义消息的推送。)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:"networkDidReceiveMessage:", name:kJPFNetworkDidReceiveMessageNotification, object:nil)
-        //开启网络状况的监听
-        RealReachability.sharedInstance().startNotifier()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:"reachabilityChanged:", name:kRealReachabilityChangedNotification, object:nil)
+        NotificationCenter.default.addObserver(self, selector:Selector("networkDidReceiveMessage:"), name:NSNotification.Name.jpfNetworkDidReceiveMessage, object:nil)
         //开启键盘框架
         IQKeyboardManager.sharedManager().enable = true
         //设置导航栏的各种状态
@@ -66,11 +42,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         //初始化登录页面
         navLogin=UINavigationController(rootViewController:LoginViewController())
         // 得到当前应用的版本号
-        let infoDictionary = NSBundle.mainBundle().infoDictionary
+        let infoDictionary = Bundle.main.infoDictionary
         let currentAppVersion = infoDictionary!["CFBundleShortVersionString"] as! String
         // 取出之前保存的版本号
-        let userDefaults = NSUserDefaults.standardUserDefaults()
-        let appVersion = userDefaults.stringForKey("appVersion")
+        let userDefaults = UserDefaults.standard
+        let appVersion = userDefaults.string(forKey: "appVersion")
         // 如果 appVersion 为 nil 说明是第一次启动；如果 appVersion 不等于 currentAppVersion 说明是更新了
         if appVersion == nil || appVersion != currentAppVersion {
             // 保存最新的版本号
@@ -134,33 +110,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         //导航栏背景色
         UINavigationBar.appearance().barTintColor=UIColor.applicationMainColor();
         //导航栏文字颜色
-        UINavigationBar.appearance().titleTextAttributes=NSDictionary(object:UIColor.whiteColor(), forKey:NSForegroundColorAttributeName) as? [String : AnyObject];
-        UINavigationBar.appearance().tintColor=UIColor.whiteColor()
+        UINavigationBar.appearance().titleTextAttributes=NSDictionary(object:UIColor.white, forKey:NSAttributedStringKey.foregroundColor as NSCopying) as? [NSAttributedStringKey : Any];
+        UINavigationBar.appearance().tintColor=UIColor.white
         //将返回按钮的文字position设置不在屏幕上显示
-        UIBarButtonItem.appearance().setBackButtonTitlePositionAdjustment(UIOffsetMake(CGFloat(NSInteger.min),CGFloat(NSInteger.min)), forBarMetrics:UIBarMetrics.Default)
+        UIBarButtonItem.appearance().setBackButtonTitlePositionAdjustment(UIOffsetMake(CGFloat(NSInteger.min),CGFloat(NSInteger.min)), for:UIBarMetrics.default)
         //改变状态栏的颜色
-        UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.LightContent;
+        UIApplication.shared.statusBarStyle = UIStatusBarStyle.lightContent;
     }
-    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         //设备标识是NSdata通过截取字符串去掉空格获得字符串保存进缓存 登录发给服务器 用于控制用户只能在一台设备登录
-        let characterSet: NSCharacterSet = NSCharacterSet(charactersInString: "<>")
+        let characterSet: CharacterSet = CharacterSet(charactersIn: "<>")
         let deviceTokenString: String = (deviceToken.description as NSString)
-            .stringByTrimmingCharactersInSet(characterSet)
-            .stringByReplacingOccurrencesOfString(" ", withString: "") as String
+            .trimmingCharacters(in: characterSet)
+            .replacingOccurrences(of: " ", with: "") as String
         //把截取的设备令牌保存进缓存
-        NSUserDefaults.standardUserDefaults().setObject(deviceTokenString, forKey:"deviceToken")
+        UserDefaults.standard.set(deviceTokenString, forKey:"deviceToken")
         //写入磁盘
-        NSUserDefaults.standardUserDefaults().synchronize()
+        UserDefaults.standard.synchronize()
         //在appdelegate注册设备处调用
         PHJPushHelper.registerDeviceToken(deviceToken)
         
     }
-    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
         //处理收到的 APNs 消息
         PHJPushHelper.handleRemoteNotification(userInfo,completion: nil)
     }
     //接收通知消息
-    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject], fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         //转换为json
         let jsonObject=JSON(userInfo);
         //取出推送内容
@@ -169,7 +145,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         let alert=aps["alert"].stringValue;
         //处理收到的 APNs 消息
         PHJPushHelper.handleRemoteNotification(userInfo, completion:completionHandler)
-        if(application.applicationState == UIApplicationState.Active){//如果程序活动在前台
+        if(application.applicationState == UIApplicationState.active){//如果程序活动在前台
             if pushReason != 0{
                 systemMessage(alert)
             }
@@ -182,43 +158,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         /**
         发送通知 在UITabBarController更新个人中心的角标
         */
-        NSNotificationCenter.defaultCenter().postNotificationName("postPersonalCenter", object:1, userInfo:nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "postPersonalCenter"), object:1, userInfo:nil)
     }
     /**
      系统消息
      
      - parameter alert:内容
      */
-    func systemMessage(alert:String){
-        let alert=UIAlertController(title:"点单即到",message:alert, preferredStyle: UIAlertControllerStyle.Alert)
-        let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.Cancel, handler:nil)
-        let ok=UIAlertAction(title:"前往个人中心查看", style: UIAlertActionStyle.Default, handler:{ Void in
+    func systemMessage(_ alert:String){
+        let alert=UIAlertController(title:"点单即到",message:alert, preferredStyle: UIAlertControllerStyle.alert)
+        let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.cancel, handler:nil)
+        let ok=UIAlertAction(title:"前往个人中心查看", style: UIAlertActionStyle.default, handler:{ Void in
             self.tab?.selectedIndex=4
         })
         alert.addAction(cancel)
         alert.addAction(ok)
-        self.window?.rootViewController!.presentViewController(alert, animated:true, completion:nil)
+        self.window?.rootViewController!.present(alert, animated:true, completion:nil)
     }
     //当一个运行着的应用程序收到一个远程的通知 发送到委托去...
-    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+    func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
         //显示本地通知在最前面
         PHJPushHelper.showLocalNotificationAtFront(notification)
     }
 
 
-    func applicationWillResignActive(application: UIApplication) {
+    func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     }
-    func applicationDidEnterBackground(application: UIApplication) {
+    func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     }
 
-    func applicationWillEnterForeground(application: UIApplication) {
+    func applicationWillEnterForeground(_ application: UIApplication) {
     }
 
-    func applicationDidBecomeActive(application: UIApplication) {
+    func applicationDidBecomeActive(_ application: UIApplication) {
         let memberId=IS_NIL_MEMBERID()
         if memberId != nil{
             isUser(memberId!)
@@ -229,7 +205,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
     }
 
 
-    func applicationWillTerminate(application: UIApplication) {
+    func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
@@ -238,8 +214,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
      
      - parameter memberId:会员Id
      */
-    func isUser(memberId:String){
-        Alamofire.request(.GET,URL+"MemberDeviceVerification.xhtml", parameters:["memberId":memberId])
+    func isUser(_ memberId:String){
+        Alamofire.request(URL+"MemberDeviceVerification.xhtml",method:.get, parameters:["memberId":memberId])
             .responseJSON { response in
                 if response.result.error != nil{
                 }
@@ -253,19 +229,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
                     let deviceName=json["deviceName"].stringValue;
                     
                     if deviceToken != "penghao"{//如果用户在打开app没有选择接收通知 直接在登录界面 给服务器传入了默认值(penghao) 不等于表示 用户开启了消息通知
-                        if deviceToken != NSUserDefaults.standardUserDefaults().objectForKey("deviceToken") as? String{//判断服务器返回的设备标识与当前本机的缓存中的设备标识是否相等  如果不等于表示该账号在另一台设备在登录
+                        if deviceToken != userDefaults.object(forKey: "deviceToken") as? String{//判断服务器返回的设备标识与当前本机的缓存中的设备标识是否相等  如果不等于表示该账号在另一台设备在登录
                             //直接跳转到登录页面
                             self.window?.rootViewController=self.navLogin
-                            userDefaults.removeObjectForKey("memberId")
-                            let alert=UIAlertController(title:"重新登录", message:"您的账号于\(loginTime)在另一台设备\(deviceName)上登录。如非本人操作,则密码可能已泄露,建议您重新设置密码,以确保数据安全。", preferredStyle: UIAlertControllerStyle.Alert)
-                            let ok=UIAlertAction(title:"确定", style: UIAlertActionStyle.Default, handler:{ Void
+                            userDefaults.removeObject(forKey: "memberId")
+                            let alert=UIAlertController(title:"重新登录", message:"您的账号于\(loginTime)在另一台设备\(deviceName)上登录。如非本人操作,则密码可能已泄露,建议您重新设置密码,以确保数据安全。", preferredStyle: UIAlertControllerStyle.alert)
+                            let ok=UIAlertAction(title:"确定", style: UIAlertActionStyle.default, handler:{ Void
                                 in//点击确定 清除推送别名
                                 JPUSHService.setAlias("",callbackSelector:nil, object:nil)
                                 JPUSHService.setTags([], callbackSelector:nil, object:nil)
                                 
                             })
                             alert.addAction(ok)
-                            self.window?.rootViewController?.presentViewController(alert, animated:true, completion:nil)
+                            self.window?.rootViewController?.present(alert, animated:true, completion:nil)
                             
                         }
                     }
@@ -276,10 +252,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
      登录(后台要求这么做)
      */
     func login(){
-        let memberName=userDefaults.objectForKey("memberName") as! String
-        let password=userDefaults.objectForKey("password") as! String
+        let memberName=userDefaults.object(forKey: "memberName") as! String
+        let password=userDefaults.object(forKey: "password") as! String
         /// 获取缓存中的唯一表示
-        var str=NSUserDefaults.standardUserDefaults().objectForKey("deviceToken") as? String
+        var str=UserDefaults.standard.object(forKey: "deviceToken") as? String
         if str == nil{//如果为空 直接付默认值
             str="penghao"
         }
@@ -290,21 +266,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         }
     }
     deinit{
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 
 }
-// MARK: - 网络实时监控
-extension AppDelegate{
-    func reachabilityChanged(notification:NSNotification){
-        let reachability=notification.object as! RealReachability
-        let status=reachability.currentReachabilityStatus()
-        log.info("网络:\(status)")
-    }
-}
 // MARK: - 极光推送自定义消息监听
 extension AppDelegate{
-    func networkDidReceiveMessage(notification:NSNotification){
+    func networkDidReceiveMessage(_ notification:Notification){
         let userInfo=notification.userInfo
         if userInfo != nil{
             let json=JSON(userInfo!)
@@ -314,11 +282,11 @@ extension AppDelegate{
                 if memberId != nil{
                     isUser(memberId!)
                 }else{
-                    log.warning("会员id为空")
+                    
                 }
             }
             else{
-                log.warning("极光推送消息userInfo为空\(userInfo)")
+                
             }
         }
     }

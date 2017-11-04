@@ -27,7 +27,7 @@ class categoryListCell:UICollectionViewCell{
         //cell宽度
         cellPicW=frame.size.width
         //父容器
-        viewWarp=UIView(frame: CGRectMake(0, 0, frame.size.width, frame.size.height))
+        viewWarp=UIView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height))
         self.contentView.addSubview(viewWarp)
         //文字标签
         textLbl=UILabel()
@@ -39,25 +39,25 @@ class categoryListCell:UICollectionViewCell{
     
     - parameter entity: GoodsCategoryEntity 商品分类实体类
     */
-    func loadItemsData(entity:GoodsCategoryEntity){
+    func loadItemsData(_ entity:GoodsCategoryEntity){
 
         //1.图片
-        imageItem=UIImageView(frame: CGRectMake((cellPicW-45)/2, 20, 45, 45))
+        imageItem=UIImageView(frame: CGRect(x: (cellPicW-45)/2, y: 20, width: 45, height: 45))
         self.contentView.addSubview(imageItem!)
         //图片若为空，则给默认图
         let goodsCategoryIco=entity.goodsCategoryIco ?? ""
-        imageItem!.sd_setImageWithURL(NSURL(string:URLIMG+goodsCategoryIco), placeholderImage: UIImage(named: "def_nil"))
+        imageItem!.sd_setImage(with: Foundation.URL(string:URLIMG+goodsCategoryIco), placeholderImage: UIImage(named: "def_nil"))
         
         //2.文字
-        textLbl!.textAlignment=NSTextAlignment.Center
-        textLbl!.font=UIFont.systemFontOfSize(12)
-        textLbl!.textColor=UIColor.blackColor()
-        textLbl!.lineBreakMode=NSLineBreakMode.ByWordWrapping
+        textLbl!.textAlignment=NSTextAlignment.center
+        textLbl!.font=UIFont.systemFont(ofSize: 12)
+        textLbl!.textColor=UIColor.black
+        textLbl!.lineBreakMode=NSLineBreakMode.byWordWrapping
         textLbl!.numberOfLines=2
         //文字若为空，给默认值""
         let text = entity.goodsCategoryName ?? ""
-        let textSize = text.textSizeWithFont(textLbl!.font, constrainedToSize: CGSizeMake(cellPicW, 60))
-        textLbl!.frame=CGRectMake(0,CGRectGetMaxY(imageItem!.frame)+1, cellPicW, textSize.height)
+        let textSize = text.textSizeWithFont(textLbl!.font, constrainedToSize: CGSize(width: cellPicW, height: 60))
+        textLbl!.frame=CGRect(x: 0,y: imageItem!.frame.maxY+1, width: cellPicW, height: textSize.height)
         textLbl!.text=text
         self.contentView.addSubview(textLbl!)
     }
@@ -66,23 +66,23 @@ class categoryListCell:UICollectionViewCell{
     
     - parameter entity: GoodsCategoryEntity  商品分类实体类
     */
-    func loadBrandData(entity:GoodsCategoryEntity){
+    func loadBrandData(_ entity:GoodsCategoryEntity){
         //父容器
         viewWarp.layer.borderWidth=CGFloat(0.5)
-        viewWarp.layer.borderColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1).CGColor
+        viewWarp.layer.borderColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1).cgColor
 
         //文字
-        textLbl!.lineBreakMode=NSLineBreakMode.ByWordWrapping
+        textLbl!.lineBreakMode=NSLineBreakMode.byWordWrapping
         textLbl!.numberOfLines=0
         textLbl!.tag=2
-        textLbl!.font=UIFont.systemFontOfSize(13);
-        textLbl!.textColor=UIColor.blackColor();
+        textLbl!.font=UIFont.systemFont(ofSize: 13);
+        textLbl!.textColor=UIColor.black;
         viewWarp.addSubview(textLbl!)
         //文字若为空，给默认值""
         let text = entity.brandname ?? ""
-        let textSize = text.textSizeWithFont(textLbl!.font, constrainedToSize: CGSizeMake(cellPicW, 50))
-        textLbl!.frame=CGRectMake(0,(cellPicW-textSize.height)/2, cellPicW, textSize.height)
-        textLbl!.textAlignment=NSTextAlignment.Center;
+        let textSize = text.textSizeWithFont(textLbl!.font, constrainedToSize: CGSize(width: cellPicW, height: 50))
+        textLbl!.frame=CGRect(x: 0,y: (cellPicW-textSize.height)/2, width: cellPicW, height: textSize.height)
+        textLbl!.textAlignment=NSTextAlignment.center;
         textLbl?.text=text
     }
     required init?(coder aDecoder: NSCoder) {
