@@ -34,8 +34,6 @@ class RegisterValidationViewController:UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //显示导航栏
-        self.navigationController?.setNavigationBarHidden(false, animated:true)
         //设置背景色
         self.view.backgroundColor=UIColor.white
         initFunc()
@@ -50,7 +48,7 @@ class RegisterValidationViewController:UIViewController{
     func initview(){
         //画横线用的view
         let lianview=UIView()
-        lianview.frame=CGRect(x: -1, y: 80, width: boundsWidth+2, height: 50)
+        lianview.frame=CGRect(x: -1, y:navHeight+16, width: boundsWidth+2, height: 50)
         lianview.layer.borderWidth=1
         lianview.layer.borderColor=UIColor.borderColor().cgColor
         self.view.addSubview(lianview)
@@ -144,7 +142,7 @@ class RegisterValidationViewController:UIViewController{
         getCode?.setTitleColor(UIColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1), for: UIControlState())
         //创建定时器每隔一秒钟执行一次
         if timer == nil {
-            timer=Timer.scheduledTimer(timeInterval: 1, target: self, selector: "updateTimer:", userInfo: nil, repeats: true);
+            timer=Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true);
         }else{
             self.timer?.invalidate();
             self.timer = nil;
@@ -162,7 +160,7 @@ class RegisterValidationViewController:UIViewController{
     }
     
     //定时器方法
-    func updateTimer(_ timer:Timer){
+    @objc func updateTimer(_ timer:Timer){
         //更改验证按信息
         count-=1;
         getCode?.setTitle("还剩\(count)秒", for: UIControlState())

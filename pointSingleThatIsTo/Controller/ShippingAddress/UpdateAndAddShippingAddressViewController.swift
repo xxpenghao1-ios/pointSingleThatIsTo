@@ -53,7 +53,7 @@ class UpdateAndAddShippingAddressViewController:BaseViewController,UITableViewDe
             self.title="添加收货地址"
         }
         self.view.backgroundColor=UIColor.white
-        table=UITableView(frame:CGRect(x: 0,y: 64,width: boundsWidth,height: 270), style: UITableViewStyle.plain)
+        table=UITableView(frame:CGRect(x: 0,y:navHeight,width:boundsWidth,height: 270), style: UITableViewStyle.plain)
         table!.dataSource=self
         table!.delegate=self
         table!.isScrollEnabled=false
@@ -70,15 +70,13 @@ class UpdateAndAddShippingAddressViewController:BaseViewController,UITableViewDe
         btnSubmit.backgroundColor=UIColor.applicationMainColor()
         btnSubmit.layer.cornerRadius=20
         btnSubmit.setTitle("提交", for: UIControlState())
-        btnSubmit.addTarget(self, action:Selector("submit:"), for: UIControlEvents.touchUpInside)
+        btnSubmit.addTarget(self, action:#selector(submit), for: UIControlEvents.touchUpInside)
         btnSubmit.titleLabel!.font=UIFont.systemFont(ofSize: 16)
         btnSubmit.setTitleColor(UIColor.white, for: UIControlState())
         self.view.addSubview(btnSubmit)
         
         //接收地区选择的通知
-        NotificationCenter.default.addObserver(self, selector: "updateAddress:", name: NSNotification.Name(rawValue: "postUpdateAddress"), object: nil)
-        
-
+        NotificationCenter.default.addObserver(self, selector:#selector(updateAddress), name: NSNotification.Name(rawValue: "postUpdateAddress"), object: nil)
         
     }
     /**
@@ -86,7 +84,7 @@ class UpdateAndAddShippingAddressViewController:BaseViewController,UITableViewDe
      
      - parameter str: 选中的省市区
      */
-    func updateAddress(_ obj:Notification) {
+    @objc func updateAddress(_ obj:Notification) {
         let myAddress=obj.object as? String
         let addressArr=myAddress!.components(separatedBy: "-")
         province=addressArr[0]
@@ -104,7 +102,7 @@ class UpdateAndAddShippingAddressViewController:BaseViewController,UITableViewDe
      
      - parameter sender: UIButton
      */
-    func submit(_ sender:UIButton){
+    @objc func submit(_ sender:UIButton){
             let storeId=UserDefaults.standard.object(forKey: "storeId") as! String
             let shippName=txtName!.text
             let detailAddress=txtDetailAddress!.text

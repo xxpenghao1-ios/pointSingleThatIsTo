@@ -208,7 +208,7 @@ class GrabASingleDetailsCell:UITableViewCell{
         }else{
             recieveGoodsNum=0
         }
-        for i in 0...recieveGoodsNum {
+        for i in 0..<recieveGoodsNum {
             let GoodsList=goodsNum[i] as! GoodDetailEntity
 //            //中间商品图片
 //            goodView=UIView(frame: CGRectMake(viewMiddleGoodsW * CGFloat(i) + 10 * CGFloat(i+1) , (viewMiddle.frame.height-viewMiddleGoodsW)/2, viewMiddleGoodsW, viewMiddleGoodsW))

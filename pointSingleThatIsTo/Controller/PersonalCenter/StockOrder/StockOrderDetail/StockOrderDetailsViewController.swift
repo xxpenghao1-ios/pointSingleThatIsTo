@@ -82,7 +82,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
     创建商品列表
     */
     func creatGoodsListTable(){
-        goodsListTable=UITableView(frame: CGRect(x: 0, y: 0, width: boundsWidth, height: boundsHeight-50), style: UITableViewStyle.grouped)
+        goodsListTable=UITableView(frame: CGRect(x: 0, y: 0, width: boundsWidth, height: boundsHeight-50-bottomSafetyDistanceHeight), style: UITableViewStyle.grouped)
         goodsListTable?.delegate=self
         goodsListTable?.dataSource=self
         goodsListTable?.backgroundColor=UIColor.goodDetailBorderColor()
@@ -337,7 +337,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
     func creatBottomView(){
         let viewH:CGFloat=50
         //订单父容器
-        bottomWarp=UIView(frame: CGRect(x: 0, y: boundsHeight-viewH, width: boundsWidth, height: viewH))
+        bottomWarp=UIView(frame: CGRect(x: 0, y: boundsHeight-viewH-bottomSafetyDistanceHeight, width: boundsWidth, height: viewH))
         bottomWarp.backgroundColor=UIColor.orderBottom()
         self.view.addSubview(bottomWarp)
         //左边订单总价父容器
@@ -356,7 +356,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
             btnReceiving.setTitleColor(UIColor.white, for: UIControlState())
             btnReceiving.titleLabel!.font=UIFont.boldSystemFont(ofSize: 14)
             btnReceiving.backgroundColor=UIColor.applicationMainColor()
-            btnReceiving.addTarget(self, action:Selector("receivingAction:"), for: UIControlEvents.touchUpInside)
+            btnReceiving.addTarget(self, action:#selector(receivingAction), for: UIControlEvents.touchUpInside)
             bottomWarp.addSubview(btnReceiving)
         }else if orderList!.orderStatus == 1{//未发货
             let btnCancelOrder=UIButton(frame:CGRect(x: sumPriceWarp.frame.maxX,y: 0,width: boundsWidth/3,height: viewH))
@@ -364,7 +364,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
             btnCancelOrder.setTitleColor(UIColor.white, for: UIControlState())
             btnCancelOrder.titleLabel!.font=UIFont.boldSystemFont(ofSize: 14)
             btnCancelOrder.backgroundColor=UIColor.applicationMainColor()
-            btnCancelOrder.addTarget(self, action:Selector("cancelOrderAction:"), for: UIControlEvents.touchUpInside)
+            btnCancelOrder.addTarget(self, action:#selector(cancelOrderAction), for: UIControlEvents.touchUpInside)
             bottomWarp.addSubview(btnCancelOrder)
         }
     }
@@ -373,7 +373,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
      
      - parameter sender:UIButton
      */
-    func cancelOrderAction(_ sender:UIButton){
+    @objc func cancelOrderAction(_ sender:UIButton){
         UIAlertController.showAlertYesNo(self, title:"点单即到", message:"您要取消订单吗?", cancelButtonTitle:"取消", okButtonTitle:"确定") { (UIAlertAction) -> Void in
             SVProgressHUD.show(withStatus: "正在加载",maskType:.clear)
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeCancelOrder(orderId: self.orderList!.orderinfoId!), successClosure: { (result) -> Void in
@@ -397,7 +397,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
      
      - parameter sender: UIButton
      */
-    func receivingAction(_ sender:UIButton){
+    @objc func receivingAction(_ sender:UIButton){
         UIAlertController.showAlertYesNo(self, title:"点单即到", message:"确认收货?", cancelButtonTitle:"取消", okButtonTitle:"确定") { (UIAlertAction) -> Void in
             SVProgressHUD.show(withStatus: "正在加载",maskType:.clear)
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.updataOrderStatus4Store(orderinfoId: self.orderList!.orderinfoId!), successClosure: { (result) -> Void in

@@ -64,7 +64,7 @@ class PurchaseRecordsViewController:BaseViewController,UITableViewDataSource,UIT
             cell!.lblName.text=str+"您购买了"+"'"+entity.goodInfoName!+"'";
             let btn=UIButton(frame:CGRect(x: 15,y: 10,width: 80,height: 80))
             btn.tag=indexPath.row
-            btn.addTarget(self, action:"pushGoodDetailView:", for: UIControlEvents.touchUpInside)
+            btn.addTarget(self, action:#selector(pushGoodDetailView), for: UIControlEvents.touchUpInside)
             cell!.addSubview(btn)
         }
         
@@ -75,7 +75,7 @@ class PurchaseRecordsViewController:BaseViewController,UITableViewDataSource,UIT
      
      - parameter sender: UIButton
      */
-    func pushGoodDetailView(_ sender:UIButton){
+    @objc func pushGoodDetailView(_ sender:UIButton){
         let entity=arr[sender.tag] as! GoodDetailEntity
         let vc=GoodDetailViewController()
         vc.goodEntity=entity

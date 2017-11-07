@@ -70,7 +70,7 @@
 //        creatGoodsListTable()
 //        creatBottomView()
 //        //添加观察者，监听卖家附言的通知
-//        NotificationCenter.default.addObserver(self, selector: Selector(("updateRemark:")), name: NSNotification.Name(rawValue: "remarkNotification"), object: nil)
+//        NotificationCenter.default.addObserver(self, #selector: #selector(("updateRemark:")), name: NSNotification.Name(rawValue: "remarkNotification"), object: nil)
 //    }
 //    /**
 //    创建我要抢单商品列表

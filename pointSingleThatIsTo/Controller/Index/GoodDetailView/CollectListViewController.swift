@@ -80,12 +80,12 @@ class CollectListViewController:BaseViewController,UITableViewDataSource,UITable
         goodTable=UITableView(frame:self.view.bounds, style: UITableViewStyle.plain)
         goodTable!.delegate=self
         goodTable!.dataSource=self
-        goodTable!.addHeaderWithCallback({
+        goodTable!.mj_header=MJRefreshNormalHeader(refreshingBlock: {
             //从第一页开始
             self.currentPage=1
             self.http(self.currentPage, isRefresh:true)
         })
-        goodTable!.addFooterWithCallback ({
+        goodTable!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {
             //从第一页开始
             self.currentPage+=1
             self.http(self.currentPage, isRefresh:false)
@@ -103,7 +103,7 @@ class CollectListViewController:BaseViewController,UITableViewDataSource,UITable
         
         //加载等待视图
         SVProgressHUD.show(withStatus: "数据加载中")
-        goodTable!.headerBeginRefreshing()
+        goodTable!.mj_header.beginRefreshing()
         //加载查询购物车按钮
         buildShoppingCarView()
     }
@@ -113,9 +113,9 @@ class CollectListViewController:BaseViewController,UITableViewDataSource,UITable
      */
     func buildShoppingCarView(){
         //查看购物车按钮
-        selectShoppingCar=UIButton(frame:CGRect(x: boundsWidth-75,y: boundsHeight-70,width: 60,height: 60));
+        selectShoppingCar=UIButton(frame:CGRect(x: boundsWidth-75,y: boundsHeight-70-bottomSafetyDistanceHeight,width: 60,height: 60));
         let shoppingCarImg=UIImage(named: "char1");
-        selectShoppingCar!.addTarget(self, action:Selector("pushChoppingView:"), for:UIControlEvents.touchUpInside);
+        selectShoppingCar!.addTarget(self, action:#selector(pushChoppingView), for:UIControlEvents.touchUpInside);
         self.selectShoppingCar?.badgeValue="\(self.badgeCount)"
         //默认隐藏按钮
         selectShoppingCar!.isHidden=true;
@@ -194,7 +194,7 @@ extension CollectListViewController{
                 textField.placeholder = "请输入\(cell.goodEntity!.miniCount!)~\(inventory)之间\(cell.goodEntity!.goodsBaseCount!)的倍数"
                 textField.tag=inventory
             }
-            NotificationCenter.default.addObserver(self, selector: Selector("alertTextFieldDidChange:"), name: NSNotification.Name.UITextFieldTextDidChange, object: textField)
+            NotificationCenter.default.addObserver(self,selector: #selector(self.alertTextFieldDidChange), name: NSNotification.Name.UITextFieldTextDidChange, object: textField)
         }
         //确定
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.default,handler:{ Void in
@@ -211,7 +211,7 @@ extension CollectListViewController{
         self.present(alertController, animated: true, completion: nil)
     }
     //检测输入框的字符是否大于库存数量 是解锁确定按钮
-    func alertTextFieldDidChange(_ notification: Notification){
+    @objc func alertTextFieldDidChange(_ notification: Notification){
         let alertController = self.presentedViewController as! UIAlertController?
         if (alertController != nil) {
             let text = (alertController!.textFields?.first)! as UITextField
@@ -228,7 +228,7 @@ extension CollectListViewController{
      
      - parameter sender:UIButton
      */
-    func pushChoppingView(_ sender:UIButton){
+    @objc func pushChoppingView(_ sender:UIButton){
         let vc=ShoppingCarViewContorller()
         vc.hidesBottomBarWhenPushed=true
         self.navigationController!.pushViewController(vc, animated:true)
@@ -319,9 +319,9 @@ extension CollectListViewController{
                 self.goodArr.add(entity!)
             }
             if count < 30{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.goodTable?.setFooterHidden(true)
+                self.goodTable?.mj_footer.isHidden=true
             }else{//否则显示
-                self.goodTable?.setFooterHidden(false)
+                self.goodTable?.mj_footer.isHidden=false
             }
             if self.goodArr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -338,18 +338,18 @@ extension CollectListViewController{
                 
             }
             //关闭刷新状态
-            self.goodTable?.headerEndRefreshing()
+            self.goodTable?.mj_header.endRefreshing()
             //关闭加载状态
-            self.goodTable?.footerEndRefreshing()
+            self.goodTable?.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
             self.goodTable?.reloadData()
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.goodTable?.headerEndRefreshing()
+                self.goodTable?.mj_header.endRefreshing()
                 //关闭加载状态
-                self.goodTable?.footerEndRefreshing()
+                self.goodTable?.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }

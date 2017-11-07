@@ -23,7 +23,7 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
         super.viewDidLoad()
         self.title="收货地址管理"
         self.view.backgroundColor=UIColor.white
-        table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-80), style: UITableViewStyle.plain)
+        table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-80-bottomSafetyDistanceHeight), style: UITableViewStyle.plain)
         table!.delegate=self
         table!.dataSource=self
         self.view.addSubview(table!)
@@ -33,11 +33,11 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
         //移除空单元格
         table!.tableFooterView = UIView(frame:CGRect.zero)
         
-        let btnSubmit=UIButton(frame:CGRect(x: 30,y: boundsHeight-60,width: boundsWidth-60,height: 40))
+        let btnSubmit=UIButton(frame:CGRect(x: 30,y: boundsHeight-60-bottomSafetyDistanceHeight,width: boundsWidth-60,height: 40))
         btnSubmit.backgroundColor=UIColor.applicationMainColor()
         btnSubmit.layer.cornerRadius=20
         btnSubmit.setTitle("添加收货地址", for: UIControlState())
-        btnSubmit.addTarget(self, action:Selector("addShippingAddress:"), for: UIControlEvents.touchUpInside)
+        btnSubmit.addTarget(self, action:#selector(addShippingAddress), for: UIControlEvents.touchUpInside)
         btnSubmit.titleLabel!.font=UIFont.systemFont(ofSize: 16)
         btnSubmit.setTitleColor(UIColor.white, for: UIControlState())
         self.view.addSubview(btnSubmit)
@@ -45,14 +45,14 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
         httpAddress()
         
         //监听通知刷新页面
-        NotificationCenter.default.addObserver(self, selector:"updateTable:", name:NSNotification.Name(rawValue: "updateViewNotification"), object:nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(updateTable), name:NSNotification.Name(rawValue: "updateViewNotification"), object:nil)
     }
     /**
      跳转添加地址页面
      
      - parameter sender: UIButton
      */
-    func addShippingAddress(_ sender:UIButton){
+    @objc func addShippingAddress(_ sender:UIButton){
         let vc=UpdateAndAddShippingAddressViewController()
         vc.addressFlag=2
         self.navigationController!.pushViewController(vc, animated:true)
@@ -62,7 +62,7 @@ class  ShippingAddressViewController:BaseViewController,UITableViewDataSource,UI
      
      - parameter obj:NSNotification
      */
-    func updateTable(_ obj:Notification){
+    @objc func updateTable(_ obj:Notification){
         arr.removeAllObjects()
         //发送网络请求
         httpAddress()

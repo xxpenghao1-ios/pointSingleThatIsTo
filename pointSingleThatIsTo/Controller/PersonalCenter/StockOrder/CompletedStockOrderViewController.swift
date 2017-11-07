@@ -34,7 +34,7 @@ class CompletedStockOrderViewController:BaseViewController,UITableViewDataSource
         self.title="已完成订单"
         self.view.backgroundColor=UIColor.white
         //监听通知 刷新数据
-        NotificationCenter.default.addObserver(self, selector:"updateOrderList:", name:NSNotification.Name(rawValue: "postUpdateOrderList"), object: nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(updateOrderList), name:NSNotification.Name(rawValue: "postUpdateOrderList"), object: nil)
         creatcompletedStockOrderTable()
     }
     /**
@@ -42,35 +42,35 @@ class CompletedStockOrderViewController:BaseViewController,UITableViewDataSource
      
      - parameter obj:NSNotification
      */
-    func updateOrderList(_ obj:Notification){
-        completedStockOrderTable?.headerBeginRefreshing()
+    @objc func updateOrderList(_ obj:Notification){
+        completedStockOrderTable?.mj_header.beginRefreshing()
     }
     
     /**
     创建已发货Table
     */
     func creatcompletedStockOrderTable(){
-        completedStockOrderTable=UITableView(frame: CGRect(x: 0, y: 0, width: boundsWidth, height: boundsHeight-104), style: UITableViewStyle.plain)
+        completedStockOrderTable=UITableView(frame: CGRect(x: 0, y: 0, width: boundsWidth, height:boundsHeight-(navHeight+40)-bottomSafetyDistanceHeight), style: UITableViewStyle.plain)
         completedStockOrderTable?.delegate=self
         completedStockOrderTable?.dataSource=self
         completedStockOrderTable?.backgroundColor=UIColor.white
         completedStockOrderTable?.separatorStyle=UITableViewCellSeparatorStyle.none
         self.view.addSubview(completedStockOrderTable!)
         
-        completedStockOrderTable!.addHeaderWithCallback({//下拉重新加载数据
+        completedStockOrderTable!.mj_header=MJRefreshNormalHeader(refreshingBlock: {//下拉重新加载数据
             //从第一页开始
             self.currentPage=1
             //重新发送请求
             self.queryOrderInfo4AndroidStoreByOrderStatus(self.currentPage,isRefresh: true)
         })
-        completedStockOrderTable!.addFooterWithCallback({//上拉加载更多
+        completedStockOrderTable!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//上拉加载更多
             //每次页面索引加1
             self.currentPage+=1
             self.queryOrderInfo4AndroidStoreByOrderStatus(self.currentPage,isRefresh: false)
         })
         //加载等待视图
         SVProgressHUD.show(withStatus: "数据加载中")
-        completedStockOrderTable!.headerBeginRefreshing()
+        completedStockOrderTable!.mj_header.beginRefreshing()
         
     }
     
@@ -98,7 +98,7 @@ class CompletedStockOrderViewController:BaseViewController,UITableViewDataSource
             cell!.updateCell(stockOrderEntityArray[indexPath.row])
             let viewMiddle=UIView(frame:CGRect(x: 0,y: 40,width: boundsWidth,height: 80))
             viewMiddle.tag=indexPath.row
-            viewMiddle.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector(("pushOrderDetail:"))))
+            viewMiddle.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(pushOrderDetail)))
             cell!.contentView.addSubview(viewMiddle)
         }
         cell!.selectionStyle=UITableViewCellSelectionStyle.none
@@ -109,7 +109,7 @@ class CompletedStockOrderViewController:BaseViewController,UITableViewDataSource
      
      - parameter sender:UITapGestureRecognizer
      */
-    func pushOrderDetail(_ sender:UITapGestureRecognizer){
+    @objc func pushOrderDetail(_ sender:UITapGestureRecognizer){
         let vc=StockOrderDetailsViewController()
         vc.orderList=stockOrderEntityArray[sender.view!.tag]
         self.navigationController!.pushViewController(vc, animated:true)
@@ -159,9 +159,9 @@ class CompletedStockOrderViewController:BaseViewController,UITableViewDataSource
                     self.stockOrderEntityArray.append(robbedEntity!)
                 }
                 if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.completedStockOrderTable?.setFooterHidden(true)
+                    self.completedStockOrderTable?.mj_footer.isHidden=true
                 }else{//否则显示
-                    self.completedStockOrderTable?.setFooterHidden(false)
+                    self.completedStockOrderTable?.mj_footer.isHidden=false
                 }
                 if(self.stockOrderEntityArray.count < 1){//如果数据为空，显示默认视图
                     self.nilView?.removeFromSuperview()
@@ -172,18 +172,18 @@ class CompletedStockOrderViewController:BaseViewController,UITableViewDataSource
                     self.nilView?.removeFromSuperview()
                 }
                 //关闭下拉刷新状态
-                self.completedStockOrderTable?.headerEndRefreshing()
+                self.completedStockOrderTable?.mj_header.endRefreshing()
                 //关闭上拉加载状态
-                self.completedStockOrderTable?.footerEndRefreshing()
+                self.completedStockOrderTable?.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.dismiss()
                 //重新加载Table
                 self.completedStockOrderTable?.reloadData()
                 }, failClosure: { (errorMsg) -> Void in
                     //关闭刷新状态
-                    self.completedStockOrderTable?.headerEndRefreshing()
+                    self.completedStockOrderTable?.mj_header.endRefreshing()
                     //关闭加载状态
-                    self.completedStockOrderTable?.footerEndRefreshing()
+                    self.completedStockOrderTable?.mj_footer.endRefreshing()
                     //关闭加载等待视图
                     SVProgressHUD.showError(withStatus: errorMsg)
             })

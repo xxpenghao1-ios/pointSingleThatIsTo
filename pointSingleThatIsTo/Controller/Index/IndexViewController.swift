@@ -32,7 +32,7 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UITextField
     ///分割线
     fileprivate var specialAndPromotionsCollectionBorderView:UIView?
     fileprivate var specialAndPromotionsCollectionButtomBorderView:UIView?
-    fileprivate var specialAndPromotionsArr=NSMutableArray()
+    fileprivate var specialAndPromotionsArr=[SpecialAndPromotionsEntity]()
     //******新品推荐begin********
     fileprivate var newProductArr=NSMutableArray()
     /// 新品推荐
@@ -57,7 +57,7 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UITextField
         super.viewWillAppear(animated)
         addTimer()
         if updateViewFlag{//如果等于true 自动刷新页面
-            self.scrollView?.headerBeginRefreshing()
+            self.scrollView?.mj_header.beginRefreshing()
         }
     }
     override func viewDidLoad() {
@@ -78,15 +78,15 @@ class IndexViewController:UIViewController,SDCycleScrollViewDelegate,UITextField
         buildView()
         //发送网络请求
         http()
-        scrollView!.addHeaderWithCallback({//下拉刷新首页数据
-                //清空所有的数据源重新请求
-                self.zwadImgArr.removeAllObjects()
-                self.classifyArr.removeAllObjects()
-                self.newProductArr.removeAllObjects()
-                self.hotGoodArr.removeAllObjects()
-                self.specialAndPromotionsArr.removeAllObjects()
-                //发送数据请求
-                self.http()
+        scrollView!.mj_header=MJRefreshNormalHeader(refreshingBlock: {
+            //清空所有的数据源重新请求
+            self.zwadImgArr.removeAllObjects()
+            self.classifyArr.removeAllObjects()
+            self.newProductArr.removeAllObjects()
+            self.hotGoodArr.removeAllObjects()
+            self.specialAndPromotionsArr.removeAll()
+            //发送数据请求
+            self.http()
         })
     }
     
@@ -172,7 +172,7 @@ extension IndexViewController{
         //设置这个的UIBarButtonItem的宽为-10
         leftBarNil.width = -10;
         //直接创建一个文本框
-        let txt=UITextField(frame:CGRect(x: 0,y: 0,width: boundsWidth-120,height: 30))
+        let txt=UITextField(frame:CGRect(x: 0,y: 0,width: boundsWidth-135,height: 30))
         txt.backgroundColor=UIColor.white
         txt.delegate=self
         txt.placeholder="请输入您要搜索的商品"
@@ -188,9 +188,9 @@ extension IndexViewController{
         let leftBarTxt=UIBarButtonItem(customView:txt)
         //公告
         let noticeImg=UIImageView(frame:CGRect(x: 0,y: 0,width: 20,height: 20))
-        noticeImg.image=UIImage(named:"notice")
+        noticeImg.image=UIImage(named:"notice")?.reSizeImage(reSize:CGSize(width:20, height: 20))
         noticeImg.isUserInteractionEnabled=true
-        noticeImg.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"showActivityAlert"))
+        noticeImg.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(showActivityAlert)))
         
         let barNotice=UIBarButtonItem(customView:noticeImg)
         ///定位文字
@@ -402,7 +402,7 @@ extension IndexViewController:UICollectionViewDataSource,UICollectionViewDelegat
         }else if collectionView.tag == 700{//特价与促销
             let cell=collectionView.dequeueReusableCell(withReuseIdentifier: "IndexSpecialAndPromotions", for:indexPath) as! IndexSpecialAndPromotions
             if specialAndPromotionsArr.count > 0{//如果大于0更新cell  防止空数据  导致程序直接崩溃
-                let entity=specialAndPromotionsArr[indexPath.row] as! SpecialAndPromotionsEntity
+                let entity=specialAndPromotionsArr[indexPath.row]
                 cell.updateCell(entity)
             }
             cells=cell
@@ -473,7 +473,9 @@ extension IndexViewController:UICollectionViewDataSource,UICollectionViewDelegat
             vc.storeId=UserDefaults.standard.object(forKey: "storeId") as? String
             self.navigationController!.pushViewController(vc, animated:true)
         }else if collectionView.tag == 700{
-            let entity=specialAndPromotionsArr[indexPath.row] as! SpecialAndPromotionsEntity
+            print("数组数量\(specialAndPromotionsArr.count)")
+            print("数组索引\(indexPath.item)")
+            let entity=specialAndPromotionsArr[indexPath.item]
             if entity.mobileOrPc == 3{
                 let vc=GoodSpecialPriceViewController()
                 vc.flag=1
@@ -496,7 +498,7 @@ extension IndexViewController{
      
      - parameter sender: NSTimer
      */
-    func newProductSwitch(_ sender:Timer){
+    @objc func newProductSwitch(_ sender:Timer){
         if self.newProductCollectionView!.indexPathsForVisibleItems.last != nil{
             let currentIndexPath=self.newProductCollectionView!.indexPathsForVisibleItems.last!
             let currentIndexPathReset=IndexPath(item: currentIndexPath.item, section:10/2)
@@ -518,7 +520,7 @@ extension IndexViewController{
      */
     func addTimer(){
         if timer == nil{
-            timer=Timer.scheduledTimer(timeInterval: 4, target: self, selector:Selector("newProductSwitch:"), userInfo:nil, repeats: true)
+            timer=Timer.scheduledTimer(timeInterval: 4, target: self, selector:#selector(newProductSwitch), userInfo:nil, repeats: true)
         }
         
     }
@@ -529,7 +531,7 @@ extension IndexViewController{
     /**
      弹出活动内容
      */
-    func showActivityAlert(){
+    @objc func showActivityAlert(){
         var message:String?="暂无内容"
         var title:String?="点单即到"
         if self.adMessgInfoEntity != nil{//弹出公告信息
@@ -618,7 +620,7 @@ extension IndexViewController{
             let json=JSON(result)
             for(_,value) in json{
                 let entity=Mapper<SpecialAndPromotionsEntity>().map(JSONObject: value.object)
-                self.specialAndPromotionsArr.add(entity!)
+                self.specialAndPromotionsArr.append(entity!)
             }
             self.specialAndPromotionsCollectionView?.reloadData()
             }) { (errorMsg) -> Void in
@@ -676,7 +678,7 @@ extension IndexViewController{
             //重新计算可滑动容器的可滑动size
             self.scrollView!.contentSize=CGSize(width: boundsWidth, height: self.hotGoodCollectionView!.frame.maxY)
             //在热门商品加载完成后结束刷新
-            self.scrollView!.headerEndRefreshing()
+            self.scrollView!.mj_header.endRefreshing()
             }) { (errorMsg) -> Void in
                 SVProgressHUD.showError(withStatus: errorMsg)
         }

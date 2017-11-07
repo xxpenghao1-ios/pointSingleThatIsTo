@@ -266,8 +266,8 @@ class LoginViewController:BaseViewController{
                             //写入磁盘
                             userDefaults.synchronize()
                             //登录成功设置应用程序别名
-                            JPUSHService.setAlias(entity!.storeFlagCode!, callbackSelector: nil, object:nil)
-                            JPUSHService.setTags([entity!.substationId!], callbackSelector:nil, object:nil)
+                            JPUSHService.setAlias(entity!.storeFlagCode!, completion: nil, seq: 11)
+                            JPUSHService.setTags([entity!.substationId!],completion: nil,seq:22)
                             //登录成功跳转到首页
                             let app=UIApplication.shared.delegate as! AppDelegate
                             

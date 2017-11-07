@@ -66,7 +66,7 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
         completeListTable?.separatorStyle=UITableViewCellSeparatorStyle.none
         self.view.addSubview(completeListTable!)
         
-//        completeListTable!.addHeaderWithCallback({//下拉重新加载数据
+//        completeListTable!.mj_header=MJRefreshNormalHeader(refreshingBlock: {//下拉重新加载数据
 //            //从第一页开始
 //            self.currentPage=1
 //            //清除数据源
@@ -74,7 +74,7 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
 //            //重新发送已抢单请求
 //            self.queryStoreAllRobOrderForList(self.currentPage)
 //        })
-//        completeListTable!.addFooterWithCallback({//上拉加载更多
+//        completeListTable!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//上拉加载更多
 //            //每次页面索引加1
 //            self.currentPage+=1
 //            self.queryStoreAllRobOrderForList(self.currentPage)
@@ -113,7 +113,7 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
             //添加中间视图交互单击事件
             cell?.viewMiddle.isUserInteractionEnabled=true
             cell?.viewMiddle.tag=indexPath.row
-            let viewMiddleTap=UITapGestureRecognizer(target: self, action: Selector("actionCompleteDetails:"))
+            let viewMiddleTap=UITapGestureRecognizer(target: self, action: #selector(actionCompleteDetails))
             cell?.viewMiddle.addGestureRecognizer(viewMiddleTap)
         }
         cell!.selectionStyle=UITableViewCellSelectionStyle.none
@@ -133,7 +133,7 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
     actionGrabASingleDetails   跳转到抢单详情页面
     - parameter sender: 当前点击的视图
     */
-    func actionCompleteDetails(_ sender:UITapGestureRecognizer){
+    @objc func actionCompleteDetails(_ sender:UITapGestureRecognizer){
 //        let GrabASingleDetailsVC=GrabASingleDetailsView()
 //        GrabASingleDetailsVC.hidesBottomBarWhenPushed=true
 //        GrabASingleDetailsVC.orderList=completeListEntityArray[sender.view!.tag]
@@ -174,9 +174,9 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
                         self.completeListEntityArray.append(robbedEntity!)
                     }
                     if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                        self.completeListTable?.setFooterHidden(true)
+                        self.completeListTable?.mj_footer.isHidden=true
                     }else{//否则显示
-                        self.completeListTable?.setFooterHidden(false)
+                        self.completeListTable?.mj_footer.isHidden=false
                     }
                     if(self.completeListEntityArray.count < 1){//如果数据为空，显示默认视图
                         self.nilView?.removeFromSuperview()
@@ -187,9 +187,9 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
                         self.nilView?.removeFromSuperview()
                     }
                     //关闭下拉刷新状态
-                    self.completeListTable?.headerEndRefreshing()
+                    self.completeListTable?.mj_header.endRefreshing()
                     //关闭上拉加载状态
-                    self.completeListTable?.footerEndRefreshing()
+                    self.completeListTable?.mj_footer.endRefreshing()
                     //关闭加载等待视图
                     SVProgressHUD.dismiss()
                     //重新加载Table
@@ -198,9 +198,9 @@ class CompleteOrderViewController:BaseViewController,UITableViewDataSource,UITab
                     self.isNetWork=true
                 }, failClosure: { (errorMsg) -> Void in
                     //关闭刷新状态
-                    self.completeListTable?.headerEndRefreshing()
+                    self.completeListTable?.mj_header.endRefreshing()
                     //关闭加载状态
-                    self.completeListTable?.footerEndRefreshing()
+                    self.completeListTable?.mj_footer.endRefreshing()
                     SVProgressHUD.showError(withStatus: errorMsg)
             })
     }

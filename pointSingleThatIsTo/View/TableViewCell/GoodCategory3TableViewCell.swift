@@ -127,13 +127,13 @@ class GoodCategory3TableViewCell:UITableViewCell {
         addShoppingCart.layer.masksToBounds=true
         addShoppingCart.layer.cornerRadius=3
         addShoppingCart.isUserInteractionEnabled=true
-        addShoppingCart.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("addShoppingCarts")))
+        addShoppingCart.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(addShoppingCarts)))
         
         //设置商品图片view
         goodImgView.layer.masksToBounds=true
         goodImgView.layer.cornerRadius=3
         goodImgView.isUserInteractionEnabled=true
-        goodImgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("pushGoodDetail")))
+        goodImgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(pushGoodDetail)))
         
         //设置购物数量view
         shoppingCartCountView.layer.cornerRadius=5
@@ -151,12 +151,12 @@ class GoodCategory3TableViewCell:UITableViewCell {
         lblGoodStock.textColor=UIColor.textColor()
         
         //设置加减数量点击事件
-        btnAddCount.addTarget(self, action:Selector("addCount:"), for: UIControlEvents.touchUpInside)
-        btnReduceCount.addTarget(self, action:Selector("reduceCount:"), for: UIControlEvents.touchUpInside)
+        btnAddCount.addTarget(self, action:#selector(addCount), for: UIControlEvents.touchUpInside)
+        btnReduceCount.addTarget(self, action:#selector(reduceCount), for: UIControlEvents.touchUpInside)
         
         //设置数量选择事件
         lblShoppingCartCount.isUserInteractionEnabled=true
-        lblShoppingCartCount.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("showCountText")))
+        lblShoppingCartCount.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(showCountText)))
         
         
         //去掉选中背景
@@ -165,19 +165,19 @@ class GoodCategory3TableViewCell:UITableViewCell {
     /**
      跳转到商品详情页
      */
-    func pushGoodDetail(){
+    @objc func pushGoodDetail(){
         delegate?.pushGoodDetailView(goodEntity!)
     }
     /**
      加入购物车
      */
-    func addShoppingCarts(){
+    @objc func addShoppingCarts(){
         delegate?.goodCategory3TableViewCellAddShoppingCarts(goodImg, indexPath: indexPath!,count:count)
     }
     /**
      弹出数量选择框
      */
-    func showCountText(){
+    @objc func showCountText(){
         delegate?.purchaseCount(inventory,indexPath:indexPath!)
     }
     /**
@@ -185,7 +185,7 @@ class GoodCategory3TableViewCell:UITableViewCell {
      
      - parameter sender: UIButton
      */
-    func addCount(_ sender:UIButton){
+    @objc func addCount(_ sender:UIButton){
         if inventory == -1{//如果库存充足
             count+=goodEntity!.goodsBaseCount!
             lblShoppingCartCount.text="\(count)"
@@ -204,7 +204,7 @@ class GoodCategory3TableViewCell:UITableViewCell {
      
      - parameter sender: UIButton
      */
-    func reduceCount(_ sender:UIButton){
+    @objc func reduceCount(_ sender:UIButton){
         if count > goodEntity!.miniCount{//数量到最低起送数量不进行操作
             count-=goodEntity!.goodsBaseCount!
             lblShoppingCartCount.text="\(count)"

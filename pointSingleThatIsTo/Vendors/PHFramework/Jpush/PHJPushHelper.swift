@@ -17,47 +17,31 @@ let APS_FOR_PRODUCTION=true
 /// 集成极光推送
 class PHJPushHelper:NSObject{
     /**
-      在应用启动的时候调用
+     在应用启动的时候调用
      
-     - parameter launchOptions:需要传入NSDictionary
+     - parameter launchOptions:需要传入[UIApplicationLaunchOptionsKey:Any]
      */
     
-    class func setupWithOptions(_ launchOptions:[AnyHashable: Any]?){
-        // ios8之后可以自定义category
-        if (UIDevice.current.systemVersion as NSString).floatValue >= 8.0{
-            JPUSHService.register(forRemoteNotificationTypes: UIUserNotificationType.badge.rawValue|UIUserNotificationType.sound.rawValue|UIUserNotificationType.alert.rawValue,categories: nil)
-        }else{//categories 必须为nil
-            JPUSHService.register(forRemoteNotificationTypes: UIUserNotificationType.badge.rawValue|UIUserNotificationType.sound.rawValue|UIUserNotificationType.alert.rawValue,categories: nil)
+    class func setupWithOptions(launchOptions:[UIApplicationLaunchOptionsKey:Any]?,delegate:JPUSHRegisterDelegate){
+        if #available(iOS 10.0, *){
+            let entiity = JPUSHRegisterEntity()
+            entiity.types = Int(UNAuthorizationOptions.alert.rawValue |
+                UNAuthorizationOptions.badge.rawValue |
+                UNAuthorizationOptions.sound.rawValue)
+            JPUSHService.register(forRemoteNotificationConfig: entiity, delegate:delegate)
+        }else if #available(iOS 8.0, *) {
+            let types = UIUserNotificationType.badge.rawValue |
+                UIUserNotificationType.sound.rawValue |
+                UIUserNotificationType.alert.rawValue
+            JPUSHService.register(forRemoteNotificationTypes: types, categories: nil)
+        }else {
+            let type = UIRemoteNotificationType.badge.rawValue |
+                UIRemoteNotificationType.sound.rawValue |
+                UIRemoteNotificationType.alert.rawValue
+            JPUSHService.register(forRemoteNotificationTypes: type, categories: nil)
         }
-        JPUSHService.setup(withOption: launchOptions, appKey:APP_KEY, channel:CHANNEL, apsForProduction:APS_FOR_PRODUCTION)
+        JPUSHService.setup(withOption:launchOptions, appKey:"5d41be0ff7738eb9a5d3bff0", channel:"ddjd", apsForProduction:APS_FOR_PRODUCTION)
     }
-    /**
-     
-     在appdelegate注册设备处调用
-     - parameter deviceToken:设备令牌
-     */
-    class func registerDeviceToken(_ deviceToken:Data){
-        JPUSHService.registerDeviceToken(deviceToken)
-    }
-    /**
-     // ios7以后，才有completion，否则传nil
-     
-     - parameter userInfo:   [NSObject: AnyObject]
-     - parameter completion: UIBackgroundFetchResult？
-     */
-    class func handleRemoteNotification(_ userInfo:[AnyHashable: Any],completion:((UIBackgroundFetchResult) -> Void)?){
-        JPUSHService.handleRemoteNotification(userInfo)
-        if (completion != nil){//如果不等于空调用闭包方法
-            completion!(UIBackgroundFetchResult.newData)
-        }
-    }
-    /**
-     显示本地通知在最前面
-     
-     - parameter notification:实现本地通知对象
-     */
-    class func showLocalNotificationAtFront(_ notification:UILocalNotification){
-        JPUSHService.showLocalNotification(atFront: notification, identifierKey:nil)
-    }
+    
 }
 

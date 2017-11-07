@@ -68,7 +68,7 @@
 //        memberId=userDefaults.object(forKey: "storeId") as? String
 //        //self.view.backgroundColor = UIColor(red:0, green:0, blue:0, alpha:0.5);
 //        //上部分view
-//        topView=UIView(frame:CGRect(x: 0,y: 64,width: width,height: (height-250)/2-30));
+//        topView=UIView(frame:CGRect(x: 0,y: navHeight,width: width,height: (height-250)/2-30));
 //        topView!.backgroundColor=UIColor(red:0, green:0, blue:0, alpha:0.5);
 //        self.view.addSubview(topView!);
 //        let imageView = UIImageView(frame:CGRect(x: (width-250)/2,y: topView!.frame.height+topView!.frame.origin.y,width: 250,height: 250))
@@ -95,7 +95,7 @@
 //        qrCodeline!.backgroundColor=UIColor.green;
 //        self.view.addSubview(qrCodeline!);
 //        if timer == nil {
-//            timer=Timer.scheduledTimer(timeInterval: 1, target: self, selector: "updateTimer:", userInfo: nil, repeats: true);
+//            timer=Timer.scheduledTimer(timeInterval: 1, target: self, #selector: "updateTimer:", userInfo: nil, repeats: true);
 //        }else{
 //            self.timer!.invalidate();
 //            self.timer = nil;

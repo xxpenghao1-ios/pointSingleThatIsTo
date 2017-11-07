@@ -84,11 +84,11 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
             queryChildCategoryBottom()
         }
         if self.itemsTitle == "休闲零食"{
-            self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"1元区", style: UIBarButtonItemStyle.done, target:self, action:Selector("push1yuanqu"))
+            self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"1元区", style: UIBarButtonItemStyle.done, target:self, action:#selector(push1yuanqu))
         }
     }
     //跳转1元区
-    func push1yuanqu(){
+    @objc func push1yuanqu(){
         /// 获取对应分类entity
         let GoodCategory3VC=GoodCategory3ViewController()
         GoodCategory3VC.flag=5
@@ -99,9 +99,9 @@ class ItemsViewController:BaseViewController,UITableViewDelegate,UITableViewData
     func creatLeftView(){
         //根据push状态码动态修改Table的高度
         if(pushState == 1){
-            flyHeight=boundsHeight - CGFloat(104)
+            flyHeight=boundsHeight-navHeight-40-bottomSafetyDistanceHeight
         }else{
-            flyHeight=boundsHeight - CGFloat(153)
+            flyHeight=boundsHeight-navHeight-40-tabBarHeight
         }
         leftTable=UITableView(frame: CGRect(x: 0, y: 0, width: 100,height: flyHeight), style: UITableViewStyle.plain)
         leftTable?.dataSource=self

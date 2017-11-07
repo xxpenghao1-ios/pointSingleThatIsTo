@@ -148,7 +148,7 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
             
             //setShadowForView(arrowBtnImageView, shadowRadius: 10.0, shadowOpacity: 10.0)
             
-            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: Selector("arrowBtnTapGesAction"))
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(arrowBtnTapGesAction))
             arrowBtnImageView.addGestureRecognizer(tapGestureRecognizer)
         }
         scNavBar = UIScrollView(frame: CGRect(x: 0, y: 0, width: frameX, height: kScNavBarHeight))
@@ -161,13 +161,13 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
     //MARK: -- 往导航栏上添加ItemButton
     fileprivate func getScNavContentAddScNavBarItemsWithItemsWidth(_ widths:NSArray) -> CGFloat {
         var buttonX:CGFloat = 0
-        for index in 0...itemsTitles.count{
+        for index in 0..<itemsTitles.count{
             let button = UIButton(type: UIButtonType.custom)
             button.frame = CGRect(x: buttonX, y: 0, width: widths[index] as! CGFloat, height: kScNavBarHeight)
             button.setTitle((itemsTitles[index] as! String), for: UIControlState())
             button.setTitleColor(UIColor.black, for: UIControlState())
             button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-            button.addTarget(self, action: Selector("itemsBtnAction:"), for: UIControlEvents.touchUpInside)
+            button.addTarget(self, action: #selector(itemsBtnAction), for: UIControlEvents.touchUpInside)
             scNavBar.addSubview(button)
             
             items.add(button)
@@ -237,13 +237,13 @@ class SKScNavBar: UIView, SKLaunchMenuDelegate {
     }
     
     //MARK: -- 导航栏上面Item的点击事件
-    func itemsBtnAction(_ sender:UIButton) {
+    @objc func itemsBtnAction(_ sender:UIButton) {
         let index = items.index(of: sender)
         delegate?.didSelectedWithIndex(index)
     }
     
     //MARK: -- 展开扩展菜单栏按钮点击事件
-    func arrowBtnTapGesAction() {
+    @objc func arrowBtnTapGesAction() {
         showScNavBarItemMenu = !showScNavBarItemMenu
         let height = kScreenWidth / 5.0 * CGFloat(itemsTitles.count / 4) + CGFloat(1.5)
         delegate?.isShowScNavBarItemMenu(showScNavBarItemMenu, height: height)

@@ -40,7 +40,7 @@ class ShippedViewController:BaseViewController,UITableViewDataSource,UITableView
         self.nilView!.center=self.shippedListTable!.center
         self.view.addSubview(self.nilView!)
 //        //添加观察者，监听已发货订单刷新的通知
-//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateOrderPage:", name: "grabASingleNotification", object: nil)
+//        NSNotificationCenter.defaultCenter().addObserver(self, #selector: "updateOrderPage:", name: "grabASingleNotification", object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
@@ -66,7 +66,7 @@ class ShippedViewController:BaseViewController,UITableViewDataSource,UITableView
         shippedListTable?.separatorStyle=UITableViewCellSeparatorStyle.none
         self.view.addSubview(shippedListTable!)
         
-//        shippedListTable!.addHeaderWithCallback({//下拉重新加载数据
+//        shippedListTable!.mj_header=MJRefreshNormalHeader(refreshingBlock: {//下拉重新加载数据
 //            //从第一页开始
 //            self.currentPage=1
 //            //清除数据源
@@ -74,7 +74,7 @@ class ShippedViewController:BaseViewController,UITableViewDataSource,UITableView
 //            //重新发送已抢单请求
 //            self.queryStoreAllRobOrderForList(self.currentPage)
 //        })
-//        shippedListTable!.addFooterWithCallback({//上拉加载更多
+//        shippedListTable!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//上拉加载更多
 //            //每次页面索引加1
 //            self.currentPage+=1
 //            self.queryStoreAllRobOrderForList(self.currentPage)
@@ -113,7 +113,7 @@ class ShippedViewController:BaseViewController,UITableViewDataSource,UITableView
             //添加中间视图交互单击事件
             cell?.viewMiddle.isUserInteractionEnabled=true
             cell?.viewMiddle.tag=indexPath.row
-            let viewMiddleTap=UITapGestureRecognizer(target: self, action: Selector("actionShippedDetails:"))
+            let viewMiddleTap=UITapGestureRecognizer(target: self, action: #selector(actionShippedDetails))
             cell?.viewMiddle.addGestureRecognizer(viewMiddleTap)
         }
         cell!.selectionStyle=UITableViewCellSelectionStyle.none
@@ -133,7 +133,7 @@ class ShippedViewController:BaseViewController,UITableViewDataSource,UITableView
     actionGrabASingleDetails   跳转到抢单详情页面
     - parameter sender: 当前点击的视图
     */
-    func actionShippedDetails(_ sender:UITapGestureRecognizer){
+    @objc func actionShippedDetails(_ sender:UITapGestureRecognizer){
 //        let GrabASingleDetailsVC=GrabASingleDetailsView()
 //        GrabASingleDetailsVC.hidesBottomBarWhenPushed=true
 //        GrabASingleDetailsVC.orderList=robbedListEntityArray[sender.view!.tag]
@@ -175,9 +175,9 @@ class ShippedViewController:BaseViewController,UITableViewDataSource,UITableView
                     self.robbedListEntityArray.append(robbedEntity!)
                 }
                 if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.shippedListTable?.setFooterHidden(true)
+                    self.shippedListTable?.mj_footer.isHidden=true
                 }else{//否则显示
-                    self.shippedListTable?.setFooterHidden(false)
+                    self.shippedListTable?.mj_footer.isHidden=false
                 }
                 if(self.robbedListEntityArray.count < 1){//如果数据为空，显示默认视图
                     self.nilView?.removeFromSuperview()
@@ -188,9 +188,9 @@ class ShippedViewController:BaseViewController,UITableViewDataSource,UITableView
                     self.nilView?.removeFromSuperview()
                 }
                 //关闭下拉刷新状态
-                self.shippedListTable?.headerEndRefreshing()
+                self.shippedListTable?.mj_header.endRefreshing()
                 //关闭上拉加载状态
-                self.shippedListTable?.footerEndRefreshing()
+                self.shippedListTable?.mj_footer.isHidden=true
                 //释放菊花图
                 SVProgressHUD.dismiss()
                 //重新加载Table
@@ -199,9 +199,9 @@ class ShippedViewController:BaseViewController,UITableViewDataSource,UITableView
                 self.isNetWork=true
                 }, failClosure: { (errorMsg) -> Void in
                     //关闭刷新状态
-                    self.shippedListTable?.headerEndRefreshing()
+                    self.shippedListTable?.mj_header.endRefreshing()
                     //关闭加载状态
-                    self.shippedListTable?.footerEndRefreshing()
+                    self.shippedListTable?.mj_header.endRefreshing()
                     SVProgressHUD.showError(withStatus: errorMsg)
             })
         

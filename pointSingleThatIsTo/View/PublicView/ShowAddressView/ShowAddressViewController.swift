@@ -37,7 +37,7 @@ class ShowAddressViewController:UIViewController,UITableViewDataSource,UITableVi
         }
     }
     func configureViews(){
-        self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.stop, target:self, action:Selector("cancel"))
+        self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.stop, target:self, action:#selector(cancel))
         self.table = UITableView(frame:self.view.bounds)
         self.table!.delegate = self;
         self.table!.dataSource = self;
@@ -128,7 +128,7 @@ class ShowAddressViewController:UIViewController,UITableViewDataSource,UITableVi
         }
         self.table?.deselectRow(at: self.table!.indexPathForSelectedRow!, animated:true)
     }
-    func cancel(){
+    @objc func cancel(){
         self.dismiss(animated: true, completion:nil)
     }
 

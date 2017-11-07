@@ -60,10 +60,10 @@
 //        super.viewDidLoad()
 //        self.title="价格"
 //        self.view.backgroundColor=UIColor.whiteColor()
-//        goodTable=UITableView(frame:CGRectMake(0,0,boundsWidth,boundsHeight-64-40), style: UITableViewStyle.Plain)
+//        goodTable=UITableView(frame:CGRectMake(0,0,boundsWidth,boundsHeight-navHeight-40), style: UITableViewStyle.Plain)
 //        goodTable!.delegate=self
 //        goodTable!.dataSource=self
-//        goodTable!.addHeaderWithCallback({//刷新
+//        goodTable!.mj_header=MJRefreshNormalHeader(refreshingBlock: {//刷新
 //            //从第一页开始
 //            self.currentPage=1
 //            if self.flag == 1{//执行搜索请求
@@ -80,7 +80,7 @@
 //            }
 //            
 //        })
-//        goodTable!.addFooterWithCallback({//加载更多
+//        goodTable!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//加载更多
 //            //每次页面索引加1
 //            self.currentPage+=1
 //            if self.flag == 1{//执行搜索请求
@@ -101,16 +101,16 @@
 //        //移除空单元格
 //        goodTable!.tableFooterView = UIView(frame:CGRectZero)
 //        //设置cell下边线全屏
-//        if(goodTable!.respondsToSelector("setLayoutMargins:")){
+//        if(goodTable!.respondsTo#selector("setLayoutMargins:")){
 //            goodTable?.layoutMargins=UIEdgeInsetsZero
 //        }
-//        if(goodTable!.respondsToSelector("setSeparatorInset:")){
+//        if(goodTable!.respondsTo#selector("setSeparatorInset:")){
 //            goodTable?.separatorInset=UIEdgeInsetsZero;
 //        }
 //
 //        //加载等待视图
 //        SVProgressHUD.showWithStatus("数据加载中")
-//        goodTable!.headerBeginRefreshing()
+//        goodTable!.mj_header.beginRefreshing()
 //        //加载查询购物车按钮
 //        buildShoppingCarView()
 //    }
@@ -136,10 +136,10 @@
 //            cell=NSBundle.mainBundle().loadNibNamed("GoodCategory3TableViewCell", owner:self, options: nil).last as? GoodCategory3TableViewCell
 //        }
 //        //设置cell下边线全屏
-//        if(cell!.respondsToSelector("setLayoutMargins:")){
+//        if(cell!.respondsTo#selector("setLayoutMargins:")){
 //            cell?.layoutMargins=UIEdgeInsetsZero
 //        }
-//        if(cell!.respondsToSelector("setSeparatorInset:")){
+//        if(cell!.respondsTo#selector("setSeparatorInset:")){
 //            cell?.separatorInset=UIEdgeInsetsZero;
 //        }
 //        if goodArr.count > 0{//进行判断  防止没有数据 程序崩溃
@@ -254,7 +254,7 @@
 //                textField.placeholder = "请输入\(cell.goodEntity!.miniCount!)~\(inventory)之间\(cell.goodEntity!.goodsBaseCount!)的倍数"
 //                textField.tag=inventory
 //            }
-//            NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("alertTextFieldDidChange:"), name: UITextFieldTextDidChangeNotification, object: textField)
+//            NSNotificationCenter.defaultCenter().addObserver(self, #selector: #selector("alertTextFieldDidChange:"), name: UITextFieldTextDidChangeNotification, object: textField)
 //        }
 //        //确定
 //        let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,handler:{ Void in
@@ -320,9 +320,9 @@
 //                self.goodArr.addObject(entity!)
 //            }
 //            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-//                self.goodTable?.setFooterHidden(true)
+//                self.goodTable?.mj_footer.isHidden=true
 //            }else{//否则显示
-//                self.goodTable?.setFooterHidden(false)
+//                self.goodTable?.mj_footer.isHidden=false
 //            }
 //            if self.goodArr.count < 1{//表示没有数据加载空
 //                self.nilView?.removeFromSuperview()
@@ -339,18 +339,18 @@
 //                
 //            }
 //            //关闭刷新状态
-//            self.goodTable?.headerEndRefreshing()
+//            self.goodTable?.mj_header.endRefreshing()
 //            //关闭加载状态
-//            self.goodTable?.footerEndRefreshing()
+//            self.goodTable?.mj_footer.endRefreshing()
 //            //关闭加载等待视图
 //            SVProgressHUD.dismiss()
 //            //刷新table
 //            self.goodTable?.reloadData()
 //            }) { (errorMsg) -> Void in
 //                //关闭刷新状态
-//                self.goodTable?.headerEndRefreshing()
+//                self.goodTable?.mj_header.endRefreshing()
 //                //关闭加载状态
-//                self.goodTable?.footerEndRefreshing()
+//                self.goodTable?.mj_footer.endRefreshing()
 //                //关闭加载等待视图
 //                SVProgressHUD.showErrorWithStatus(errorMsg)
 //        }
@@ -388,9 +388,9 @@
 //                self.goodArr.addObject(entity!)
 //            }
 //            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-//                self.goodTable?.setFooterHidden(true)
+//                self.goodTable?.mj_footer.isHidden=true
 //            }else{//否则显示
-//                self.goodTable?.setFooterHidden(false)
+//                self.goodTable?.mj_footer.isHidden=false
 //            }
 //            if self.goodArr.count < 1{//表示没有数据加载空
 //                self.nilView?.removeFromSuperview()
@@ -407,18 +407,18 @@
 //                
 //            }
 //            //关闭刷新状态
-//            self.goodTable?.headerEndRefreshing()
+//            self.goodTable?.mj_header.endRefreshing()
 //            //关闭加载状态
-//            self.goodTable?.footerEndRefreshing()
+//            self.goodTable?.mj_footer.endRefreshing()
 //            //关闭加载等待视图
 //            SVProgressHUD.dismiss()
 //            //刷新table
 //            self.goodTable?.reloadData()
 //            }) { (errorMsg) -> Void in
 //                //关闭刷新状态
-//                self.goodTable?.headerEndRefreshing()
+//                self.goodTable?.mj_header.endRefreshing()
 //                //关闭加载状态
-//                self.goodTable?.footerEndRefreshing()
+//                self.goodTable?.mj_footer.endRefreshing()
 //                //关闭加载等待视图
 //                SVProgressHUD.showErrorWithStatus(errorMsg)
 //        }
@@ -457,9 +457,9 @@
 //                self.goodArr.addObject(entity!)
 //            }
 //            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-//                self.goodTable?.setFooterHidden(true)
+//                self.goodTable?.mj_footer.isHidden=true
 //            }else{//否则显示
-//                self.goodTable?.setFooterHidden(false)
+//                self.goodTable?.mj_footer.isHidden=false
 //            }
 //            if self.goodArr.count < 1{//表示没有数据加载空
 //                self.nilView?.removeFromSuperview()
@@ -476,18 +476,18 @@
 //                
 //            }
 //            //关闭刷新状态
-//            self.goodTable?.headerEndRefreshing()
+//            self.goodTable?.mj_header.endRefreshing()
 //            //关闭加载状态
-//            self.goodTable?.footerEndRefreshing()
+//            self.goodTable?.mj_footer.endRefreshing()
 //            //关闭加载等待视图
 //            SVProgressHUD.dismiss()
 //            //刷新table
 //            self.goodTable?.reloadData()
 //            }) { (errorMsg) -> Void in
 //                //关闭刷新状态
-//                self.goodTable?.headerEndRefreshing()
+//                self.goodTable?.mj_header.endRefreshing()
 //                //关闭加载状态
-//                self.goodTable?.footerEndRefreshing()
+//                self.goodTable?.mj_footer.endRefreshing()
 //                //关闭加载等待视图
 //                SVProgressHUD.showErrorWithStatus(errorMsg)
 //        }
@@ -526,9 +526,9 @@
 //                self.goodArr.addObject(entity!)
 //            }
 //            if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-//                self.goodTable?.setFooterHidden(true)
+//                self.goodTable?.mj_footer.isHidden=true
 //            }else{//否则显示
-//                self.goodTable?.setFooterHidden(false)
+//                self.goodTable?.mj_footer.isHidden=false
 //            }
 //            if self.goodArr.count < 1{//表示没有数据加载空
 //                self.nilView?.removeFromSuperview()
@@ -545,18 +545,18 @@
 //                
 //            }
 //            //关闭刷新状态
-//            self.goodTable?.headerEndRefreshing()
+//            self.goodTable?.mj_header.endRefreshing()
 //            //关闭加载状态
-//            self.goodTable?.footerEndRefreshing()
+//            self.goodTable?.mj_footer.endRefreshing()
 //            //关闭加载等待视图
 //            SVProgressHUD.dismiss()
 //            //刷新table
 //            self.goodTable?.reloadData()
 //            }) { (errorMsg) -> Void in
 //                //关闭刷新状态
-//                self.goodTable?.headerEndRefreshing()
+//                self.goodTable?.mj_header.endRefreshing()
 //                //关闭加载状态
-//                self.goodTable?.footerEndRefreshing()
+//                self.goodTable?.mj_footer.endRefreshing()
 //                //关闭加载等待视图
 //                SVProgressHUD.showErrorWithStatus(errorMsg)
 //        }
@@ -572,9 +572,9 @@
 //            if(res.result.error != nil){
 //                SVProgressHUD.showErrorWithStatus(res.result.error?.description)
 //                //关闭刷新状态
-//                self.goodTable?.headerEndRefreshing()
+//                self.goodTable?.mj_header.endRefreshing()
 //                //关闭加载状态
-//                self.goodTable?.footerEndRefreshing()
+//                self.goodTable?.mj_footer.endRefreshing()
 //            }
 //            if(res.result.value != nil){
 //                let json=JSON(res.result.value!)
@@ -600,9 +600,9 @@
 //                    self.goodArr.addObject(entity!)
 //                }
 //                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-//                    self.goodTable?.setFooterHidden(true)
+//                    self.goodTable?.mj_footer.isHidden=true
 //                }else{//否则显示
-//                    self.goodTable?.setFooterHidden(false)
+//                    self.goodTable?.mj_footer.isHidden=false
 //                }
 //                if self.goodArr.count < 1{//表示没有数据加载空
 //                    self.nilView?.removeFromSuperview()
@@ -619,9 +619,9 @@
 //                    
 //                }
 //                //关闭刷新状态
-//                self.goodTable?.headerEndRefreshing()
+//                self.goodTable?.mj_header.endRefreshing()
 //                //关闭加载状态
-//                self.goodTable?.footerEndRefreshing()
+//                self.goodTable?.mj_footer.endRefreshing()
 //                //关闭加载等待视图
 //                SVProgressHUD.dismiss()
 //                //刷新table

@@ -107,7 +107,7 @@ class StockOrderManageTableViewCell: UITableViewCell {
         goodImg3.isHidden=true
         //判断商品集合是否为空
         if entity.list != nil{
-            for i in 0...entity.list!.count{
+            for i in 0..<entity.list!.count{
                     let entity=entity.list![i] as! GoodDetailEntity
                     entity.goodPic=entity.goodPic ?? ""
                     switch i{

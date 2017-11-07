@@ -41,9 +41,9 @@ class TabBarViewController:UITabBarController {
         //设置购物车角标
         setBadgeValue()
         //接收通知 更新购物车角标
-        NotificationCenter.default.addObserver(self, selector:Selector(("updateBadgeValue:")), name:NSNotification.Name(rawValue: "postBadgeValue"), object:nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(updateBadgeValue), name:NSNotification.Name(rawValue: "postBadgeValue"), object:nil)
         //更新个人中心角标
-        NotificationCenter.default.addObserver(self, selector:Selector(("updatePersonalCenter:")), name:NSNotification.Name(rawValue: "postPersonalCenter"), object: nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(updatePersonalCenter), name:NSNotification.Name(rawValue: "postPersonalCenter"), object: nil)
         
      }
     /// 个人中心角标总数
@@ -53,26 +53,24 @@ class TabBarViewController:UITabBarController {
      
      - parameter notification:NSNotification
      */
-    func updatePersonalCenter(_ notification:Notification){
+    @objc func updatePersonalCenter(_ notification:Notification){
         let obj=notification.object as! Int
         if obj == 1{//表示角标数值累加
             sumCount+=obj
             self.personalCenterView.tabBarItem.badgeValue="\(sumCount)"
+        }else if obj == 5{//切换到个人中心
+            self.selectedIndex=3
         }else{//清空角标数值
             self.personalCenterView.tabBarItem.badgeValue=nil
             sumCount=0
         }
-        /**
-        发送通知  通知个人中心小红点是否显示
-        */
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "postIsHiddenMessageBadgeView"), object:sumCount, userInfo:nil)
     }
     /**
      收到通知更新角标
      
      - parameter notification:NSNotification
      */
-    func updateBadgeValue(_ notification:Notification){
+    @objc func updateBadgeValue(_ notification:Notification){
         if notification.object != nil{
             let obj=notification.object as! Int
             if obj == 1{//读取服务器购物车总数量

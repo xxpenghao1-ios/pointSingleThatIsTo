@@ -103,14 +103,14 @@ class  GoodCategory3ViewController:AddShoppingCartAnimation{
      构建查看购物车按钮
      */
     func buildView(){
-        let menu=DOPDropDownMenu(origin:CGPoint(x: 0,y: 64),andHeight:40)
+        let menu=DOPDropDownMenu(origin:CGPoint(x:0,y:navHeight),andHeight:40)
         menu!.dataSource=self
         menu!.delegate=self
         self.view.addSubview(menu!)
-        table=UITableView(frame:CGRect(x: 0,y: 104,width: boundsWidth,height: boundsHeight-64-40))
+        table=UITableView(frame:CGRect(x: 0,y:menu!.frame.maxY,width: boundsWidth,height: boundsHeight-menu!.frame.maxY-bottomSafetyDistanceHeight))
         table.dataSource=self
         table.delegate=self
-        table.addHeaderWithCallback({//刷新
+        table.mj_header=MJRefreshNormalHeader(refreshingBlock:{
             //从第一页开始
             self.currentPage=1
             if self.flag == 1{//执行搜索请求
@@ -129,7 +129,7 @@ class  GoodCategory3ViewController:AddShoppingCartAnimation{
             }
             
         })
-        table.addFooterWithCallback({//加载更多
+        table.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//加载更多
             //每次页面索引加1
             self.currentPage+=1
             if self.flag == 1{//执行搜索请求
@@ -153,11 +153,11 @@ class  GoodCategory3ViewController:AddShoppingCartAnimation{
         //加载菊花图
         SVProgressHUD.show(withStatus: "数据加载中")
         //开始加载页面
-        table.headerBeginRefreshing()
+        table.mj_header.beginRefreshing()
         //查看购物车按钮
-        selectShoppingCar=UIButton(frame:CGRect(x: boundsWidth-75,y: boundsHeight-70,width: 60,height: 60));
+        selectShoppingCar=UIButton(frame:CGRect(x:boundsWidth-75,y: boundsHeight-70-bottomSafetyDistanceHeight,width: 60,height: 60));
         let shoppingCarImg=UIImage(named: "char1");
-        selectShoppingCar!.addTarget(self, action:Selector("pushChoppingView:"), for:UIControlEvents.touchUpInside);
+        selectShoppingCar!.addTarget(self, action:#selector(pushChoppingView), for:UIControlEvents.touchUpInside);
         self.selectShoppingCar?.badgeValue="\(self.badgeCount)"
         //默认隐藏按钮
         selectShoppingCar!.isHidden=true;
@@ -294,7 +294,7 @@ extension GoodCategory3ViewController{
                 textField.placeholder = "请输入\(cell.goodEntity!.miniCount!)~\(inventory)之间\(cell.goodEntity!.goodsBaseCount!)的倍数"
                 textField.tag=inventory
             }
-            NotificationCenter.default.addObserver(self, selector: Selector("alertTextFieldDidChange:"), name: NSNotification.Name.UITextFieldTextDidChange, object: textField)
+            NotificationCenter.default.addObserver(self,selector: #selector(self.alertTextFieldDidChange), name: NSNotification.Name.UITextFieldTextDidChange, object: textField)
         }
         //确定
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.default,handler:{ Void in
@@ -311,7 +311,7 @@ extension GoodCategory3ViewController{
         self.present(alertController, animated: true, completion: nil)
     }
     //检测输入框的字符是否大于库存数量 是解锁确定按钮
-    func alertTextFieldDidChange(_ notification: Notification){
+    @objc func alertTextFieldDidChange(_ notification: Notification){
         let alertController = self.presentedViewController as! UIAlertController?
         if (alertController != nil) {
             let text = (alertController!.textFields?.first)! as UITextField
@@ -332,7 +332,7 @@ extension GoodCategory3ViewController{
      
      - parameter sender:UIButton
      */
-    func pushChoppingView(_ sender:UIButton){
+    @objc func pushChoppingView(_ sender:UIButton){
         let vc=ShoppingCarViewContorller()
         vc.hidesBottomBarWhenPushed=true
         self.navigationController!.pushViewController(vc, animated:true)
@@ -384,9 +384,9 @@ extension GoodCategory3ViewController{
                 self.goodArr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table.setFooterHidden(true)
+                self.table.mj_footer.isHidden=true
             }else{//否则显示
-                self.table.setFooterHidden(false)
+                self.table.mj_footer.isHidden=false
             }
             if self.goodArr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -403,18 +403,18 @@ extension GoodCategory3ViewController{
                 
             }
             //关闭刷新状态
-            self.table.headerEndRefreshing()
+            self.table.mj_header.endRefreshing()
             //关闭加载状态
-            self.table.footerEndRefreshing()
+            self.table.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
             self.table.reloadData()
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
                 
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -452,10 +452,11 @@ extension GoodCategory3ViewController{
                 }
                 self.goodArr.add(entity!)
             }
+            print(self.goodArr.count)
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table.setFooterHidden(true)
+                self.table.mj_footer.isHidden=true
             }else{//否则显示
-                self.table.setFooterHidden(false)
+                self.table.mj_footer.isHidden=false
             }
             if self.goodArr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -472,18 +473,18 @@ extension GoodCategory3ViewController{
                 
             }
             //关闭刷新状态
-            self.table.headerEndRefreshing()
+            self.table.mj_header.endRefreshing()
             //关闭加载状态
-            self.table.footerEndRefreshing()
+            self.table.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
             self.table.reloadData()
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -523,9 +524,9 @@ extension GoodCategory3ViewController{
                 self.goodArr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table.setFooterHidden(true)
+                self.table.mj_footer.isHidden=true
             }else{//否则显示
-                self.table.setFooterHidden(false)
+                self.table.mj_footer.isHidden=false
             }
             if self.goodArr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -542,18 +543,18 @@ extension GoodCategory3ViewController{
                 
             }
             //关闭刷新状态
-            self.table.headerEndRefreshing()
+            self.table.mj_header.endRefreshing()
             //关闭加载状态
-            self.table.footerEndRefreshing()
+            self.table.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
             self.table.reloadData()
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -592,9 +593,9 @@ extension GoodCategory3ViewController{
                 self.goodArr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table.setFooterHidden(true)
+                self.table.mj_footer.isHidden=true
             }else{//否则显示
-                self.table.setFooterHidden(false)
+                self.table.mj_footer.isHidden=false
             }
             if self.goodArr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -611,18 +612,18 @@ extension GoodCategory3ViewController{
                 
             }
             //关闭刷新状态
-            self.table.headerEndRefreshing()
+            self.table.mj_header.endRefreshing()
             //关闭加载状态
-            self.table.footerEndRefreshing()
+            self.table.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
             self.table.reloadData()
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -656,14 +657,14 @@ extension GoodCategory3ViewController{
                 self.goodArr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table.setFooterHidden(true)
+                self.table.mj_footer.isHidden=true
             }else{//否则显示
-                self.table.setFooterHidden(false)
+                self.table.mj_footer.isHidden=false
             }
             //关闭刷新状态
-            self.table.headerEndRefreshing()
+            self.table.mj_header.endRefreshing()
             //关闭加载状态
-            self.table.footerEndRefreshing()
+            self.table.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
@@ -678,9 +679,9 @@ extension GoodCategory3ViewController{
             }
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -698,9 +699,9 @@ extension GoodCategory3ViewController{
             if(res.result.error != nil){
                 SVProgressHUD.showError(withStatus:res.result.error?.localizedDescription)
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
             }
             if(res.result.value != nil){
                 let json=JSON(res.result.value!)
@@ -726,9 +727,9 @@ extension GoodCategory3ViewController{
                     self.goodArr.add(entity!)
                 }
                 if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.table.setFooterHidden(true)
+                    self.table.mj_footer.isHidden=true
                 }else{//否则显示
-                    self.table.setFooterHidden(false)
+                    self.table.mj_footer.isHidden=false
                 }
                 if self.goodArr.count < 1{//表示没有数据加载空
                     self.nilView?.removeFromSuperview()
@@ -745,9 +746,9 @@ extension GoodCategory3ViewController{
                     
                 }
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.dismiss()
                 //刷新table
@@ -791,9 +792,9 @@ extension GoodCategory3ViewController{
                 self.goodArr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table.setFooterHidden(true)
+                self.table.mj_footer.isHidden=true
             }else{//否则显示
-                self.table.setFooterHidden(false)
+                self.table.mj_footer.isHidden=false
             }
             if self.goodArr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -810,18 +811,18 @@ extension GoodCategory3ViewController{
                 
             }
             //关闭刷新状态
-            self.table.headerEndRefreshing()
+            self.table.mj_header.endRefreshing()
             //关闭加载状态
-            self.table.footerEndRefreshing()
+            self.table.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
             self.table.reloadData()
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -894,6 +895,6 @@ extension GoodCategory3ViewController:DOPDropDownMenuDataSource,DOPDropDownMenuD
             }
         }
         self.table.reloadData()
-        self.table.headerBeginRefreshing()
+        self.table.mj_header.beginRefreshing()
     }
 }

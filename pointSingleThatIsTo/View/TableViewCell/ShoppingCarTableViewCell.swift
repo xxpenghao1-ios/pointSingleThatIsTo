@@ -128,7 +128,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
         btnSelectImg=UIButton(frame:CGRect(x: 15,y: (120-25)/2,width: 25,height: 25));
         btnSelectImg.setImage(selectImg, for:UIControlState())
         btnSelectImg.setImage(selectImgSelected, for:.selected);
-        btnSelectImg.addTarget(self, action:"selectImgSwitch:", for: UIControlEvents.touchUpInside);
+        btnSelectImg.addTarget(self, action:#selector(selectImgSwitch), for: UIControlEvents.touchUpInside);
         self.contentView.addSubview(btnSelectImg);
         
         
@@ -189,7 +189,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
         btnReductionCount.setTitle("-", for:UIControlState());
         btnReductionCount.titleLabel!.font=UIFont.boldSystemFont(ofSize: 22)
         btnReductionCount.setTitleColor(UIColor(red:204/255, green:204/255, blue:204/255, alpha: 1), for: UIControlState())
-        btnReductionCount.addTarget(self, action:"reductionCount:", for: UIControlEvents.touchUpInside);
+        btnReductionCount.addTarget(self, action:#selector(reductionCount), for: UIControlEvents.touchUpInside);
         btnReductionCount.setTitleColor(UIColor.white, for: UIControlState.highlighted)
         btnReductionCount.backgroundColor=UIColor.white
         countView.addSubview(btnReductionCount);
@@ -211,7 +211,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
         btnAddCount.titleLabel!.font=UIFont.systemFont(ofSize: 22)
         btnAddCount.setTitleColor(UIColor(red:204/255, green:204/255, blue:204/255, alpha: 1), for: UIControlState())
         btnAddCount.setTitleColor(UIColor.white, for: UIControlState.highlighted)
-        btnAddCount.addTarget(self, action:"addCount:", for: UIControlEvents.touchUpInside);
+        btnAddCount.addTarget(self, action:#selector(addCount), for: UIControlEvents.touchUpInside);
         countView.addSubview(btnAddCount);
         
         self.contentView.addSubview(countView);
@@ -222,7 +222,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
      
      - parameter sender: UIButton
      */
-    func reductionCount(_ sender:UIButton){
+    @objc func reductionCount(_ sender:UIButton){
         if good!.carNumber > good!.miniCount{//购物车数量大于1的时候 可以进行减少操作
             good!.carNumber!-=good!.goodsBaseCount!
             lblCountLeb.text="\(good!.carNumber!)";
@@ -240,7 +240,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
      
      - parameter sender: UIButton
      */
-    func addCount(_ sender:UIButton){
+    @objc func addCount(_ sender:UIButton){
         if good!.flag == 1 || good!.flag == 3{//如果是特价商品 或者促销商品
             if good!.stock != -1{//特价库存是否充足
                 if good!.eachCount > good!.stock{//如果特价限定数量 大于 库存数量
@@ -331,7 +331,7 @@ class ShoppingCarTableViewCell:UITableViewCell {
      
      - parameter sender:UIButton
      */
-    func selectImgSwitch(_ sender:UIButton){
+    @objc func selectImgSwitch(_ sender:UIButton){
         
         if sender.isSelected == true{//如果是选中状态 切换
             //设置按钮状态 为未选中

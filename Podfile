@@ -12,11 +12,13 @@ target ‘pointSingleThatIsTo’ do
     pod 'SVProgressHUD'    #菊花动画
 #    pod 'XCGLogger' #日志管理类库
     pod 'RealReachability' #实时监测网络
-    pod 'BaiduMapKit' #百度地图SDK
+#    pod 'BaiduMapKit' #百度地图SDK
     pod 'Result'
     pod 'EAIntroView'#引导页
     pod 'Moya' #对Alamofire的封装
     pod 'BaiduMobStat'
     pod 'SwiftyJSON'
+    pod 'MJRefresh' #下拉刷新
+    pod 'JPush' #极光推送
 end
 

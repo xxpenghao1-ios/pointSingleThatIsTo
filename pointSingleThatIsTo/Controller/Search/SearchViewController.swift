@@ -99,18 +99,18 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
         outSearchArr=search.object(forKey: "search") as? NSArray;
         
         //搜索框
-        searchBarControl = UISearchBar(frame: CGRect(x: 0,y: 64,width: boundsWidth-50,height: 45))
+        searchBarControl = UISearchBar(frame: CGRect(x: 0,y: navHeight,width: boundsWidth-50,height:45))
         searchBarControl!.delegate = self;
         searchBarControl!.barStyle = .default
         searchBarControl!.placeholder = "请输入商品类型"
         self.view.addSubview(searchBarControl!);
         
         //搜索按钮
-        btnSearch=UIButton(frame:CGRect(x: boundsWidth-50,y: 64,width: 50,height: 45));
+        btnSearch=UIButton(frame:CGRect(x: boundsWidth-50,y: navHeight,width: 50,height: 45));
         btnSearch!.setTitle("搜索", for:UIControlState());
         btnSearch!.setTitleColor(UIColor.applicationMainColor(), for:UIControlState());
         btnSearch!.backgroundColor=UIColor(red:200/255, green:199/255, blue:205/255, alpha:1.0);
-        btnSearch!.addTarget(self, action:"searchGood:", for: UIControlEvents.touchUpInside);
+        btnSearch!.addTarget(self, action:#selector(searchGood), for: UIControlEvents.touchUpInside);
         btnSearch!.titleLabel!.font=UIFont.systemFont(ofSize: 14);
         self.view.addSubview(btnSearch!)
         
@@ -130,7 +130,7 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
         btnRemoveSearchRecords=UIButton(frame:CGRect(x: 0,y: borderView.frame.maxY,width: boundsWidth,height: 50));
         btnRemoveSearchRecords!.setTitle("清除历史记录", for:UIControlState());
         btnRemoveSearchRecords!.setTitleColor(UIColor.textColor(), for: UIControlState());
-        btnRemoveSearchRecords!.addTarget(self, action:"removeSearchRecords:", for:UIControlEvents.touchUpInside);
+        btnRemoveSearchRecords!.addTarget(self, action:#selector(removeSearchRecords), for:UIControlEvents.touchUpInside);
         btnRemoveSearchRecords!.titleLabel!.font=UIFont.systemFont(ofSize: 15);
         self.view.addSubview(btnRemoveSearchRecords!);
         
@@ -140,7 +140,7 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
         self.view.addSubview(btnRemoveSearchRecordsborderView!);
         
         //搜索记录table
-        searchRecordTableView=UITableView(frame:CGRect(x: 0,y: btnRemoveSearchRecords!.frame.maxY+0.5,width: boundsWidth,height: boundsHeight-(btnRemoveSearchRecords!.frame.maxY+0.5)));
+        searchRecordTableView=UITableView(frame:CGRect(x: 0,y: btnRemoveSearchRecords!.frame.maxY+0.5,width: boundsWidth,height: boundsHeight-(btnRemoveSearchRecords!.frame.maxY+0.5)-bottomSafetyDistanceHeight));
         searchRecordTableView!.dataSource=self;
         searchRecordTableView!.delegate=self;
         //移除空单元格
@@ -162,7 +162,7 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
      
      - parameter sender:UIButton
      */
-    func removeSearchRecords(_ sender:UIButton!){
+    @objc func removeSearchRecords(_ sender:UIButton!){
         
         //先清除缓存中的数据
         search.removeObject(forKey: "search");
@@ -228,7 +228,7 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
         }
     }
     //点击搜索按钮
-    func searchGood(_ sender:UIButton){
+    @objc func searchGood(_ sender:UIButton){
         //创建2个数组互转  是因为缓存里面不能保存NSMutableArray(可变)类型的数组
         
         //保存搜索记录arr

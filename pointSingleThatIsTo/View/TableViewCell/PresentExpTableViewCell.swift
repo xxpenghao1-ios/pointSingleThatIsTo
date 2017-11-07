@@ -47,7 +47,7 @@ class PresentExpTableViewCell: UITableViewCell {
         btnExchange.backgroundColor=UIColor.applicationMainColor()
         btnExchange.titleLabel!.textColor=UIColor.white
         btnExchange.layer.cornerRadius=15
-        btnExchange.addTarget(self, action:Selector("submitExchangeInfo:"), for: UIControlEvents.touchUpInside)
+        btnExchange.addTarget(self, action:#selector(submitExchangeInfo), for: UIControlEvents.touchUpInside)
         //去掉选中背景
         self.selectionStyle=UITableViewCellSelectionStyle.none;
         // Initialization code
@@ -94,7 +94,7 @@ extension PresentExpTableViewCell{
      
      - parameter sender: UIButton
      */
-    func submitExchangeInfo(_ sender:UIButton){
+    @objc func submitExchangeInfo(_ sender:UIButton){
         delegate?.httpExchangeInfo(cellEntity!,index:index!)
     }
 }

@@ -19,12 +19,17 @@
 		63CC4FDC1F580D7300D0F994 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CC4FDB1F580D7300D0F994 /* libstdc++.tbd */; };
 		63D0633C1F3C402300FE515E /* VouchersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D0633B1F3C402300FE515E /* VouchersViewController.swift */; };
 		63D0633E1F3C4BBB00FE515E /* VouchersEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D0633D1F3C4BBB00FE515E /* VouchersEntity.swift */; };
+		63D1E8ED1FB037EC006F705B /* UITextView+Placeholder.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D1E8EB1FB037EC006F705B /* UITextView+Placeholder.m */; };
 		63D720891E7F894800424993 /* SpecialAndPromotionsEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D720881E7F894800424993 /* SpecialAndPromotionsEntity.swift */; };
 		63D8114B1F54F6970027F4C6 /* SignListTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D8114A1F54F6970027F4C6 /* SignListTableCell.swift */; };
 		63E99A211E83BA9600A6C018 /* BrandCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E99A201E83BA9600A6C018 /* BrandCollectionCell.swift */; };
 		63F360E81EEB729400F72A0D /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F360E71EEB729400F72A0D /* BaseCollectionViewCell.swift */; };
 		63F360EA1EEB78F500F72A0D /* PersonalCenterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F360E91EEB78F500F72A0D /* PersonalCenterCollectionViewCell.swift */; };
 		63F360EC1EEB93B700F72A0D /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F360EB1EEB93B700F72A0D /* SettingsViewController.swift */; };
+		63F5F2B31FB13C96000C51E8 /* PriceComputationsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F5F2B21FB13C96000C51E8 /* PriceComputationsUtil.swift */; };
+		63F5F2B51FB17F7E000C51E8 /* RegisterValidationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F5F2B41FB17F7E000C51E8 /* RegisterValidationViewController.swift */; };
+		63F5F2B81FB18566000C51E8 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63F5F2B71FB1855D000C51E8 /* UserNotifications.framework */; };
+		63F5F2BA1FB18572000C51E8 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 63F5F2B91FB18572000C51E8 /* libresolv.tbd */; };
 		8F4E98D339F955D44581EE5C /* Pods_pointSingleThatIsTo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E8C477E58EC698C1BBDE19F /* Pods_pointSingleThatIsTo.framework */; };
 		EF1B4F5D1D813EA9008BD770 /* FeedbackOnProblemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1B4F5C1D813EA9008BD770 /* FeedbackOnProblemsViewController.swift */; };
 		EF2A300F1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2A300D1D3DD82B006DCE92 /* IntegralRecordTableViewCell.swift */; };
@@ -67,7 +72,6 @@
 		EF455F721D33847500E9539F /* UnDeliverGoodsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455E9E1D33847500E9539F /* UnDeliverGoodsViewController.swift */; };
 		EF455F731D33847500E9539F /* SweepOutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455E9F1D33847500E9539F /* SweepOutViewController.swift */; };
 		EF455F741D33847500E9539F /* RegisterMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455EA11D33847500E9539F /* RegisterMember.swift */; };
-		EF455F751D33847500E9539F /* RegisterValidationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455EA21D33847500E9539F /* RegisterValidationViewController.swift */; };
 		EF455F761D33847500E9539F /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455EA31D33847500E9539F /* RegisterViewController.swift */; };
 		EF455F771D33847500E9539F /* SalesmanLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455EA51D33847500E9539F /* SalesmanLoginViewController.swift */; };
 		EF455F781D33847500E9539F /* SweepersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455EA61D33847500E9539F /* SweepersViewController.swift */; };
@@ -100,7 +104,6 @@
 		EF455F931D33847500E9539F /* AddShoppingCartAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455ECE1D33847500E9539F /* AddShoppingCartAnimation.swift */; };
 		EF455F941D33847500E9539F /* PublicUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455ECF1D33847500E9539F /* PublicUtility.swift */; };
 		EF455F951D33847500E9539F /* ToDecimalNumberTwoFloat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455ED11D33847500E9539F /* ToDecimalNumberTwoFloat.swift */; };
-		EF455F961D33847500E9539F /* UITextView+Placeholder.m in Sources */ = {isa = PBXBuildFile; fileRef = EF455ED41D33847500E9539F /* UITextView+Placeholder.m */; };
 		EF455F971D33847500E9539F /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455ED61D33847500E9539F /* BaseViewController.swift */; };
 		EF455F981D33847500E9539F /* V2LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455ED71D33847500E9539F /* V2LoadingView.swift */; };
 		EF455F991D33847500E9539F /* CBAutoScrollLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = EF455EDB1D33847500E9539F /* CBAutoScrollLabel.m */; };
@@ -108,15 +111,7 @@
 		EF455FA31D33847500E9539F /* DOPDropDownMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = EF455EF21D33847500E9539F /* DOPDropDownMenu.m */; };
 		EF455FA41D33847500E9539F /* HYScratchCardView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF455EF51D33847500E9539F /* HYScratchCardView.m */; };
 		EF455FA51D33847500E9539F /* UINavigationBar+Awesome.m in Sources */ = {isa = PBXBuildFile; fileRef = EF455EF81D33847500E9539F /* UINavigationBar+Awesome.m */; };
-		EF455FA61D33847500E9539F /* jpush-ios-2.1.7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF455EFB1D33847500E9539F /* jpush-ios-2.1.7.a */; };
 		EF455FA71D33847500E9539F /* PHJPushHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455EFD1D33847500E9539F /* PHJPushHelper.swift */; };
-		EF455FA81D33847500E9539F /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF455EFF1D33847500E9539F /* arrow@2x.png */; };
-		EF455FA91D33847500E9539F /* Refresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F001D33847500E9539F /* Refresh.swift */; };
-		EF455FAA1D33847500E9539F /* RefreshBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F011D33847500E9539F /* RefreshBaseView.swift */; };
-		EF455FAB1D33847500E9539F /* RefreshConst.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F021D33847500E9539F /* RefreshConst.swift */; };
-		EF455FAC1D33847500E9539F /* RefreshFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F031D33847500E9539F /* RefreshFooterView.swift */; };
-		EF455FAD1D33847500E9539F /* RefreshHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F041D33847500E9539F /* RefreshHeaderView.swift */; };
-		EF455FAE1D33847500E9539F /* UIScrollView+Refresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F051D33847500E9539F /* UIScrollView+Refresh.swift */; };
 		EF455FAF1D33847500E9539F /* SKScNavViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F081D33847500E9539F /* SKScNavViewController.swift */; };
 		EF455FB01D33847500E9539F /* arrow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF455F0A1D33847500E9539F /* arrow@3x.png */; };
 		EF455FB11D33847500E9539F /* SKMacros.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF455F0B1D33847500E9539F /* SKMacros.swift */; };
@@ -164,7 +159,7 @@
 		EF7082D61DE80F4B00C47AC4 /* LetterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7082D51DE80F4B00C47AC4 /* LetterViewController.swift */; };
 		EFA34D6A1D3DBCF1007284C8 /* IntegralRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA34D691D3DBCF1007284C8 /* IntegralRecordViewController.swift */; };
 		EFADF3AB1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFADF3AA1D45AFA500B9882A /* IntegralGoodExchangeEntity.swift */; };
-		EFD7D0031C7BFC6800DA8C1B /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		EFD7D0031C7BFC6800DA8C1B /* (null) in Sources */ = {isa = PBXBuildFile; };
 		EFE0B53E1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE0B53C1D3CA6BD00E3C5AA /* PresentExpTableViewCell.swift */; };
 		EFE0B53F1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFE0B53D1D3CA6BD00E3C5AA /* PresentExpTableViewCell.xib */; };
 		EFE0B5411D3CBA0B00E3C5AA /* MemberIntegralEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE0B5401D3CBA0B00E3C5AA /* MemberIntegralEntity.swift */; };
@@ -225,12 +220,19 @@
 		63CC4FDB1F580D7300D0F994 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		63D0633B1F3C402300FE515E /* VouchersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VouchersViewController.swift; sourceTree = "<group>"; };
 		63D0633D1F3C4BBB00FE515E /* VouchersEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VouchersEntity.swift; sourceTree = "<group>"; };
+		63D1E8EB1FB037EC006F705B /* UITextView+Placeholder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextView+Placeholder.m"; sourceTree = "<group>"; };
+		63D1E8EC1FB037EC006F705B /* UITextView+Placeholder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextView+Placeholder.h"; sourceTree = "<group>"; };
 		63D720881E7F894800424993 /* SpecialAndPromotionsEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecialAndPromotionsEntity.swift; sourceTree = "<group>"; };
 		63D8114A1F54F6970027F4C6 /* SignListTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignListTableCell.swift; sourceTree = "<group>"; };
 		63E99A201E83BA9600A6C018 /* BrandCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrandCollectionCell.swift; sourceTree = "<group>"; };
 		63F360E71EEB729400F72A0D /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		63F360E91EEB78F500F72A0D /* PersonalCenterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonalCenterCollectionViewCell.swift; sourceTree = "<group>"; };
 		63F360EB1EEB93B700F72A0D /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		63F5F2B21FB13C96000C51E8 /* PriceComputationsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceComputationsUtil.swift; sourceTree = "<group>"; };
+		63F5F2B41FB17F7E000C51E8 /* RegisterValidationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterValidationViewController.swift; sourceTree = "<group>"; };
+		63F5F2B61FB184EE000C51E8 /* pointSingleThatIsTo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = pointSingleThatIsTo.entitlements; sourceTree = "<group>"; };
+		63F5F2B71FB1855D000C51E8 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		63F5F2B91FB18572000C51E8 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		7ABD49AC08B6BDABAE840F39 /* Pods-pointSingleThatIsTo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pointSingleThatIsTo.release.xcconfig"; path = "Pods/Target Support Files/Pods-pointSingleThatIsTo/Pods-pointSingleThatIsTo.release.xcconfig"; sourceTree = "<group>"; };
 		9373174AB77EE10B1A8034C4 /* Pods-pointSingleThatIsTo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pointSingleThatIsTo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-pointSingleThatIsTo/Pods-pointSingleThatIsTo.debug.xcconfig"; sourceTree = "<group>"; };
 		EF1B4F5C1D813EA9008BD770 /* FeedbackOnProblemsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedbackOnProblemsViewController.swift; sourceTree = "<group>"; };
@@ -274,7 +276,6 @@
 		EF455E9E1D33847500E9539F /* UnDeliverGoodsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnDeliverGoodsViewController.swift; sourceTree = "<group>"; };
 		EF455E9F1D33847500E9539F /* SweepOutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SweepOutViewController.swift; sourceTree = "<group>"; };
 		EF455EA11D33847500E9539F /* RegisterMember.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterMember.swift; sourceTree = "<group>"; };
-		EF455EA21D33847500E9539F /* RegisterValidationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterValidationViewController.swift; sourceTree = "<group>"; };
 		EF455EA31D33847500E9539F /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		EF455EA51D33847500E9539F /* SalesmanLoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SalesmanLoginViewController.swift; sourceTree = "<group>"; };
 		EF455EA61D33847500E9539F /* SweepersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SweepersViewController.swift; sourceTree = "<group>"; };
@@ -307,8 +308,6 @@
 		EF455ECE1D33847500E9539F /* AddShoppingCartAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddShoppingCartAnimation.swift; sourceTree = "<group>"; };
 		EF455ECF1D33847500E9539F /* PublicUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicUtility.swift; sourceTree = "<group>"; };
 		EF455ED11D33847500E9539F /* ToDecimalNumberTwoFloat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToDecimalNumberTwoFloat.swift; sourceTree = "<group>"; };
-		EF455ED31D33847500E9539F /* UITextView+Placeholder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextView+Placeholder.h"; sourceTree = "<group>"; };
-		EF455ED41D33847500E9539F /* UITextView+Placeholder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextView+Placeholder.m"; sourceTree = "<group>"; };
 		EF455ED61D33847500E9539F /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		EF455ED71D33847500E9539F /* V2LoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = V2LoadingView.swift; sourceTree = "<group>"; };
 		EF455EDA1D33847500E9539F /* CBAutoScrollLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBAutoScrollLabel.h; sourceTree = "<group>"; };
@@ -320,16 +319,7 @@
 		EF455EF51D33847500E9539F /* HYScratchCardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYScratchCardView.m; sourceTree = "<group>"; };
 		EF455EF71D33847500E9539F /* UINavigationBar+Awesome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationBar+Awesome.h"; sourceTree = "<group>"; };
 		EF455EF81D33847500E9539F /* UINavigationBar+Awesome.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationBar+Awesome.m"; sourceTree = "<group>"; };
-		EF455EFB1D33847500E9539F /* jpush-ios-2.1.7.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "jpush-ios-2.1.7.a"; sourceTree = "<group>"; };
-		EF455EFC1D33847500E9539F /* JPUSHService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPUSHService.h; sourceTree = "<group>"; };
 		EF455EFD1D33847500E9539F /* PHJPushHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PHJPushHelper.swift; sourceTree = "<group>"; };
-		EF455EFF1D33847500E9539F /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
-		EF455F001D33847500E9539F /* Refresh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Refresh.swift; sourceTree = "<group>"; };
-		EF455F011D33847500E9539F /* RefreshBaseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshBaseView.swift; sourceTree = "<group>"; };
-		EF455F021D33847500E9539F /* RefreshConst.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshConst.swift; sourceTree = "<group>"; };
-		EF455F031D33847500E9539F /* RefreshFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshFooterView.swift; sourceTree = "<group>"; };
-		EF455F041D33847500E9539F /* RefreshHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshHeaderView.swift; sourceTree = "<group>"; };
-		EF455F051D33847500E9539F /* UIScrollView+Refresh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Refresh.swift"; sourceTree = "<group>"; };
 		EF455F081D33847500E9539F /* SKScNavViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKScNavViewController.swift; sourceTree = "<group>"; };
 		EF455F0A1D33847500E9539F /* arrow@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@3x.png"; sourceTree = "<group>"; };
 		EF455F0B1D33847500E9539F /* SKMacros.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKMacros.swift; sourceTree = "<group>"; };
@@ -419,24 +409,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63F5F2B81FB18566000C51E8 /* UserNotifications.framework in Frameworks */,
+				EFE459811C47A8B000B8B24C /* libz.tbd in Frameworks */,
+				EFE4597F1C47A8A300B8B24C /* Security.framework in Frameworks */,
+				63CC4FD61F580D5700D0F994 /* UIKit.framework in Frameworks */,
+				63CC4FD81F580D6000D0F994 /* Foundation.framework in Frameworks */,
+				EFE4597D1C47A89300B8B24C /* CoreGraphics.framework in Frameworks */,
+				EFE4597B1C47A88B00B8B24C /* SystemConfiguration.framework in Frameworks */,
+				63F5F2BA1FB18572000C51E8 /* libresolv.tbd in Frameworks */,
+				EFE459791C47A88200B8B24C /* CoreTelephony.framework in Frameworks */,
+				EFE459771C47A87900B8B24C /* CoreFoundation.framework in Frameworks */,
+				EFE459751C47A87100B8B24C /* CFNetwork.framework in Frameworks */,
 				63CC4FDC1F580D7300D0F994 /* libstdc++.tbd in Frameworks */,
 				63CC4FDA1F580D6900D0F994 /* libz.1.2.5.tbd in Frameworks */,
-				63CC4FD81F580D6000D0F994 /* Foundation.framework in Frameworks */,
-				63CC4FD61F580D5700D0F994 /* UIKit.framework in Frameworks */,
-				EFE4597D1C47A89300B8B24C /* CoreGraphics.framework in Frameworks */,
-				EFE459791C47A88200B8B24C /* CoreTelephony.framework in Frameworks */,
-				EFE4597B1C47A88B00B8B24C /* SystemConfiguration.framework in Frameworks */,
 				EFE290381D21062400FC99CC /* CoreLocation.framework in Frameworks */,
-				EFE4597F1C47A8A300B8B24C /* Security.framework in Frameworks */,
 				63CC4FD41F580D2000D0F994 /* JavaScriptCore.framework in Frameworks */,
 				EFE2903F1D21068200FC99CC /* libstdc++.6.0.9.tbd in Frameworks */,
 				EFE2903D1D21066400FC99CC /* libsqlite3.0.tbd in Frameworks */,
 				EFE2903B1D21063A00FC99CC /* OpenGLES.framework in Frameworks */,
-				EF455FA61D33847500E9539F /* jpush-ios-2.1.7.a in Frameworks */,
 				EFE290391D21062F00FC99CC /* QuartzCore.framework in Frameworks */,
-				EFE459811C47A8B000B8B24C /* libz.tbd in Frameworks */,
-				EFE459771C47A87900B8B24C /* CoreFoundation.framework in Frameworks */,
-				EFE459751C47A87100B8B24C /* CFNetwork.framework in Frameworks */,
 				8F4E98D339F955D44581EE5C /* Pods_pointSingleThatIsTo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -461,6 +452,8 @@
 		4939929DC8317437950FA354 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63F5F2B91FB18572000C51E8 /* libresolv.tbd */,
+				63F5F2B71FB1855D000C51E8 /* UserNotifications.framework */,
 				63CC4FDB1F580D7300D0F994 /* libstdc++.tbd */,
 				63CC4FD91F580D6900D0F994 /* libz.1.2.5.tbd */,
 				63CC4FD71F580D6000D0F994 /* Foundation.framework */,
@@ -653,8 +646,8 @@
 		EF455EA01D33847500E9539F /* Register */ = {
 			isa = PBXGroup;
 			children = (
+				63F5F2B41FB17F7E000C51E8 /* RegisterValidationViewController.swift */,
 				EF455EA11D33847500E9539F /* RegisterMember.swift */,
-				EF455EA21D33847500E9539F /* RegisterValidationViewController.swift */,
 				EF455EA31D33847500E9539F /* RegisterViewController.swift */,
 			);
 			path = Register;
@@ -806,6 +799,7 @@
 			children = (
 				EF455ECE1D33847500E9539F /* AddShoppingCartAnimation.swift */,
 				EF455ECF1D33847500E9539F /* PublicUtility.swift */,
+				63F5F2B21FB13C96000C51E8 /* PriceComputationsUtil.swift */,
 			);
 			path = PublicUtility;
 			sourceTree = "<group>";
@@ -821,8 +815,8 @@
 		EF455ED21D33847500E9539F /* UITextView+Placeholder */ = {
 			isa = PBXGroup;
 			children = (
-				EF455ED31D33847500E9539F /* UITextView+Placeholder.h */,
-				EF455ED41D33847500E9539F /* UITextView+Placeholder.m */,
+				63D1E8EC1FB037EC006F705B /* UITextView+Placeholder.h */,
+				63D1E8EB1FB037EC006F705B /* UITextView+Placeholder.m */,
 			);
 			path = "UITextView+Placeholder";
 			sourceTree = "<group>";
@@ -845,7 +839,6 @@
 				EF455EF31D33847500E9539F /* HYScratchCardView */,
 				EF455EF61D33847500E9539F /* LTNavigationBar */,
 				EF455EF91D33847500E9539F /* PHFramework */,
-				EF455EFE1D33847500E9539F /* Refresh */,
 				EF455F061D33847500E9539F /* SKScNavBarController */,
 				EF455F171D33847500E9539F /* UIButton+Badge */,
 			);
@@ -907,25 +900,9 @@
 		EF455EFA1D33847500E9539F /* Jpush */ = {
 			isa = PBXGroup;
 			children = (
-				EF455EFB1D33847500E9539F /* jpush-ios-2.1.7.a */,
-				EF455EFC1D33847500E9539F /* JPUSHService.h */,
 				EF455EFD1D33847500E9539F /* PHJPushHelper.swift */,
 			);
 			path = Jpush;
-			sourceTree = "<group>";
-		};
-		EF455EFE1D33847500E9539F /* Refresh */ = {
-			isa = PBXGroup;
-			children = (
-				EF455EFF1D33847500E9539F /* arrow@2x.png */,
-				EF455F001D33847500E9539F /* Refresh.swift */,
-				EF455F011D33847500E9539F /* RefreshBaseView.swift */,
-				EF455F021D33847500E9539F /* RefreshConst.swift */,
-				EF455F031D33847500E9539F /* RefreshFooterView.swift */,
-				EF455F041D33847500E9539F /* RefreshHeaderView.swift */,
-				EF455F051D33847500E9539F /* UIScrollView+Refresh.swift */,
-			);
-			path = Refresh;
 			sourceTree = "<group>";
 		};
 		EF455F061D33847500E9539F /* SKScNavBarController */ = {
@@ -1166,6 +1143,7 @@
 		EFE4593D1C477EE900B8B24C /* pointSingleThatIsTo */ = {
 			isa = PBXGroup;
 			children = (
+				63F5F2B61FB184EE000C51E8 /* pointSingleThatIsTo.entitlements */,
 				EF455E6D1D33847500E9539F /* Controller */,
 				EF455EB31D33847500E9539F /* Entity */,
 				EF455EC11D33847500E9539F /* Utility */,
@@ -1281,12 +1259,13 @@
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 5A79UN6C3M;
 						LastSwiftMigration = 0830;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
 							com.apple.Push = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};
@@ -1335,7 +1314,6 @@
 				EF455FDA1D33847500E9539F /* ShippingAddressTableViewCell.xib in Resources */,
 				EF455FDE1D33847500E9539F /* StockOrderManageTableViewCell.xib in Resources */,
 				EF455FCF1D33847500E9539F /* GoodCategory3TableViewCell.xib in Resources */,
-				EF455FA81D33847500E9539F /* arrow@2x.png in Resources */,
 				EF455FC61D33847500E9539F /* checked@2x.png in Resources */,
 				EF455FB01D33847500E9539F /* arrow@3x.png in Resources */,
 				EFE459491C477EE900B8B24C /* LaunchScreen.storyboard in Resources */,
@@ -1378,6 +1356,7 @@
 				"${BUILT_PRODUCTS_DIR}/EAIntroView/EAIntroView.framework",
 				"${BUILT_PRODUCTS_DIR}/EARestrictedScrollView/EARestrictedScrollView.framework",
 				"${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
 				"${BUILT_PRODUCTS_DIR}/Moya/Moya.framework",
 				"${BUILT_PRODUCTS_DIR}/ObjectMapper/ObjectMapper.framework",
 				"${BUILT_PRODUCTS_DIR}/RealReachability/RealReachability.framework",
@@ -1394,6 +1373,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EAIntroView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EARestrictedScrollView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManagerSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Moya.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ObjectMapper.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealReachability.framework",
@@ -1459,7 +1439,6 @@
 				EF455FA21D33847500E9539F /* IJReachability.swift in Sources */,
 				EF455F7B1D33847500E9539F /* UpdateAndAddShippingAddressViewController.swift in Sources */,
 				EF455F6E1D33847500E9539F /* CompletedStockOrderViewController.swift in Sources */,
-				EF455F751D33847500E9539F /* RegisterValidationViewController.swift in Sources */,
 				EF455F8A1D33847500E9539F /* OrderListEntity.swift in Sources */,
 				EF455FD51D33847500E9539F /* IRecommendViewControllerCell.swift in Sources */,
 				EF455F881D33847500E9539F /* IRecommendEntity.swift in Sources */,
@@ -1470,7 +1449,6 @@
 				63E99A211E83BA9600A6C018 /* BrandCollectionCell.swift in Sources */,
 				EFE0B5431D3CBCA200E3C5AA /* IntegralExchangeEntity.swift in Sources */,
 				EF455FCE1D33847500E9539F /* GoodCategory3TableViewCell.swift in Sources */,
-				EF455FAD1D33847500E9539F /* RefreshHeaderView.swift in Sources */,
 				EF455FBE1D33847500E9539F /* SalePriceCollectionViewCell.swift in Sources */,
 				63D720891E7F894800424993 /* SpecialAndPromotionsEntity.swift in Sources */,
 				EF455F5C1D33847500E9539F /* GoodDetailPromotionsDetailView.swift in Sources */,
@@ -1488,7 +1466,6 @@
 				EF455F601D33847500E9539F /* GoodSpecialPriceUpriceViewController.swift in Sources */,
 				EF455F791D33847500E9539F /* SearchViewController.swift in Sources */,
 				EF455FDD1D33847500E9539F /* StockOrderManageTableViewCell.swift in Sources */,
-				EF455FAE1D33847500E9539F /* UIScrollView+Refresh.swift in Sources */,
 				EF455FDF1D33847500E9539F /* TabBarViewController.swift in Sources */,
 				EF455F6A1D33847500E9539F /* PersonalCenterViewContorller.swift in Sources */,
 				63F360E81EEB729400F72A0D /* BaseCollectionViewCell.swift in Sources */,
@@ -1503,15 +1480,16 @@
 				EF455F901D33847500E9539F /* EntityTurnJson.swift in Sources */,
 				EF455F831D33847500E9539F /* CanBeTicketViewControllerEntity.swift in Sources */,
 				63D0633E1F3C4BBB00FE515E /* VouchersEntity.swift in Sources */,
+				63D1E8ED1FB037EC006F705B /* UITextView+Placeholder.m in Sources */,
+				63F5F2B51FB17F7E000C51E8 /* RegisterValidationViewController.swift in Sources */,
 				EFE459411C477EE900B8B24C /* ViewController.swift in Sources */,
-				EF455F961D33847500E9539F /* UITextView+Placeholder.m in Sources */,
 				EF455FC81D33847500E9539F /* ShowAddressViewController.swift in Sources */,
 				EF455F7F1D33847500E9539F /* ShoppingCarViewContorller.swift in Sources */,
 				EF455F721D33847500E9539F /* UnDeliverGoodsViewController.swift in Sources */,
 				EF455F851D33847500E9539F /* GoodDetailEntity.swift in Sources */,
 				EF455FBA1D33847500E9539F /* UIButton+Badge.m in Sources */,
 				EF455F6F1D33847500E9539F /* DeliverGoodsedViewController.swift in Sources */,
-				EFD7D0031C7BFC6800DA8C1B /* BuildFile in Sources */,
+				EFD7D0031C7BFC6800DA8C1B /* (null) in Sources */,
 				EF455FA71D33847500E9539F /* PHJPushHelper.swift in Sources */,
 				63F360EA1EEB78F500F72A0D /* PersonalCenterCollectionViewCell.swift in Sources */,
 				EF455F571D33847500E9539F /* RobbedListViewController.swift in Sources */,
@@ -1524,7 +1502,6 @@
 				EF455F5A1D33847500E9539F /* PriceViewController.swift in Sources */,
 				EFEFA5F21D363CD50028A518 /* PresentExpViewController.swift in Sources */,
 				EF455F771D33847500E9539F /* SalesmanLoginViewController.swift in Sources */,
-				EF455FAB1D33847500E9539F /* RefreshConst.swift in Sources */,
 				EF455F8F1D33847500E9539F /* ShoppingCarDB.swift in Sources */,
 				EF455F951D33847500E9539F /* ToDecimalNumberTwoFloat.swift in Sources */,
 				EF455F761D33847500E9539F /* RegisterViewController.swift in Sources */,
@@ -1532,6 +1509,7 @@
 				EF455F8B1D33847500E9539F /* PreferentialAndGoodsEntity.swift in Sources */,
 				EF455FBF1D33847500E9539F /* ACircleView.swift in Sources */,
 				EFEBFE921D3F7BE500E113E3 /* SubstationEntity.swift in Sources */,
+				63F5F2B31FB13C96000C51E8 /* PriceComputationsUtil.swift in Sources */,
 				EF455FDB1D33847500E9539F /* ShoppingCarTableViewCell.swift in Sources */,
 				EF455FDC1D33847500E9539F /* StockOrderDetailsCell.swift in Sources */,
 				EF455FA51D33847500E9539F /* UINavigationBar+Awesome.m in Sources */,
@@ -1544,7 +1522,6 @@
 				EF455F981D33847500E9539F /* V2LoadingView.swift in Sources */,
 				EF455F631D33847500E9539F /* LoginViewController.swift in Sources */,
 				EF455F7A1D33847500E9539F /* ShippingAddressViewController.swift in Sources */,
-				EF455FA91D33847500E9539F /* Refresh.swift in Sources */,
 				EF7082D61DE80F4B00C47AC4 /* LetterViewController.swift in Sources */,
 				EF455F781D33847500E9539F /* SweepersViewController.swift in Sources */,
 				EF455F711D33847500E9539F /* StockOrderManage.swift in Sources */,
@@ -1566,7 +1543,6 @@
 				EFE9BF091D582FEB0003039B /* PHNetWork.swift in Sources */,
 				EF455F701D33847500E9539F /* StockOrderDetailsViewController.swift in Sources */,
 				EF455F7C1D33847500E9539F /* BuyerRemark.swift in Sources */,
-				EF455FAC1D33847500E9539F /* RefreshFooterView.swift in Sources */,
 				EF455F691D33847500E9539F /* MessageCenterViewController.swift in Sources */,
 				EFE4593F1C477EE900B8B24C /* AppDelegate.swift in Sources */,
 				EF455F5E1D33847500E9539F /* GoodSpecialPriceDetailViewController.swift in Sources */,
@@ -1582,7 +1558,6 @@
 				EF455F811D33847500E9539F /* AdMessgInfoEntity.swift in Sources */,
 				EF455FD31D33847500E9539F /* GrabASingleDetailsCell.swift in Sources */,
 				EFED436B1D5967740041B0BE /* ShoppingCarVo.swift in Sources */,
-				EF455FAA1D33847500E9539F /* RefreshBaseView.swift in Sources */,
 				EF455F891D33847500E9539F /* MessageCenterEntity.swift in Sources */,
 				EF455F5B1D33847500E9539F /* SalesViewController.swift in Sources */,
 				EF1B4F5D1D813EA9008BD770 /* FeedbackOnProblemsViewController.swift in Sources */,
@@ -1761,8 +1736,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = pointSingleThatIsTo/pointSingleThatIsTo.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5A79UN6C3M;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1780,9 +1758,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.nmore.phddjdStore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "pointSingleThatIsTo/pointSingleThatIsTo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/** $(PROJECT_DIR)/pointSingleThatIsTo/Vendors/PHFramework/Jpush";
 			};
 			name = Debug;
@@ -1794,8 +1774,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = pointSingleThatIsTo/pointSingleThatIsTo.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5A79UN6C3M;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1813,8 +1796,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.nmore.phddjdStore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "pointSingleThatIsTo/pointSingleThatIsTo-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/** $(PROJECT_DIR)/pointSingleThatIsTo/Vendors/PHFramework/Jpush";
 			};
 			name = Release;

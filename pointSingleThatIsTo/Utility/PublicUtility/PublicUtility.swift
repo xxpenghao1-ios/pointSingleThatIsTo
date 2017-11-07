@@ -61,6 +61,15 @@ let boundsWidth=UIScreen.main.bounds.width
 /// 屏幕高
 let boundsHeight=UIScreen.main.bounds.height
 
+/// 导航栏高度
+let navHeight:CGFloat=boundsHeight==812.0 ? 88 : 64
+
+/// 底部安全距离
+let bottomSafetyDistanceHeight:CGFloat=boundsHeight==812.0 ? 34 : 0
+
+/// tabBar高度
+let tabBarHeight:CGFloat=boundsHeight==812.0 ? 83 : 49
+
 /// 全局缓存
 let userDefaults=UserDefaults.standard
 
@@ -98,6 +107,19 @@ func chineISInitials(_ str:String)->String{
     CFStringTransform(str1, nil, kCFStringTransformStripCombiningMarks, false)
     let str2 = CFStringCreateWithSubstring(nil, str1, CFRangeMake(0, 1))
     return str2! as String
+}
+extension UIImage{
+    /**
+     *  重设图片大小
+     */
+    func reSizeImage(reSize:CGSize)->UIImage {
+        
+        UIGraphicsBeginImageContextWithOptions(reSize,false,UIScreen.main.scale);
+        self.draw(in: CGRect(x: 0, y: 0, width: reSize.width, height: reSize.height))
+        let reSizeImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!;
+        UIGraphicsEndImageContext();
+        return reSizeImage;
+    }
 }
 /**
  递归数据 把数据根据首字母分组
@@ -247,7 +269,7 @@ extension String {
     func IsChinese(_ str:String) ->Bool{
         var flag=false;
         let length=NSString(string: str).length;
-        for i in 0...length{
+        for i in 0..<length{
             let range=NSMakeRange(i,1);
             let subString:NSString=NSString(string: str).substring(with: range) as NSString
             let char=subString.utf8String;
@@ -381,7 +403,55 @@ extension UIAlertController {
     }
 }
 
-
+internal enum OperatorType{
+    //加
+    case addition
+    //减
+    case subtraction
+    //乘
+    case Multiplication
+    //除
+    case division
+}
+class XTYUtil: NSObject {
+    /// 货币计算,向上取整
+    ///
+    /// - Parameters:
+    ///   - multiplierValue: value1
+    ///   - multiplicandValue: value2
+    ///   - position:需要保留的小数点位数
+    /// - Returns:保留好位数的字符串
+    internal class func decimalNumberWithString(multiplierValue:String,multiplicandValue:String,type:OperatorType, position:Int) -> String {
+        
+        let multiplierNumber = NSDecimalNumber.init(string: multiplierValue)
+        let multiplicandNumber = NSDecimalNumber.init(string: multiplicandValue)
+        
+        let roundingBehavior = NSDecimalNumberHandler.init(
+            roundingMode: NSDecimalNumber.RoundingMode.up,
+            scale: Int16(position),
+            raiseOnExactness: false,
+            raiseOnOverflow: false,
+            raiseOnUnderflow: false,
+            raiseOnDivideByZero: false)
+        var product : NSDecimalNumber
+        switch type {
+        case .addition:
+            product = multiplierNumber.adding(multiplicandNumber, withBehavior: roundingBehavior)
+            break
+        case .subtraction:
+            product = multiplierNumber.subtracting(multiplicandNumber, withBehavior: roundingBehavior)
+            break
+        case .Multiplication:
+            product = multiplierNumber.multiplying(by: multiplicandNumber, withBehavior: roundingBehavior)
+            break
+        default:
+            product = multiplierNumber.dividing(by: multiplicandNumber, withBehavior: roundingBehavior)
+            break
+        }
+        return String(format: "%.\(position)f", product.doubleValue)
+    }
+    
+}  
 
 
 

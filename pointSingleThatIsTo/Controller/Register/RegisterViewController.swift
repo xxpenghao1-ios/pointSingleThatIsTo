@@ -55,7 +55,7 @@ class RegisterViewController:UIViewController{
     func uiView(){
         ///提示标签
         lblremind=UILabel()
-        lblremind?.frame=CGRect(x: 0, y: 64, width: boundsWidth, height: 60)
+        lblremind?.frame=CGRect(x: 0, y: navHeight, width: boundsWidth, height: 60)
         lblremind?.textAlignment=NSTextAlignment.center
         lblremind?.backgroundColor=UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
         lblremind?.font=UIFont.systemFont(ofSize: 14)
@@ -82,14 +82,14 @@ class RegisterViewController:UIViewController{
         btnNext?.backgroundColor=UIColor.red
         btnNext?.layer.cornerRadius=20
         btnNext?.setTitle("下一步", for: UIControlState())
-        btnNext?.addTarget(self, action: Selector("clickBtn:"), for: UIControlEvents.touchUpInside)
+        btnNext?.addTarget(self, action: #selector(clickBtn), for: UIControlEvents.touchUpInside)
         self.view.addSubview(btnNext!)
         
         
     }
     
     //点击下一步触发
-    func clickBtn(_ sender:UIButton){
+    @objc func clickBtn(_ sender:UIButton){
         //要求手机号为11位数
         if feildPhone?.text?.characters.count==11{
             //发送请求（手机验证）
@@ -140,8 +140,7 @@ class RegisterViewController:UIViewController{
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //隐藏导航栏
-        self.navigationController?.setNavigationBarHidden(true, animated:true)
+        
     }
 
 

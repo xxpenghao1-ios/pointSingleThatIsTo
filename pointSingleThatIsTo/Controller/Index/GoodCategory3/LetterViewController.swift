@@ -99,10 +99,10 @@ class LetterViewController:AddShoppingCartAnimation,UITableViewDataSource,UITabl
         super.viewDidLoad()
         self.title="首字母"
         self.view.backgroundColor=UIColor.white
-        goodTable=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-64-40), style: UITableViewStyle.plain)
+        goodTable=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-navHeight-40), style: UITableViewStyle.plain)
         goodTable!.delegate=self
         goodTable!.dataSource=self
-        goodTable!.addHeaderWithCallback({//刷新
+        goodTable!.mj_header=MJRefreshNormalHeader(refreshingBlock: {//刷新
             //从第一页开始
             self.currentPage=1
             self.goodArr.removeAllObjects()
@@ -112,7 +112,7 @@ class LetterViewController:AddShoppingCartAnimation,UITableViewDataSource,UITabl
             }
             
         })
-        goodTable!.addFooterWithCallback({//加载更多
+        goodTable!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//加载更多
             //每次页面索引加1
             self.currentPage+=1
             if self.flag == 2{//查询3级分类
@@ -136,7 +136,7 @@ class LetterViewController:AddShoppingCartAnimation,UITableViewDataSource,UITabl
         
         //加载等待视图
         SVProgressHUD.show(withStatus: "数据加载中")
-        goodTable!.headerBeginRefreshing()
+        goodTable!.mj_header.beginRefreshing()
         //加载查询购物车按钮
         buildShoppingCarView()
     }
@@ -147,7 +147,7 @@ class LetterViewController:AddShoppingCartAnimation,UITableViewDataSource,UITabl
         //查看购物车按钮
         selectShoppingCar=UIButton(frame:CGRect(x: boundsWidth-75,y: boundsHeight-70-40-64,width: 60,height: 60));
         let shoppingCarImg=UIImage(named: "char1");
-        selectShoppingCar!.addTarget(self, action:Selector(("pushChoppingView:")), for:UIControlEvents.touchUpInside);
+        selectShoppingCar!.addTarget(self, action:#selector(pushChoppingView), for:UIControlEvents.touchUpInside);
         self.selectShoppingCar?.badgeValue="\(self.badgeCount)"
         //默认隐藏按钮
         selectShoppingCar!.isHidden=true;
@@ -298,7 +298,7 @@ extension LetterViewController{
                 textField.placeholder = "请输入\(cell.goodEntity!.miniCount!)~\(inventory)之间\(cell.goodEntity!.goodsBaseCount!)的倍数"
                 textField.tag=inventory
             }
-            NotificationCenter.default.addObserver(self, selector: Selector(("alertTextFieldDidChange:")), name: NSNotification.Name.UITextFieldTextDidChange, object: textField)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.alertTextFieldDidChange), name: NSNotification.Name.UITextFieldTextDidChange, object: textField)
         }
         //确定
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.default,handler:{ Void in
@@ -315,7 +315,7 @@ extension LetterViewController{
         self.present(alertController, animated: true, completion: nil)
     }
     //检测输入框的字符是否大于库存数量 是解锁确定按钮
-    func alertTextFieldDidChange(_ notification: Notification){
+    @objc func alertTextFieldDidChange(_ notification: Notification){
         let alertController = self.presentedViewController as! UIAlertController?
         if (alertController != nil) {
             let text = (alertController!.textFields?.first)! as UITextField
@@ -362,9 +362,9 @@ extension LetterViewController{
                 self.goodArr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.goodTable?.setFooterHidden(true)
+                self.goodTable?.mj_footer.isHidden=true
             }else{//否则显示
-                self.goodTable?.setFooterHidden(false)
+                self.goodTable?.mj_footer.isHidden=false
             }
             if self.goodArr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -381,18 +381,18 @@ extension LetterViewController{
                 
             }
             //关闭刷新状态
-            self.goodTable?.headerEndRefreshing()
+            self.goodTable?.mj_header.endRefreshing()
             //关闭加载状态
-            self.goodTable?.footerEndRefreshing()
+            self.goodTable?.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
             self.goodTable?.reloadData()
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.goodTable?.headerEndRefreshing()
+                self.goodTable?.mj_header.endRefreshing()
                 //关闭加载状态
-                self.goodTable?.footerEndRefreshing()
+                self.goodTable?.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -426,14 +426,14 @@ extension LetterViewController{
                 self.goodArr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.goodTable?.setFooterHidden(true)
+                self.goodTable?.mj_footer.isHidden=true
             }else{//否则显示
-                self.goodTable?.setFooterHidden(false)
+                self.goodTable?.mj_footer.isHidden=false
             }
             //关闭刷新状态
-            self.goodTable?.headerEndRefreshing()
+            self.goodTable?.mj_header.endRefreshing()
             //关闭加载状态
-            self.goodTable?.footerEndRefreshing()
+            self.goodTable?.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
@@ -448,9 +448,9 @@ extension LetterViewController{
             }
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.goodTable?.headerEndRefreshing()
+                self.goodTable?.mj_header.endRefreshing()
                 //关闭加载状态
-                self.goodTable?.footerEndRefreshing()
+                self.goodTable?.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -467,9 +467,9 @@ extension LetterViewController{
             if(res.result.error != nil){
                 SVProgressHUD.showError(withStatus:res.result.error?.localizedDescription)
                 //关闭刷新状态
-                self.goodTable?.headerEndRefreshing()
+                self.goodTable?.mj_header.endRefreshing()
                 //关闭加载状态
-                self.goodTable?.footerEndRefreshing()
+                self.goodTable?.mj_footer.endRefreshing()
             }
             if(res.result.value != nil){
                 let json=JSON(res.result.value!)
@@ -495,9 +495,9 @@ extension LetterViewController{
                     self.goodArr.add(entity!)
                 }
                 if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.goodTable?.setFooterHidden(true)
+                    self.goodTable?.mj_footer.isHidden=true
                 }else{//否则显示
-                    self.goodTable?.setFooterHidden(false)
+                    self.goodTable?.mj_footer.isHidden=false
                 }
                 if self.goodArr.count < 1{//表示没有数据加载空
                     self.nilView?.removeFromSuperview()
@@ -514,9 +514,9 @@ extension LetterViewController{
                     
                 }
                 //关闭刷新状态
-                self.goodTable?.headerEndRefreshing()
+                self.goodTable?.mj_header.endRefreshing()
                 //关闭加载状态
-                self.goodTable?.footerEndRefreshing()
+                self.goodTable?.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.dismiss()
                 //刷新table
@@ -534,7 +534,7 @@ extension LetterViewController{
      
      - parameter sender:UIButton
      */
-    func pushChoppingView(_ sender:UIButton){
+    @objc func pushChoppingView(_ sender:UIButton){
         let vc=ShoppingCarViewContorller()
         vc.hidesBottomBarWhenPushed=true
         self.navigationController!.pushViewController(vc, animated:true)

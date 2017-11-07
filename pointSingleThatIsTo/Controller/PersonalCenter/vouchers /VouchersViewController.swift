@@ -65,29 +65,29 @@ class VouchersViewController:UIViewController{
         super.viewDidLoad()
         self.title="代金券"
         self.view.backgroundColor=UIColor.white
-        let textTitleBorderView=UIView(frame:CGRect(x: 10,y: 84,width: boundsWidth-20,height: 1))
+        let textTitleBorderView=UIView(frame:CGRect(x: 10,y:navHeight+20,width: boundsWidth-20,height: 1))
         textTitleBorderView.backgroundColor=UIColor.borderColor()
         self.view.addSubview(textTitleBorderView)
         let textTitle=buildLabel(UIColor.RGBFromHexColor("#999999"), font:13, textAlignment: NSTextAlignment.center)
         textTitle.text="全部代金券"
-        textTitle.frame=CGRect(x: (boundsWidth-100)/2,y: 74,width: 100,height: 20)
+        textTitle.frame=CGRect(x: (boundsWidth-100)/2,y:navHeight+10,width: 100,height: 20)
         textTitle.backgroundColor=UIColor.white
         self.view.addSubview(textTitle)
-        table=UITableView(frame:CGRect(x: 0,y: textTitle.frame.maxY+10,width: boundsWidth,height: boundsHeight-104))
+        table=UITableView(frame:CGRect(x: 0,y: textTitle.frame.maxY+10,width: boundsWidth,height:boundsHeight-(textTitle.frame.maxY+10)-bottomSafetyDistanceHeight))
         table.dataSource=self
         table.delegate=self
         table.tableFooterView=UIView(frame:CGRect.zero)
         table.separatorStyle = .none
         self.view.addSubview(table)
-        table.addHeaderWithCallback { () -> Void in
+        table.mj_header=MJRefreshNormalHeader(refreshingBlock: {
             self.currentPage=1
             self.requestVouchersList(self.currentPage,isRefresh:true)
-        }
-        table.addFooterWithCallback { () -> Void in
+        })
+        table.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: { () -> Void in
             self.currentPage+=1
             self.requestVouchersList(self.currentPage,isRefresh:false)
-        }
-        self.table.headerBeginRefreshing()
+        })
+        self.table.mj_header.beginRefreshing()
         SVProgressHUD.show(withStatus: "正在加载")
     }
 }
@@ -152,9 +152,9 @@ extension VouchersViewController{
             if response.result.error != nil{
                 SVProgressHUD.showError(withStatus: response.result.error!.localizedDescription)
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
             }
             if response.result.value != nil{
                 if isRefresh{
@@ -168,9 +168,9 @@ extension VouchersViewController{
                     self.arr.append(entity!)
                 }
                 if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.table.setFooterHidden(true)
+                    self.table.mj_footer.isHidden=true
                 }else{//否则显示
-                    self.table.setFooterHidden(false)
+                    self.table.mj_footer.isHidden=false
                 }
                 if(self.arr.count < 1){//如果数据为空，显示默认视图
                     self.nilView?.removeFromSuperview()
@@ -183,9 +183,9 @@ extension VouchersViewController{
                 //关闭加载等待视图
                 SVProgressHUD.dismiss()
                 //关闭刷新状态
-                self.table.headerEndRefreshing()
+                self.table.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table.footerEndRefreshing()
+                self.table.mj_footer.endRefreshing()
                 self.table.reloadData()
             }
         }

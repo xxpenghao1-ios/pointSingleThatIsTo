@@ -36,8 +36,7 @@ class PersonalCenterViewContorller:BaseViewController{
         //设置页面背景色
         self.view.backgroundColor=UIColor.viewBackgroundColor()
         buildView()
-        //监听通知
-        NotificationCenter.default.addObserver(self, selector:"isHiddenMessageBadgeView:", name:NSNotification.Name(rawValue: "postIsHiddenMessageBadgeView"), object:nil)
+        
     }
     
     
@@ -147,9 +146,9 @@ extension PersonalCenterViewContorller{
     func buildView(){
         
         let imgView=UIImageView(frame:CGRect(x: 0,y: 0,width: 25,height: 25))
-        imgView.image=UIImage(named:"settings")
+        imgView.image=UIImage(named:"settings")?.reSizeImage(reSize:CGSize(width:25, height:25))
         imgView.isUserInteractionEnabled=true
-        imgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:"pushSettings"))
+        imgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(pushSettings)))
         let item=UIBarButtonItem(customView:imgView)
         self.navigationItem.rightBarButtonItem=item
 //        let signImg=UIImageView(frame:CGRectMake(0,0,25,25))
@@ -205,7 +204,7 @@ extension PersonalCenterViewContorller{
         let btnExitLogin=UIButton(frame: CGRect(x: 0,y: collectionView.frame.maxY+30,width: boundsWidth,height: 50));
         btnExitLogin.backgroundColor=UIColor.applicationMainColor()
         btnExitLogin.setTitle("退出当前账号", for: UIControlState());
-        btnExitLogin.addTarget(self, action: "btnAction:", for: UIControlEvents.touchUpInside);
+        btnExitLogin.addTarget(self, action: #selector(btnAction), for: UIControlEvents.touchUpInside);
         self.scrollView.addSubview(btnExitLogin)
         
         self.scrollView.contentSize=CGSize(width: boundsWidth,height: btnExitLogin.frame.maxY+30)
@@ -272,6 +271,7 @@ extension PersonalCenterViewContorller:UICollectionViewDelegate,UICollectionView
             let vc=MessageCenterViewController();
             vc.hidesBottomBarWhenPushed=true;
             self.navigationController?.pushViewController(vc, animated:true)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue:"postPersonalCenter"), object:2)
         }else if indexPath.row == 6{
             // 搜一搜   点击事件
             let vc=VouchersViewController();
@@ -317,13 +317,13 @@ extension PersonalCenterViewContorller{
      
      - parameter sender: UIButton
      */
-    func btnAction(_ sender:UIButton){
+    @objc func btnAction(_ sender:UIButton){
         let alert=UIAlertController(title:"点单即到", message:"您确定要退出登录吗?,退出登录后将收不到任何订单", preferredStyle: UIAlertControllerStyle.actionSheet)
         let ok=UIAlertAction(title:"退出登录", style: UIAlertActionStyle.default, handler:{
             Void in
             //设置极光推送 别名为空
-            JPUSHService.setAlias("",callbackSelector:nil, object:nil)
-            JPUSHService.setTags([], callbackSelector:nil, object:nil)
+            JPUSHService.deleteAlias(nil, seq:11)
+            JPUSHService.setTags([],completion: nil,seq:22)
             request(URL+"outLoginForStore.xhtml",method:.get, parameters:["memebrId":IS_NIL_MEMBERID()!])
             //清除缓存中会员id
             userDefaults.removeObject(forKey: "memberId")
@@ -342,7 +342,7 @@ extension PersonalCenterViewContorller{
 }
 // MARK: - 跳转页面
 extension PersonalCenterViewContorller{
-    func pushSettings(){
+    @objc func pushSettings(){
         let vc=SettingsViewController()
         vc.hidesBottomBarWhenPushed=true
         self.navigationController?.pushViewController(vc, animated:true)

@@ -38,13 +38,13 @@ class CategoryListController:BaseViewController{
         SKNac.showArrowButton=false
         SKNac.addParentController(self)
         if categoryName == "休闲零食"{
-            self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"1元区", style: UIBarButtonItemStyle.done, target:self, action:"push1yuanqu")
+            self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"1元区", style: UIBarButtonItemStyle.done, target:self, action:#selector(push1yuanqu))
         }
     }
     
 
     //跳转1元区
-    func push1yuanqu(){
+    @objc func push1yuanqu(){
         /// 获取对应分类entity
         let GoodCategory3VC=GoodCategory3ViewController()
         GoodCategory3VC.flag=5

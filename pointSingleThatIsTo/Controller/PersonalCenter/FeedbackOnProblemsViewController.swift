@@ -29,7 +29,7 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
      */
     func creatUI(){
         //文本容器
-        textViews=UITextView(frame: CGRect(x: 10, y: 84, width: boundsWidth-20, height: 100));
+        textViews=UITextView(frame: CGRect(x: 10, y:navHeight+20, width: boundsWidth-20, height: 100));
         textViews.font=UIFont.systemFont(ofSize: 14)
         textViews.layer.borderWidth=0.5
         textViews.layer.borderColor=UIColor.borderColor().cgColor
@@ -50,7 +50,7 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
         confirmBtn.layer.cornerRadius=5
         self.view.addSubview(confirmBtn)
         //添加点击事件
-        confirmBtn.addTarget(self, action: "actionRemark:", for: UIControlEvents.touchUpInside)
+        confirmBtn.addTarget(self, action: #selector(actionRemark), for: UIControlEvents.touchUpInside)
     }
     func textViewDidEndEditing(_ textView: UITextView) {
         NSLog("DidEndEditing---\(textView.text)")
@@ -66,7 +66,7 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
      
      - parameter sender: 当前完成按钮
      */
-    func actionRemark(_ sender:UIButton){
+    @objc func actionRemark(_ sender:UIButton){
         let storeId=userDefaults.object(forKey: "storeId") as! String
         if textLbl.characters.count==0{
             SVProgressHUD.showInfo(withStatus: "内容为空")

@@ -51,13 +51,13 @@
 //        btnSubmit.backgroundColor=UIColor.applicationMainColor()
 //        btnSubmit.layer.cornerRadius=20
 //        /// 添加刷新定位按钮
-//        let refreshLocationItem=UIBarButtonItem(title:"刷新定位", style: UIBarButtonItemStyle.plain, target:self, action:Selector("refreshLocation"))
+//        let refreshLocationItem=UIBarButtonItem(title:"刷新定位", style: UIBarButtonItemStyle.plain, target:self, action:#selector("refreshLocation"))
 //        self.navigationItem.rightBarButtonItem=refreshLocationItem
 //
 //        /// 默认给tag(1表示图片没有上传)
 //        imgAdd.tag=1
 //        imgAdd.isUserInteractionEnabled=true
-//        imgAdd.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("openPhoto")))
+//        imgAdd.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector("openPhoto")))
 //
 //        //初始化BMKLocationService
 //        locService = BMKLocationService()

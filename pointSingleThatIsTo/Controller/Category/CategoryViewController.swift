@@ -26,10 +26,10 @@ class CategoryViewController:UIViewController,UITableViewDelegate,UITableViewDat
         leftTable?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
         self.view.addSubview(leftTable!)
         //去掉15px空白
-        if(leftTable!.responds(to: "setLayoutMargins:")){
+        if(leftTable!.responds(to: #selector(setter: UIView.layoutMargins))){
             leftTable?.layoutMargins=UIEdgeInsets.zero
         }
-        if(leftTable!.responds(to: "setSeparatorInset:")){
+        if(leftTable!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
             leftTable!.separatorInset=UIEdgeInsets.zero;
         }
         leftTable?.separatorColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
@@ -54,10 +54,10 @@ class CategoryViewController:UIViewController,UITableViewDelegate,UITableViewDat
         cell?.textLabel?.text="\(indexPath.row)行"
         cell?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
         cell?.selectionStyle=UITableViewCellSelectionStyle.none
-        if(cell!.responds(to: "setLayoutMargins:")){
+        if(cell!.responds(to: #selector(setter: UIView.layoutMargins))){
             cell!.layoutMargins=UIEdgeInsets.zero
         }
-        if(cell!.responds(to: "setSeparatorInset:")){
+        if(cell!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
             cell!.separatorInset=UIEdgeInsets.zero;
         }
         //创建分割线

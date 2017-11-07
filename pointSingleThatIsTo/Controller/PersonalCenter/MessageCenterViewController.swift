@@ -41,21 +41,21 @@ class  MessageCenterViewController:BaseViewController,UITableViewDelegate,UITabl
         //移除空单元格
         table!.tableFooterView = UIView(frame:CGRect.zero)
         //设置cell下边线全屏
-        if(table!.responds(to: "setLayoutMargins:")){
+        if(table!.responds(to: #selector(setter: UIView.layoutMargins))){
             table?.layoutMargins=UIEdgeInsets.zero
         }
-        if(table!.responds(to: "setSeparatorInset:")){
+        if(table!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
             table?.separatorInset=UIEdgeInsets.zero;
         }
         self.view.addSubview(table!)
-        table!.addHeaderWithCallback({//刷新
+        table!.mj_header=MJRefreshNormalHeader(refreshingBlock: {//刷新
             //从第一页开始
             self.currentPage=1
             //发送网络请求
             self.httpQueryMessageToStore(self.currentPage, isRefresh:true)
             
         })
-        table!.addFooterWithCallback({//加载更多
+        table!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//加载更多
             //每次页面索引加1
             self.currentPage+=1
             //发送网络请求
@@ -63,7 +63,7 @@ class  MessageCenterViewController:BaseViewController,UITableViewDelegate,UITabl
         })
         //加载视图
         SVProgressHUD.show(withStatus: "数据加载中")
-        table!.headerBeginRefreshing()
+        table!.mj_header.beginRefreshing()
     }
     //返回tabview每一行显示什么
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
@@ -135,9 +135,9 @@ extension MessageCenterViewController{
                 self.arr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table?.setFooterHidden(true)
+                self.table?.mj_footer.isHidden=true
             }else{//否则显示
-                self.table?.setFooterHidden(false)
+                self.table?.mj_footer.isHidden=false
             }
             if self.arr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -149,9 +149,9 @@ extension MessageCenterViewController{
                 self.nilView?.removeFromSuperview()
             }
             //关闭刷新状态
-            self.table?.headerEndRefreshing()
+            self.table?.mj_header.endRefreshing()
             //关闭加载状态
-            self.table?.footerEndRefreshing()
+            self.table?.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
@@ -159,9 +159,9 @@ extension MessageCenterViewController{
             }) { (errorMsg) -> Void in
                 SVProgressHUD.showError(withStatus: errorMsg)
                 //关闭刷新状态
-                self.table?.headerEndRefreshing()
+                self.table?.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table?.footerEndRefreshing()
+                self.table?.mj_footer.endRefreshing()
         }
     }
 }

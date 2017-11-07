@@ -50,7 +50,7 @@ class SellerRemark:BaseViewController,UITextViewDelegate{
         confirmBtn.layer.cornerRadius=5
         self.view.addSubview(confirmBtn)
         //添加点击事件
-        confirmBtn.addTarget(self, action: "actionRemark:", for: UIControlEvents.touchUpInside)
+        confirmBtn.addTarget(self, action: #selector(actionRemark), for: UIControlEvents.touchUpInside)
     }
     func textViewDidEndEditing(_ textView: UITextView) {
         NSLog("DidEndEditing---\(textView.text)")
@@ -66,7 +66,7 @@ class SellerRemark:BaseViewController,UITextViewDelegate{
     
     - parameter sender: 当前完成按钮
     */
-    func actionRemark(_ sender:UIButton){
+    @objc func actionRemark(_ sender:UIButton){
         //发送通知
         NotificationCenter.default.post(name: Notification.Name(rawValue: "remarkNotification"), object: textLbl)
         self.navigationController?.popViewController(animated: true)

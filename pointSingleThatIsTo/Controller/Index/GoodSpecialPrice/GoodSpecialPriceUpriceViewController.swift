@@ -42,7 +42,7 @@ class GoodSpecialPriceUpriceViewController:AddShoppingCartAnimation,UITableViewD
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        table?.headerBeginRefreshing()
+        table?.mj_header.beginRefreshing()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +51,7 @@ class GoodSpecialPriceUpriceViewController:AddShoppingCartAnimation,UITableViewD
         let countyId=UserDefaults.standard.object(forKey: "countyId") as! String
         let storeId=UserDefaults.standard.object(forKey: "storeId") as! String
         
-        table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-64-40), style: UITableViewStyle.plain)
+        table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-navHeight-40-bottomSafetyDistanceHeight), style: UITableViewStyle.plain)
         table!.dataSource=self
         table!.delegate=self
         self.view.addSubview(table!)
@@ -67,7 +67,7 @@ class GoodSpecialPriceUpriceViewController:AddShoppingCartAnimation,UITableViewD
         if(table!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
             table?.separatorInset=UIEdgeInsets.zero;
         }
-        table!.addHeaderWithCallback({//刷新
+        table!.mj_header=MJRefreshNormalHeader(refreshingBlock: {//刷新
             //从第一页开始
             self.currentPage=1
             if self.flag == 1{
@@ -78,7 +78,7 @@ class GoodSpecialPriceUpriceViewController:AddShoppingCartAnimation,UITableViewD
             }
             
         })
-        table!.addFooterWithCallback({//加载更多
+        table!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//加载更多
             //每次页面索引加1
             self.currentPage+=1
             if self.flag == 1{
@@ -90,9 +90,9 @@ class GoodSpecialPriceUpriceViewController:AddShoppingCartAnimation,UITableViewD
         })
         //加载视图
         SVProgressHUD.show(withStatus: "数据加载中")
-        table!.headerBeginRefreshing()
+        table!.mj_header.beginRefreshing()
         //监听通知
-        NotificationCenter.default.addObserver(self, selector:Selector(("updateGoodSpecialPriceView:")), name:NSNotification.Name(rawValue: "selectedCategory"), object:nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(updateGoodSpecialPriceView), name:NSNotification.Name(rawValue: "selectedCategory"), object:nil)
         
     }
     
@@ -153,7 +153,7 @@ extension GoodSpecialPriceUpriceViewController{
      
      - parameter obj:NSNotification
      */
-    func updateGoodSpecialPriceView(_ obj:Notification){
+    @objc func updateGoodSpecialPriceView(_ obj:Notification){
         categoryId=obj.object as? Int
         let countyId=UserDefaults.standard.object(forKey: "countyId") as! String
         let storeId=UserDefaults.standard.object(forKey: "storeId") as! String
@@ -276,9 +276,9 @@ extension GoodSpecialPriceUpriceViewController{
                 self.arr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table?.setFooterHidden(true)
+                self.table?.mj_footer.isHidden=true
             }else{//否则显示
-                self.table?.setFooterHidden(false)
+                self.table?.mj_footer.isHidden=false
             }
             if self.arr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -291,9 +291,9 @@ extension GoodSpecialPriceUpriceViewController{
                 self.createTimer()
             }
             //关闭刷新状态
-            self.table?.headerEndRefreshing()
+            self.table?.mj_header.endRefreshing()
             //关闭加载状态
-            self.table?.footerEndRefreshing()
+            self.table?.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
@@ -301,9 +301,9 @@ extension GoodSpecialPriceUpriceViewController{
 
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.table?.headerEndRefreshing()
+                self.table?.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table?.footerEndRefreshing()
+                self.table?.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -354,9 +354,9 @@ extension GoodSpecialPriceUpriceViewController{
                 self.arr.add(entity!)
             }
             if count < 7{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table!.setFooterHidden(true)
+                self.table!.mj_footer.isHidden=true
             }else{//否则显示
-                self.table!.setFooterHidden(false)
+                self.table!.mj_footer.isHidden=false
             }
             if self.arr.count < 1{//表示没有数据加载空
                 self.nilView?.removeFromSuperview()
@@ -370,18 +370,18 @@ extension GoodSpecialPriceUpriceViewController{
                 self.createTimer()
             }
             //关闭刷新状态
-            self.table!.headerEndRefreshing()
+            self.table!.mj_header.endRefreshing()
             //关闭加载状态
-            self.table!.footerEndRefreshing()
+            self.table!.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
             self.table!.reloadData()
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.table!.headerEndRefreshing()
+                self.table!.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table!.footerEndRefreshing()
+                self.table!.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
@@ -395,7 +395,7 @@ extension GoodSpecialPriceUpriceViewController{
      */
     func createTimer(){
         if timer == nil{
-            timer=Timer(timeInterval:1, target:self, selector:Selector("timerEvent"), userInfo:nil, repeats:true)
+            timer=Timer(timeInterval:1, target:self, selector:#selector(timerEvent), userInfo:nil, repeats:true)
             //避免tableView滑动的时候卡死
             RunLoop.current.add(timer!,forMode:RunLoopMode.commonModes)
         }
@@ -403,8 +403,8 @@ extension GoodSpecialPriceUpriceViewController{
     /**
      定时器每次执行
      */
-    func timerEvent(){
-        for j in 0...arr.count{//获取数据源所有剩余时间
+    @objc func timerEvent(){
+        for j in 0..<arr.count{//获取数据源所有剩余时间
             let entity=arr[j] as! GoodDetailEntity
             var time=0
             if flag == 1{
@@ -427,7 +427,7 @@ extension GoodSpecialPriceUpriceViewController{
         }
         //获取屏幕内可见的cell
         let cells=table!.visibleCells
-        for i in 0...cells.count{
+        for i in 0..<cells.count{
             let cell=cells[i] as! GoodSpecialPriceTableCell
             let entity=arr[cell.indexPath!.row] as! GoodDetailEntity
             var time=0

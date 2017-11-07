@@ -101,7 +101,7 @@ class CanBeTicketViewController:UIViewController,UITableViewDataSource,UITableVi
         if(cell!.responds(to: #selector(setter: UIView.layoutMargins))){
             cell!.layoutMargins=UIEdgeInsets.zero
         }
-        if(cell!.responds(to: "setSeparatorInset:")){
+        if(cell!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
             cell!.separatorInset=UIEdgeInsets.zero;
         }
         return cell!
@@ -130,21 +130,16 @@ class CanBeTicketViewController:UIViewController,UITableViewDataSource,UITableVi
             }
             if self.tablefootCount! < 10{
                 
-                self.tableView!.setFooterHidden(true);
+                self.tableView!.mj_footer.isHidden=true;
                 
             }else{
                 
-                self.tableView!.setFooterHidden(false);
-                
-            }
-            if self.tablefootCount! < 1{
-                
-                self.tableView!.setHeaderHidden(true)
+                self.tableView!.mj_footer.isHidden=false;
                 
             }
             self.tableView?.reloadData()
-            self.tableView?.headerEndRefreshing()
-            self.tableView?.footerEndRefreshing()
+            self.tableView?.mj_header.endRefreshing()
+            self.tableView?.mj_footer.endRefreshing()
 
             }) { (errorMsg) -> Void in
     
@@ -152,7 +147,7 @@ class CanBeTicketViewController:UIViewController,UITableViewDataSource,UITableVi
     }
     //上拉加载/下拉刷新
     func setupRefresh1(){
-        self.tableView?.addHeaderWithCallback({
+        self.tableView?.mj_header=MJRefreshNormalHeader(refreshingBlock: {
             self.currentPage!=1;
             self.arr.removeAllObjects()
             let delayInSeconds:Int64 =  1000000000  * 2
@@ -164,7 +159,7 @@ class CanBeTicketViewController:UIViewController,UITableViewDataSource,UITableVi
             
         })
         
-        self.tableView?.addFooterWithCallback({
+        self.tableView?.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {
             //每次上拉都加1
             self.currentPage=self.currentPage!+1;
             let delayInSeconds:Int64 = 1000000000 * 2

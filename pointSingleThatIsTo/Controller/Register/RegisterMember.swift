@@ -139,7 +139,7 @@ class RegisterMember:UIViewController{
         btnRegist?.layer.cornerRadius=20
         btnRegist?.tag=2
         btnRegist?.titleLabel?.font=UIFont.systemFont(ofSize: 16)
-        btnRegist?.addTarget(self, action: "clickRegist:", for: UIControlEvents.touchUpInside)
+        btnRegist?.addTarget(self, action:#selector(clickRegist), for: UIControlEvents.touchUpInside)
         self.view.addSubview(btnRegist!)
 
 
@@ -150,7 +150,7 @@ class RegisterMember:UIViewController{
     func uistyle(){
         ///提示标签
         lblremind=UILabel()
-        lblremind?.frame=CGRect(x: 0, y: 64, width: boundsWidth, height: 60)
+        lblremind?.frame=CGRect(x: 0, y: navHeight, width: boundsWidth, height: 60)
         lblremind?.text="亲，用户名是您登录的唯一通行证!"
         lblremind?.font=UIFont.systemFont(ofSize: 16)
         lblremind?.numberOfLines=1
@@ -222,7 +222,7 @@ class RegisterMember:UIViewController{
         btnSweep?.setTitle("扫一扫", for: UIControlState())
         btnSweep?.backgroundColor=UIColor.red
         btnSweep?.titleLabel?.font=UIFont.systemFont(ofSize: 16)
-        btnSweep?.addTarget(self, action: Selector("clickSweep:"), for: UIControlEvents.touchUpInside)
+        btnSweep?.addTarget(self, action: #selector(clickSweep), for: UIControlEvents.touchUpInside)
         self.view.addSubview(btnSweep!)
         /// 注册按钮
         btnRegist=UIButton()
@@ -232,15 +232,15 @@ class RegisterMember:UIViewController{
         btnRegist?.layer.cornerRadius=20
         btnRegist?.tag=1
         btnRegist?.titleLabel?.font=UIFont.systemFont(ofSize: 16)
-        btnRegist?.addTarget(self, action: Selector("clickRegist:"), for: UIControlEvents.touchUpInside)
+        btnRegist?.addTarget(self, action: #selector(clickRegist), for: UIControlEvents.touchUpInside)
         self.view.addSubview(btnRegist!)
         
     }
-    /// 扫一扫按钮 触发事件
-    func clickSweep(_ sender:UIButton){
+    /// 扫一扫按钮 触发事件@objc
+    @objc func clickSweep(_ sender:UIButton){
     }
-    /// 注册按钮
-    func clickRegist(_ sender:UIButton){
+    /// 注册按钮@objc
+    @objc func clickRegist(_ sender:UIButton){
         let charcount=feildPsW?.text?.characters.count
         
         if feildPsW?.text==feildPsWAgian?.text{

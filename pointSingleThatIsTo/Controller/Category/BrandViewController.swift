@@ -35,11 +35,11 @@ class BrandViewController:BaseViewController,UICollectionViewDelegate,UICollecti
         self.view.backgroundColor=UIColor.white
         //根据push状态码动态修改Table的高度
         if(pushState == 1){
-            flyHeight=boundsHeight - CGFloat(104)
+            flyHeight=boundsHeight-navHeight-40-bottomSafetyDistanceHeight
             indexBuildView()
             queryChildCategory()
         }else{
-            flyHeight=boundsHeight - CGFloat(153)
+            flyHeight=boundsHeight-navHeight-40-tabBarHeight
             bottomBuildView()
             queryChildCategoryBottom()
         }
@@ -69,10 +69,10 @@ class BrandViewController:BaseViewController,UICollectionViewDelegate,UICollecti
         leftTable?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
         self.view.addSubview(leftTable!)
         //去掉15px空白
-        if(leftTable!.responds(to: "setLayoutMargins:")){
+        if(leftTable!.responds(to: #selector(setter: UIView.layoutMargins))){
             leftTable?.layoutMargins=UIEdgeInsets.zero
         }
-        if(leftTable!.responds(to: "setSeparatorInset:")){
+        if(leftTable!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
             leftTable!.separatorInset=UIEdgeInsets.zero;
         }
         leftTable?.separatorColor=UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1)
@@ -113,10 +113,10 @@ class BrandViewController:BaseViewController,UICollectionViewDelegate,UICollecti
         cell?.textLabel?.font=UIFont.systemFont(ofSize: 14)
         cell?.backgroundColor=UIColor(red: 0.95, green: 0.96, blue: 0.96, alpha: 1.0)
         cell?.selectionStyle=UITableViewCellSelectionStyle.none
-        if(cell!.responds(to: "setLayoutMargins:")){
+        if(cell!.responds(to: #selector(setter: UIView.layoutMargins))){
             cell!.layoutMargins=UIEdgeInsets.zero
         }
-        if(cell!.responds(to: "setSeparatorInset:")){
+        if(cell!.responds(to: #selector(setter: UITableViewCell.separatorInset))){
             cell!.separatorInset=UIEdgeInsets.zero;
         }
         //默认选中的视图背景颜色
@@ -148,12 +148,12 @@ class BrandViewController:BaseViewController,UICollectionViewDelegate,UICollecti
         if arr.count > 0{
             let entity=arr[indexPath.row] as! GoodsCategoryEntity
             cell.updateCell(entity)
-            cell.btn.addTarget(self, action:"pushGoodCategory3:", for: UIControlEvents.touchUpInside)
+            cell.btn.addTarget(self, action:#selector(pushGoodCategory3), for: UIControlEvents.touchUpInside)
             cell.btn.tag=indexPath.row
         }
         return cell;
     }
-    func pushGoodCategory3(_ sender:UIButton){
+    @objc func pushGoodCategory3(_ sender:UIButton){
         let entity=arr[sender.tag] as! GoodsCategoryEntity
         let GoodCategory3VC=GoodCategory3ViewController()
         GoodCategory3VC.hidesBottomBarWhenPushed=true

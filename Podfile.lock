@@ -1,11 +1,14 @@
 PODS:
   - Alamofire (4.5.1)
-  - BaiduMapKit (3.4.0)
   - BaiduMobStat (4.6.3)
   - EAIntroView (2.10.0):
     - EARestrictedScrollView (~> 1.1.0)
   - EARestrictedScrollView (1.1.0)
   - IQKeyboardManagerSwift (5.0.3)
+  - JCore (1.1.5)
+  - JPush (3.0.6):
+    - JCore (~> 1.1.1)
+  - MJRefresh (3.1.14)
   - Moya (9.0.0):
     - Moya/Core (= 9.0.0)
   - Moya/Core (9.0.0):
@@ -29,10 +32,11 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire
-  - BaiduMapKit
   - BaiduMobStat
   - EAIntroView
   - IQKeyboardManagerSwift
+  - JPush
+  - MJRefresh
   - Moya
   - ObjectMapper
   - RealReachability
@@ -45,11 +49,13 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
-  BaiduMapKit: 0a5e5e0b1e3fd8dc5aceb40ab9b89e52e1d13df9
   BaiduMobStat: 0b90ece449274a310d2c37eec949c6da3602a995
   EAIntroView: 3494b7bbd1212e3a4f7e8d16194a1b00e7b9abb2
   EARestrictedScrollView: b0c2a3f92fb2610bb44d71c5e4893777c89e45ef
   IQKeyboardManagerSwift: e257e513744cf32123eca7061272acea0246fc83
+  JCore: 9bd9c770c877c583d98b90a68792b8361974c231
+  JPush: c41be50eb1a574a66aeb68d237f00a4ec6ec3a82
+  MJRefresh: 6642e35b3227a5447b9fd5e17c552c90196c9859
   Moya: cf5e6ee93af526532f92614004b8ad2ea60fd845
   ObjectMapper: 92230db59bf8f341a5c3a3cf0b9fbdde3cf0d87f
   RealReachability: a8c483900986a0f3305733961effbfbb00637a02
@@ -60,6 +66,6 @@ SPEC CHECKSUMS:
   SVProgressHUD: db27c54e6e18bc903341661fc9feb55e04905cc4
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 2d9a4c930c04250242e0cb54ca5a7a2d5354e681
+PODFILE CHECKSUM: e0c285e6bf0422ea6e8208710512c1a6dedcad18
 
 COCOAPODS: 1.4.0.beta.1

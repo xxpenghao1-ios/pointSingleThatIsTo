@@ -12,57 +12,37 @@ import IQKeyboardManagerSwift
 import SVProgressHUD
 import SwiftyJSON
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
+class AppDelegate: UIResponder, UIApplicationDelegate{
     var window: UIWindow?
     /// 登录页面
     var navLogin:UINavigationController?
     /// 主页面
     var tab:UITabBarController?
-    /// 百度地图
-    var mapManager: BMKMapManager?
     //程序入口
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        mapManager = BMKMapManager()
-        BaiduMobStat.default().start(withAppId: "ec2fbe36a3")
+        BaiduMobStat.default().start(withAppId:"ec2fbe36a3")
         BaiduMobStat.default().enableDebugOn=true
-        // 如果要关注网络及授权验证事件，请设定generalDelegate参数
-        let ret = mapManager?.start("zUKLMiVbDlWfOj7o5vcY3m4XG2E9u3XN", generalDelegate:self)
-        if ret == true {
-            
-        }
-//        JPUSHService.setDebugMode()
+        JPUSHService.setDebugMode()
         //监听极光推送自定义消息(只有在前端运行的时候才能收到自定义消息的推送。)
-        NotificationCenter.default.addObserver(self, selector:Selector("networkDidReceiveMessage:"), name:NSNotification.Name.jpfNetworkDidReceiveMessage, object:nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(networkDidReceiveMessage), name:NSNotification.Name.jpfNetworkDidReceiveMessage, object:nil)
         //开启键盘框架
         IQKeyboardManager.sharedManager().enable = true
         //设置导航栏的各种状态
         setUpNav()
-        //启动极光推送
-        PHJPushHelper.setupWithOptions(launchOptions)
+        //开启极光推送
+        PHJPushHelper.setupWithOptions(launchOptions:launchOptions,delegate:self)
+        //关闭极光推送打印
+        JPUSHService.setLogOFF()
         //初始化登录页面
         navLogin=UINavigationController(rootViewController:LoginViewController())
-        // 得到当前应用的版本号
-        let infoDictionary = Bundle.main.infoDictionary
-        let currentAppVersion = infoDictionary!["CFBundleShortVersionString"] as! String
-        // 取出之前保存的版本号
-        let userDefaults = UserDefaults.standard
-        let appVersion = userDefaults.string(forKey: "appVersion")
-        // 如果 appVersion 为 nil 说明是第一次启动；如果 appVersion 不等于 currentAppVersion 说明是更新了
-        if appVersion == nil || appVersion != currentAppVersion {
-            // 保存最新的版本号
-            userDefaults.setValue(currentAppVersion, forKey: "appVersion")
-            let helpNav=UINavigationController(rootViewController: ViewController())
-            //设置根视图
-            self.window!.rootViewController=helpNav
+        
+        if IS_NIL_MEMBERID() == nil{//判断会员id是否为空 如果为空进入程序 需要登录
+            self.window?.rootViewController=navLogin
         }else{
-            if IS_NIL_MEMBERID() == nil{//判断会员id是否为空 如果为空进入程序 需要登录
-                self.window?.rootViewController=navLogin
-            }else{
-                //初始化主页面
-                tab=TabBarViewController()
-                self.window?.rootViewController=tab
-                login()
-            }
+            //初始化主页面
+            tab=TabBarViewController()
+            self.window?.rootViewController=tab
+            login()
         }
         //设置菊花图默认前景色和背景色
         SVProgressHUD.setForegroundColor(UIColor(white: 1, alpha: 1))
@@ -112,8 +92,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         //导航栏文字颜色
         UINavigationBar.appearance().titleTextAttributes=NSDictionary(object:UIColor.white, forKey:NSAttributedStringKey.foregroundColor as NSCopying) as? [NSAttributedStringKey : Any];
         UINavigationBar.appearance().tintColor=UIColor.white
-        //将返回按钮的文字position设置不在屏幕上显示
-        UIBarButtonItem.appearance().setBackButtonTitlePositionAdjustment(UIOffsetMake(CGFloat(NSInteger.min),CGFloat(NSInteger.min)), for:UIBarMetrics.default)
+//        //将返回按钮的文字position设置不在屏幕上显示
+//        UIBarButtonItem.appearance().setBackButtonTitlePositionAdjustment(UIOffsetMake(CGFloat(NSInteger.min),CGFloat(NSInteger.min)), for:UIBarMetrics.default)
         //改变状态栏的颜色
         UIApplication.shared.statusBarStyle = UIStatusBarStyle.lightContent;
     }
@@ -128,31 +108,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         //写入磁盘
         UserDefaults.standard.synchronize()
         //在appdelegate注册设备处调用
-        PHJPushHelper.registerDeviceToken(deviceToken)
+        JPUSHService.registerDeviceToken(deviceToken)
         
     }
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
         //处理收到的 APNs 消息
-        PHJPushHelper.handleRemoteNotification(userInfo,completion: nil)
+         JPUSHService.handleRemoteNotification(userInfo)
     }
     //接收通知消息
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        //处理收到的 APNs 消息
+        JPUSHService.handleRemoteNotification(userInfo)
+        completionHandler(.newData)
         //转换为json
         let jsonObject=JSON(userInfo);
         //取出推送内容
         var aps=jsonObject["aps"]
         let pushReason=jsonObject["pushReason"].intValue;
         let alert=aps["alert"].stringValue;
-        //处理收到的 APNs 消息
-        PHJPushHelper.handleRemoteNotification(userInfo, completion:completionHandler)
         if(application.applicationState == UIApplicationState.active){//如果程序活动在前台
             if pushReason != 0{
                 systemMessage(alert)
             }
-             
         }else{//如果程序运行在后台
             if pushReason != 0{//进来直接跳转到订单页面
-                tab?.selectedIndex=4
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "postPersonalCenter"), object:5, userInfo:nil)
             }
         }
         /**
@@ -169,7 +149,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         let alert=UIAlertController(title:"点单即到",message:alert, preferredStyle: UIAlertControllerStyle.alert)
         let cancel=UIAlertAction(title:"取消", style: UIAlertActionStyle.cancel, handler:nil)
         let ok=UIAlertAction(title:"前往个人中心查看", style: UIAlertActionStyle.default, handler:{ Void in
-            self.tab?.selectedIndex=4
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "postPersonalCenter"), object:5, userInfo:nil)
         })
         alert.addAction(cancel)
         alert.addAction(ok)
@@ -177,8 +157,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
     }
     //当一个运行着的应用程序收到一个远程的通知 发送到委托去...
     func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
-        //显示本地通知在最前面
-        PHJPushHelper.showLocalNotificationAtFront(notification)
+        
     }
 
 
@@ -199,7 +178,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
         if memberId != nil{
             isUser(memberId!)
         }
-        JPUSHService.resetBadge();
+//        JPUSHService.resetBadge();
         application.applicationIconBadgeNumber=0;
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
@@ -229,15 +208,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
                     let deviceName=json["deviceName"].stringValue;
                     
                     if deviceToken != "penghao"{//如果用户在打开app没有选择接收通知 直接在登录界面 给服务器传入了默认值(penghao) 不等于表示 用户开启了消息通知
-                        if deviceToken != userDefaults.object(forKey: "deviceToken") as? String{//判断服务器返回的设备标识与当前本机的缓存中的设备标识是否相等  如果不等于表示该账号在另一台设备在登录
+                        if deviceToken != userDefaults.object(forKey:"deviceToken") as? String{//判断服务器返回的设备标识与当前本机的缓存中的设备标识是否相等  如果不等于表示该账号在另一台设备在登录
                             //直接跳转到登录页面
                             self.window?.rootViewController=self.navLogin
                             userDefaults.removeObject(forKey: "memberId")
                             let alert=UIAlertController(title:"重新登录", message:"您的账号于\(loginTime)在另一台设备\(deviceName)上登录。如非本人操作,则密码可能已泄露,建议您重新设置密码,以确保数据安全。", preferredStyle: UIAlertControllerStyle.alert)
                             let ok=UIAlertAction(title:"确定", style: UIAlertActionStyle.default, handler:{ Void
                                 in//点击确定 清除推送别名
-                                JPUSHService.setAlias("",callbackSelector:nil, object:nil)
-                                JPUSHService.setTags([], callbackSelector:nil, object:nil)
+                                JPUSHService.deleteAlias(nil, seq:11)
+                                JPUSHService.setTags([],completion: nil,seq:22)
                                 
                             })
                             alert.addAction(ok)
@@ -270,9 +249,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate,BMKGeneralDelegate{
     }
 
 }
+// MARK: - 实现极光推送协议
+extension AppDelegate:JPUSHRegisterDelegate{
+    ///用户点击通知栏进入app执行
+    @available(iOS 10.0, *)
+    func jpushNotificationCenter(_ center: UNUserNotificationCenter!, didReceive response: UNNotificationResponse!, withCompletionHandler completionHandler: (() -> Void)!) {
+        let userInfo=response.notification.request.content.userInfo
+        if (response.notification.request.trigger?.isKind(of:UNPushNotificationTrigger.classForCoder()))!{
+            JPUSHService.handleRemoteNotification(userInfo)
+            //转换为json
+            let jsonObject=JSON(userInfo);
+            let pushReason=jsonObject["pushReason"].intValue;
+            if pushReason != 0{//进来直接跳转到订单页面
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "postPersonalCenter"), object:5, userInfo:nil)
+            }
+            /**
+             发送通知 在UITabBarController更新个人中心的角标
+             */
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "postPersonalCenter"), object:1, userInfo:nil)
+        }
+        completionHandler()
+    }
+    ///用户在前台接收到推送消息执行
+    @available(iOS 10.0, *)
+    func jpushNotificationCenter(_ center: UNUserNotificationCenter!, willPresent notification: UNNotification!, withCompletionHandler completionHandler: ((Int) -> Void)!) {
+        let userInfo=notification.request.content.userInfo
+        if (notification.request.trigger?.isKind(of:UNPushNotificationTrigger.classForCoder()))!{
+            JPUSHService.handleRemoteNotification(userInfo)
+            //转换为json
+            let jsonObject=JSON(userInfo);
+            //取出推送内容
+            var aps=jsonObject["aps"]
+            let pushReason=jsonObject["pushReason"].intValue;
+            let alert=aps["alert"].stringValue;
+            if pushReason != 0{
+                systemMessage(alert)
+            }
+            /**
+             发送通知 在UITabBarController更新个人中心的角标
+             */
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "postPersonalCenter"), object:1, userInfo:nil)
+        }
+    }
+    
+}
 // MARK: - 极光推送自定义消息监听
 extension AppDelegate{
-    func networkDidReceiveMessage(_ notification:Notification){
+    @objc func networkDidReceiveMessage(_ notification:Notification){
         let userInfo=notification.userInfo
         if userInfo != nil{
             let json=JSON(userInfo!)

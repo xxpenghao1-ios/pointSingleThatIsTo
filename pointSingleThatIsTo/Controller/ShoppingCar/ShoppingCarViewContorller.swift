@@ -43,17 +43,14 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
     var editBar:UIBarButtonItem?
     let storeId=userDefaults.object(forKey: "storeId") as! String
     /// 保存总价格
-    var totalPirce:Double=0.00{
-        didSet{
-            totalPirce=totalPirce.toDecimalNumberTwo(totalPirce)
-        }
-    };
+    var totalPirce="0.0"
     
     /// 空购物车提示
     var nilShoppingCarView:UIView?
     
     /// 页面加载标识
     var viewFlag=false;
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -68,17 +65,23 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
         self.title="购物车"
         self.view.backgroundColor=UIColor.viewBackgroundColor()
         http()
-        //table高度
-        var tableHeight:CGFloat=0
-        tableHeight=boundsHeight-50;
-       
         //拿到缓存中的会员id
         memberId=UserDefaults.standard.object(forKey: "memberId") as? String
+        var tableY:CGFloat=0
+        
+        if self.hidesBottomBarWhenPushed == true {
+            tableY=boundsHeight-50-bottomSafetyDistanceHeight-navHeight
+        }else{
+            tableY=boundsHeight-50-navHeight-self.tabBarController!.tabBar.frame.height
+        }
         //初始化table
-        table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: tableHeight), style: UITableViewStyle.grouped)
+        table=UITableView(frame:CGRect(x:0,y:navHeight,width:boundsWidth,height:tableY), style: UITableViewStyle.grouped)
         table!.dataSource=self
         table!.delegate=self
         table!.backgroundColor=UIColor.clear
+        table!.estimatedRowHeight = 0;
+        table!.estimatedSectionHeaderHeight = 0;
+        table!.estimatedSectionFooterHeight = 0;
         self.view.addSubview(table!)
         //移除空单元格
         table!.tableFooterView = UIView(frame:CGRect.zero)
@@ -97,6 +100,7 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
         viewFlag=true
         
     }
+    
     /**
      空购物车布局
      */
@@ -126,13 +130,13 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
         
         /// 高度
         var clearingViewY:CGFloat=0
-        
         if self.hidesBottomBarWhenPushed == true{//如果底部菜单隐藏 －50
-            clearingViewY=boundsHeight-50
+            clearingViewY=boundsHeight-50-bottomSafetyDistanceHeight
         }else{// 没有 －50 －菜单高度
-            clearingViewY=boundsHeight-49-50
+            clearingViewY=boundsHeight-50-self.tabBarController!.tabBar.frame.height
         }
-        clearingView=UIView(frame:CGRect(x: 0,y: clearingViewY,width: boundsWidth,height: 50))
+        clearingView=UIView(frame:CGRect(x:0,y:clearingViewY,width:boundsWidth,height:50))
+        self.view.addSubview(clearingView!)
         //默认隐藏
         clearingView!.isHidden=true
         //显示总价view
@@ -146,7 +150,7 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
         btnClearing!.setTitle("去结算(0)", for: UIControlState())
         btnClearing!.setTitleColor(UIColor.white, for: UIControlState())
         btnClearing!.titleLabel!.font=UIFont.systemFont(ofSize: 15)
-        btnClearing!.addTarget(self, action:"pushOrderView:", for: UIControlEvents.touchUpInside);
+        btnClearing!.addTarget(self, action:#selector(pushOrderView), for: UIControlEvents.touchUpInside);
         clearingView!.addSubview(btnClearing!)
         
         
@@ -156,7 +160,7 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
         btnCheckAll!.setBackgroundImage(UIImage(named: "select_03"), for: UIControlState.selected)
         //默认全选
         btnCheckAll!.isSelected=true
-        btnCheckAll!.addTarget(self, action:"checkAll:", for: UIControlEvents.touchUpInside)
+        btnCheckAll!.addTarget(self, action:#selector(checkAll), for: UIControlEvents.touchUpInside)
         leftView.addSubview(btnCheckAll!)
         
         //总价
@@ -165,7 +169,6 @@ class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegat
         lblTotalPrice!.textColor=UIColor.white;
         lblTotalPrice!.font=UIFont.systemFont(ofSize: 14);
         leftView.addSubview(lblTotalPrice!);
-        self.view.addSubview(clearingView!)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -206,8 +209,10 @@ extension ShoppingCarViewContorller:UITableViewDelegate,UITableViewDataSource{
     }
     //3.5.1返回头部组视图
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
-            let vo=arr[section] as! ShoppingCarVo
+        let vo=arr[section] as! ShoppingCarVo
+        if vo.listGoods!.count == 0{//判断当前组下面是否有商品集合
+            return nil
+        }else{
             let view=UIView(frame:CGRect.zero)
             view.layer.borderWidth=0.5
             view.layer.borderColor=UIColor.borderColor().cgColor
@@ -220,7 +225,7 @@ extension ShoppingCarViewContorller:UITableViewDelegate,UITableViewDataSource{
             let btnSelectImg=UIButton(frame:CGRect(x: 10,y: (40-20)/2,width: 20,height: 20));
             btnSelectImg.setImage(selectImg, for:UIControlState())
             btnSelectImg.setImage(selectImgSelected, for:.selected);
-            btnSelectImg.addTarget(self, action:"selectImgSwitch:", for: UIControlEvents.touchUpInside);
+            btnSelectImg.addTarget(self, action:#selector(selectImgSwitch), for: UIControlEvents.touchUpInside);
             btnSelectImg.tag=section
             view.addSubview(btnSelectImg)
             
@@ -235,52 +240,46 @@ extension ShoppingCarViewContorller:UITableViewDelegate,UITableViewDataSource{
             lblSupplierName.font=UIFont.systemFont(ofSize: 14)
             lblSupplierName.frame=CGRect(x: btnSelectImg.frame.maxX+5,y: 5,width: boundsWidth-40,height: 30)
             view.addSubview(lblSupplierName)
-        if vo.listGoods!.count == 0{//判断当前组下面是否有商品集合
-            return nil
-        }else{
             if vo.isSelected == 1{//如果等于1选中
                 btnSelectImg.isSelected=true
             }
+            return view
         }
-        return view
         
     }
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let vo=arr[section] as! ShoppingCarVo
-        let view=UIView(frame:CGRect.zero)
-//        view.layer.borderWidth=0.5
-//        view.layer.borderColor=UIColor.borderColor().CGColor
-        view.backgroundColor=UIColor.white
         //每组小计价格
-        var sum:Double=0
+        var sum:String="0"
         if vo.listGoods!.count == 0{//判断当前组下面是否有商品集合
             return nil
         }else{
             //循环所有商品统计
-            for i in 0...vo.listGoods!.count{
+            for i in 0..<vo.listGoods!.count{
                 let entity=vo.listGoods![i] as! GoodDetailEntity
                 //每个商品小计价格
-                var sumMoney:Double=0
+                var sumMoney:String="0"
                 if entity.isSelected == 1{//只计算选中的商品
                     if entity.flag == 1{//如果是特价
-                        sumMoney=(Double(entity.carNumber!)*Double(entity.prefertialPrice!)!)
+                        sumMoney=PriceComputationsUtil.decimalNumberWithString(multiplierValue: "\(entity.carNumber!)", multiplicandValue: entity.prefertialPrice!, type:.multiplication, position:2)
                     }else{//普通价格
-                        sumMoney=(Double(entity.carNumber!)*Double(entity.uprice!)!)
+                        sumMoney=PriceComputationsUtil.decimalNumberWithString(multiplierValue: "\(entity.carNumber!)", multiplicandValue: entity.uprice!, type:.multiplication, position:2)
                     }
                 }
-                sum+=sumMoney
+                sum=PriceComputationsUtil.decimalNumberWithString(multiplierValue:sumMoney, multiplicandValue:sum, type:.addition, position:2)
             }
             
         }
+        let view=UIView(frame:CGRect.zero)
+        view.backgroundColor=UIColor.white
         let btn=ButtonControl().button(ButtonType.cornerRadiusButton, text:"去凑单", textColor:UIColor.white, font:14, backgroundColor:UIColor.applicationMainColor(), cornerRadius:5)
-        btn.addTarget(self, action:Selector(("pushSubSuppingVC:")), for:UIControlEvents.touchUpInside)
+        btn.addTarget(self, action:#selector(pushSubSuppingVC), for:UIControlEvents.touchUpInside)
         btn.tag=section
         btn.isHidden=true
-        
         let name=buildLabel(UIColor.red, font: 14, textAlignment: NSTextAlignment.left)
         
-        if sum < Double(vo.lowestMoney!)!{//如果小计小于最低起送额
-            name.text="还需\(Double(vo.lowestMoney!)!-sum)元起送"
+        if Double(sum)! < Double(vo.lowestMoney!)!{//如果小计小于最低起送额
+            name.text="还需\(PriceComputationsUtil.decimalNumberWithString(multiplierValue:vo.lowestMoney!, multiplicandValue: sum, type:.subtraction, position:2))元起送"
             btn.isHidden=false
         }else{
             name.text="您已达到配送标准"
@@ -322,8 +321,13 @@ extension ShoppingCarViewContorller:UITableViewDelegate,UITableViewDataSource{
     }
     //返回tabview的行数
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        let vo=arr[section] as! ShoppingCarVo
-        return vo.listGoods!.count
+        if arr.count > 0{
+            let vo=arr[section] as! ShoppingCarVo
+            if vo.listGoods != nil{
+                return vo.listGoods!.count
+            }
+        }
+        return 0
     }
     //返回tabview的高度
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
@@ -331,7 +335,9 @@ extension ShoppingCarViewContorller:UITableViewDelegate,UITableViewDataSource{
     }
     //删除操作
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath){
-        deleteShoppingCar(indexPath, tableView:tableView)
+        if editingStyle == .delete{
+            deleteShoppingCar(indexPath, tableView:tableView)
+        }
     }
     //把delete 该成中文
     func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String?{
@@ -346,9 +352,9 @@ extension ShoppingCarViewContorller{
      */
     func updateCarAllGoodsNumForMember(){
         let goodArr=NSMutableArray()
-        for i in 0...arr.count{
+        for i in 0..<arr.count{
             let vo=arr[i] as! ShoppingCarVo
-            for j in 0...vo.listGoods!.count{
+            for j in 0..<vo.listGoods!.count{
                 let entity=vo.listGoods![j] as! GoodDetailEntity
                 goodArr.add(entity)
             }
@@ -377,26 +383,27 @@ extension ShoppingCarViewContorller{
                     //获取对应cell
                     let cell = tableView.cellForRow(at: indexPath) as? ShoppingCarTableViewCell
                     if cell != nil{
+                        //删除对应的cell
                         //删除数据源的对应数据
                         vo.listGoods!.removeObject(at: indexPath.row)
-                        //删除对应的cell
                         if vo.listGoods!.count > 0{
                             self.table!.deleteRows(at: [indexPath], with: UITableViewRowAnimation.none)
                             self.isSection(indexPath)
                         }else{
-                            self.arr.removeObject(at: indexPath.section)
+                            self.arr.removeObject(at:indexPath.section)
                             self.table!.deleteSections(NSIndexSet(index:indexPath.section) as IndexSet, with: UITableViewRowAnimation.none)
                             self.totalPriceAndSumCount()
                         }
+                        self.table?.reloadData()
                         //发送通知更新角标
                         NotificationCenter.default.post(name:NSNotification.Name(rawValue:"postBadgeValue"), object: 3, userInfo: ["carCount":entity.carNumber!])
-                        self.table?.reloadData()
+                        
                     }
                 }
             }
         }
-
     }
+    
     /**
      请求购物车数据
      */
@@ -464,7 +471,7 @@ extension ShoppingCarViewContorller{
                 self.totalPriceAndSumCount()
                 SVProgressHUD.dismiss()
                 //发送通知更新角标
-                NotificationCenter.default.post(name:NSNotification.Name(rawValue: "postBadgeValue"), object:3)
+                NotificationCenter.default.post(name:NSNotification.Name(rawValue: "postBadgeValue"), object:1)
                 
             }
         }
@@ -478,7 +485,7 @@ extension ShoppingCarViewContorller{
      
      - parameter sender:UIBarButtonItem
      */
-    func edit(_ sender:UIBarButtonItem){
+    @objc func edit(_ sender:UIBarButtonItem){
         if sender.title == "编辑"{
             sender.title="完成"
             multiSelectDelete(2)
@@ -500,10 +507,10 @@ extension ShoppingCarViewContorller{
      */
     func multiSelectDelete(_ isDelete:Int){
         //如果是删除让选中状态变为不选中(完成回到选中状态)
-        for i in 0...arr.count{
+        for i in 0..<arr.count{
             let vo=arr[i] as! ShoppingCarVo
             vo.isSelected=isDelete
-            for j in 0...vo.listGoods!.count{
+            for j in 0..<vo.listGoods!.count{
                 let entity=vo.listGoods![j] as! GoodDetailEntity
                 entity.isSelected=isDelete
             }
@@ -515,7 +522,7 @@ extension ShoppingCarViewContorller{
      
      - parameter sender:UIButton
      */
-    func selectImgSwitch(_ sender:UIButton){
+    @objc func selectImgSwitch(_ sender:UIButton){
         var isSelected=0
         if sender.isSelected == true{
             sender.isSelected=false
@@ -527,7 +534,7 @@ extension ShoppingCarViewContorller{
         }
         let vo=arr[sender.tag] as! ShoppingCarVo
         vo.isSelected=isSelected
-        for i in 0...vo.listGoods!.count{
+        for i in 0..<vo.listGoods!.count{
             let entity=vo.listGoods![i] as! GoodDetailEntity
             entity.isSelected=isSelected
         }
@@ -540,24 +547,25 @@ extension ShoppingCarViewContorller{
     func totalPriceAndSumCount(){
         /// 清零数据
         selectSumCount=0
-        totalPirce=0.0
+        totalPirce="0.0"
         if arr.count > 0{//如果有数据
             if editBar == nil{
-                editBar=UIBarButtonItem(title:"编辑", style: UIBarButtonItemStyle.done, target:self, action:"edit:")
+                editBar=UIBarButtonItem(title:"编辑", style: UIBarButtonItemStyle.done, target:self, action:#selector(edit))
                 self.navigationItem.rightBarButtonItem=editBar
             }
             //显示结算视图
             clearingView!.isHidden=false
-            for i in 0...arr.count{
+            for i in 0..<arr.count{
                 let vo=arr[i] as! ShoppingCarVo
-                for j in 0...vo.listGoods!.count{
+                for j in 0..<vo.listGoods!.count{
                     let entity=vo.listGoods![j] as! GoodDetailEntity
                     if entity.isSelected == 1{//只统计选中的商品
                         if entity.flag == 1{//如果是特价
                             if entity.endTime != nil{
                                 if Int(entity.endTime!)! > 0{
                                     //计算总价格
-                                    totalPirce+=Double(entity.prefertialPrice!)!*Double(entity.carNumber!)
+                                    let price=PriceComputationsUtil.decimalNumberWithString(multiplierValue:"\(entity.carNumber!)", multiplicandValue: entity.prefertialPrice!, type: .multiplication, position:2)
+                                    totalPirce=PriceComputationsUtil.decimalNumberWithString(multiplierValue:price, multiplicandValue: totalPirce, type:.addition, position: 2)
                                     //计算总数量
                                     selectSumCount+=entity.carNumber!
                                 }
@@ -566,14 +574,16 @@ extension ShoppingCarViewContorller{
                             if entity.endTime != nil{
                                 if Int(entity.endTime!)! > 0{
                                     //计算总价格
-                                    totalPirce+=Double(entity.uprice!)!*Double(entity.carNumber!)
+                                    let price=PriceComputationsUtil.decimalNumberWithString(multiplierValue:"\(entity.carNumber!)", multiplicandValue: entity.uprice!, type: .multiplication, position:2)
+                                    totalPirce=PriceComputationsUtil.decimalNumberWithString(multiplierValue:price, multiplicandValue: totalPirce, type:.addition, position: 2)
                                     //计算总数量
                                     selectSumCount+=entity.carNumber!
                                 }
                             }
                         }else{
                             //计算总价格
-                            totalPirce+=Double(entity.uprice!)!*Double(entity.carNumber!)
+                            let price=PriceComputationsUtil.decimalNumberWithString(multiplierValue:"\(entity.carNumber!)", multiplicandValue: entity.uprice!, type: .multiplication, position:2)
+                            totalPirce=PriceComputationsUtil.decimalNumberWithString(multiplierValue:price, multiplicandValue: totalPirce, type:.addition, position: 2)
                             //计算总数量
                             selectSumCount+=entity.carNumber!
                         }
@@ -587,7 +597,7 @@ extension ShoppingCarViewContorller{
             //用于判断当前所有商品是否全部选择 如果有一个为false表示还没有全部选中
             var cellSelectFlag=false
             //获取所有的cell
-            for i in 0...self.arr.count{
+            for i in 0..<self.arr.count{
                 let vo=self.arr[i] as! ShoppingCarVo
                 if vo.isSelected == 1{//判断选中按钮是否选中 如果选中cellSelectFlag设为true
                     cellSelectFlag=true;
@@ -618,7 +628,7 @@ extension ShoppingCarViewContorller{
      
      - parameter sender:UIButton
      */
-    func checkAll(_ sender:UIButton){
+    @objc func checkAll(_ sender:UIButton){
         var isSelected=0
         if sender.isSelected == false{//表示全部选中
             //设置按钮为选中状态
@@ -630,10 +640,10 @@ extension ShoppingCarViewContorller{
             isSelected=2
             
         }
-        for i in 0...arr.count{
+        for i in 0..<arr.count{
             let vo=arr[i] as! ShoppingCarVo
             vo.isSelected=isSelected
-            for j in 0...vo.listGoods!.count{
+            for j in 0..<vo.listGoods!.count{
                 let entity=vo.listGoods![j] as! GoodDetailEntity
                 entity.isSelected=isSelected
             }
@@ -706,7 +716,7 @@ extension ShoppingCarViewContorller{
             let vo=arr[index.section] as! ShoppingCarVo
             if vo.listGoods!.count > 0{
                 var isSelected=2
-                for i in 0...vo.listGoods!.count{
+                for i in 0..<vo.listGoods!.count{
                     let goodEntity=vo.listGoods![i] as! GoodDetailEntity
                     if goodEntity.isSelected==1{
                         isSelected=1
@@ -725,12 +735,12 @@ extension ShoppingCarViewContorller{
      
      - parameter sender: UIButton
      */
-    func pushOrderView(_ sender:UIButton){
+    @objc func pushOrderView(_ sender:UIButton){
         let orderArr=NSMutableArray()
-        for i in 0...arr.count{//循环所有的数据 判断有无选中的entity
+        for i in 0..<arr.count{//循环所有的数据 判断有无选中的entity
             let vo=arr[i] as! ShoppingCarVo
             var sumMoney:Double=0
-            for j in 0...vo.listGoods!.count{
+            for j in 0..<vo.listGoods!.count{
                 let entity=vo.listGoods![j] as! GoodDetailEntity
                 if entity.isSelected == 1{//如果有 添加进新集合
                     if entity.flag == 1 {//如果是特价商品
@@ -794,7 +804,7 @@ extension ShoppingCarViewContorller{
             if orderArr.count > 0{
                 let vc=OrdersViewController()
                 vc.arr=orderArr
-                vc.totalPirce=self.totalPirce
+                vc.totalPirce=Double(self.totalPirce)
                 vc.sumCount=self.selectSumCount
                 vc.hidesBottomBarWhenPushed=true
                 self.navigationController!.pushViewController(vc, animated:true)
@@ -809,7 +819,7 @@ extension ShoppingCarViewContorller{
      
      - parameter sender:
      */
-    func pushSubSuppingVC(_ sender:UIButton){
+    @objc func pushSubSuppingVC(_ sender:UIButton){
         let entity=arr[sender.tag] as! ShoppingCarVo
         showSubSuppingVC(entity)
     }

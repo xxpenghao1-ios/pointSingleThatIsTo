@@ -65,7 +65,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
         super.viewDidLoad()
         self.title="确认订单"
         self.view.backgroundColor=UIColor.white
-            table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-50), style: UITableViewStyle.plain)
+            table=UITableView(frame:CGRect(x: 0,y: 0,width: boundsWidth,height: boundsHeight-50-bottomSafetyDistanceHeight), style: UITableViewStyle.plain)
             table!.dataSource=self
             table!.delegate=self
             self.view.addSubview(table!)
@@ -84,7 +84,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
             //请求代金券是否可以使用
             requestSubStationCC()
             //监听附言通知
-        NotificationCenter.default.addObserver(self, selector: Selector("updateRemark:"), name: NSNotification.Name(rawValue: "remarkNotification"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateRemark), name: NSNotification.Name(rawValue: "remarkNotification"), object: nil)
     }
     
     /**
@@ -108,7 +108,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
      */
     func buildOrderingView(){
         /// 订单视图
-        let orderingView=UIView(frame:CGRect(x: 0,y: boundsHeight-50,width: boundsWidth,height: 50))
+        let orderingView=UIView(frame:CGRect(x: 0,y: boundsHeight-50-bottomSafetyDistanceHeight,width: boundsWidth,height: 50))
         orderingView.backgroundColor=UIColor(red:32/255, green: 32/255, blue: 32/255, alpha: 1)
         lblTotalPrice=UILabel(frame:CGRect(x: 15,y: 15,width: boundsWidth/2,height: 20))
         lblTotalPrice!.text="总价 : ￥\(totalPirce!)"
@@ -122,7 +122,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
         btnOrdering!.setTitle("提交订单", for: UIControlState())
         btnOrdering!.setTitleColor(UIColor.white, for: UIControlState())
         btnOrdering!.titleLabel!.font=UIFont.systemFont(ofSize: 15)
-        btnOrdering!.addTarget(self, action:Selector(("submitOrder:")), for: UIControlEvents.touchUpInside);
+        btnOrdering!.addTarget(self, action:#selector(submitOrder), for: UIControlEvents.touchUpInside);
         orderingView.addSubview(btnOrdering!)
         
         
@@ -133,7 +133,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
      
      - parameter sender:UIButton
      */
-    func submitOrder(_ sender:UIButton){
+    @objc func submitOrder(_ sender:UIButton){
         
             if self.addressArr.count > 0{//查看用户是否有收获地址信息
                 self.buyerRemark=self.buyerRemark ?? ""
@@ -151,7 +151,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                     let success=json["success"].stringValue
                     if success == "success"{
                         var badgeCount=0
-                        for i in 0...self.arr.count{
+                        for i in 0..<self.arr.count{
                             
                             let entity=self.arr[i] as! GoodDetailEntity
                             badgeCount+=entity.carNumber!
@@ -245,7 +245,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 var goodViewX:CGFloat=15
                 /// 计算数组加载了几次
                 var count=0
-                for i in 0...arr.count{
+                for i in 0..<arr.count{
                     let entity=arr[i] as! GoodDetailEntity
                     count+=1
                     ///创建商品图片view
@@ -289,7 +289,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 lblDetailAddress.textColor=UIColor.textColor()
                 lblDetailAddress.font=UIFont.systemFont(ofSize: 14)
                 cell!.contentView.addSubview(lblDetailAddress)
-                for i in 0...self.addressArr.count{//循环所有地址信息
+                for i in 0..<self.addressArr.count{//循环所有地址信息
                     let entity=self.addressArr[i] as! AddressEntity
                     if entity.defaultFlag == 1{//如果有默认地址的加载默认地址
                         addressEntity=entity
@@ -450,7 +450,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
      
      - parameter obj: 传入的参数
      */
-    func updateRemark(_ obj:Notification){
+    @objc func updateRemark(_ obj:Notification){
         var str=obj.object as? String
         if str == nil || str == ""{
             str=nil

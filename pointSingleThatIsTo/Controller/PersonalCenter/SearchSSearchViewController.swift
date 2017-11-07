@@ -82,11 +82,11 @@ class SearchSSearchViewController:BaseViewController{
         btnSearch?.backgroundColor=UIColor.applicationMainColor()
         btnSearch?.setTitle("搜一搜", for: UIControlState())
         btnSearch?.layer.cornerRadius=4
-        btnSearch?.addTarget(self, action: Selector("clickBtn:"), for: UIControlEvents.touchUpInside)
+        btnSearch?.addTarget(self, action: #selector(clickBtn), for: UIControlEvents.touchUpInside)
         searchView!.addSubview(btnSearch!)
     }
     //点击按钮触发事件
-    func clickBtn(_ sender:UIButton){
+    @objc func clickBtn(_ sender:UIButton){
         //每次点击删除所有子视图
         self.scollView?.removeFromSuperview()
         let code=self.searchFeild?.text

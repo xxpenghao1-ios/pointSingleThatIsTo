@@ -33,9 +33,9 @@ class PresentExpViewController:BaseViewController{
         self.title="点单商城"
         self.view.backgroundColor=UIColor.white
         
-        self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"兑换记录", style: UIBarButtonItemStyle.plain, target:self, action:"pushRecordOfConversion")
+        self.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"兑换记录", style: UIBarButtonItemStyle.plain, target:self, action:#selector(pushRecordOfConversion))
         
-        tableHeaderView=UIView(frame:CGRect(x: 0,y: 64,width: boundsWidth,height: 120))
+        tableHeaderView=UIView(frame:CGRect(x: 0,y: navHeight,width: boundsWidth,height: 120))
         self.view.addSubview(tableHeaderView!)
         
         let imgView=UIImageView(frame:tableHeaderView!.bounds)
@@ -55,7 +55,7 @@ class PresentExpViewController:BaseViewController{
         lblIntegral!.textAlignment = .center
         tableHeaderView!.addSubview(lblIntegral!)
         
-        table=UITableView(frame:CGRect(x: 0,y: tableHeaderView!.frame.maxY,width: boundsWidth,height: boundsHeight-64-120), style: UITableViewStyle.plain)
+        table=UITableView(frame:CGRect(x: 0,y: tableHeaderView!.frame.maxY,width: boundsWidth,height: boundsHeight-navHeight-120-bottomSafetyDistanceHeight), style: UITableViewStyle.plain)
         table!.dataSource=self
         table!.delegate=self
         self.view.addSubview(table!)
@@ -64,17 +64,17 @@ class PresentExpViewController:BaseViewController{
         table?.separatorInset=UIEdgeInsets.zero
         //移除空单元格
         table!.tableFooterView = UIView(frame:CGRect.zero)
-        table!.addHeaderWithCallback{
+        table!.mj_header=MJRefreshNormalHeader(refreshingBlock:{
             self.currentPage=1
             self.httpQueryIntegralMallForSubStation(self.currentPage,isRefresh:true)
-        }
-        table!.addFooterWithCallback{
+        })
+        table!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {
             self.currentPage+=1
             self.httpQueryIntegralMallForSubStation(self.currentPage,isRefresh:false)
-        }
+        })
         //加载等待视图
         SVProgressHUD.show(withStatus: "数据加载中")
-        table!.headerBeginRefreshing()
+        table!.mj_header.beginRefreshing()
     }
 }
 // MARK: - 实现table协议
@@ -121,7 +121,7 @@ extension PresentExpViewController{
                     let ok=UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler: { (UIAlertAction) -> Void in
                         //查看剩余积分
                         self.httpQueryMemberIntegral()
-                        self.table!.headerBeginRefreshing()
+                        self.table!.mj_header.beginRefreshing()
                     })
                     alert.addAction(ok)
                     self.present(alert, animated:true, completion:nil)
@@ -189,9 +189,9 @@ extension PresentExpViewController{
                 self.arr.add(entity!)
             }
             if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                self.table?.setFooterHidden(true)
+                self.table?.mj_footer.isHidden=true
             }else{//否则显示
-                self.table?.setFooterHidden(false)
+                self.table?.mj_footer.isHidden=false
             }
             if self.arr.count < 1{//表示没有数据加载空
                 self.lblNilTitle?.removeFromSuperview()
@@ -202,25 +202,25 @@ extension PresentExpViewController{
                 self.lblNilTitle?.removeFromSuperview()
             }
             //关闭刷新状态
-            self.table?.headerEndRefreshing()
+            self.table?.mj_header.endRefreshing()
             //关闭加载状态
-            self.table?.footerEndRefreshing()
+            self.table?.mj_footer.endRefreshing()
             //关闭加载等待视图
             SVProgressHUD.dismiss()
             //刷新table
             self.table?.reloadData()
             }) { (errorMsg) -> Void in
                 //关闭刷新状态
-                self.table?.headerEndRefreshing()
+                self.table?.mj_header.endRefreshing()
                 //关闭加载状态
-                self.table?.footerEndRefreshing()
+                self.table?.mj_footer.endRefreshing()
                 SVProgressHUD.showError(withStatus: errorMsg)
         }
     }
 }
 // MARK: - 跳转页面
 extension PresentExpViewController{
-    func pushRecordOfConversion(){
+    @objc func pushRecordOfConversion(){
         let vc=RecordOfConversionViewController()
         self.navigationController!.pushViewController(vc, animated:true)
     }

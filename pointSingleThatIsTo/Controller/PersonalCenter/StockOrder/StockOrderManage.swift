@@ -32,14 +32,14 @@ class StockOrderManage:BaseViewController{
         SKScNav.showArrowButton=false
         SKScNav.addParentController(self)
         if flag == 2{
-            self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.stop, target:self, action:"cancel")
+            self.navigationItem.rightBarButtonItem=UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.stop, target:self, action:#selector(cancel))
         }
         
     }
     /**
      关闭页面
      */
-    func cancel(){
+    @objc func cancel(){
         self.dismiss(animated: true, completion:nil)
     }
 

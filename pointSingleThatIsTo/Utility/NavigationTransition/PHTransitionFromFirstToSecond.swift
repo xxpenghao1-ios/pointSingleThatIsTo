@@ -48,11 +48,11 @@ extension UINavigationController:UINavigationControllerDelegate{
      */
     open override func viewDidLoad() {
         super.viewDidLoad()
-        /// 给导航控制器中的view添加屏幕滑动手势
-        let popRecognizer = UIScreenEdgePanGestureRecognizer(target:self,action: Selector(("handlePopRecognizer:")))
-        // 设置为左滑动
-        popRecognizer.edges = UIRectEdge.left
-        self.view.addGestureRecognizer(popRecognizer)
+//        /// 给导航控制器中的view添加屏幕滑动手势
+//        let popRecognizer = UIScreenEdgePanGestureRecognizer(target:self,action: #selector(handlePopRecognizer))
+//        // 设置为左滑动
+//        popRecognizer.edges = UIRectEdge.left
+//        self.view.addGestureRecognizer(popRecognizer)
         
     }
 //    /**

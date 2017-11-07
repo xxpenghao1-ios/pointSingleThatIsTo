@@ -27,11 +27,19 @@ open class PHMoyaHttp {
      - parameter failClosure:    失败结果
      */
     func requestDataWithTargetJSON(_ target:RequestAPI,successClosure:@escaping SuccessClosure,failClosure: @escaping FailClosure) {
+//        let requestClosure = { (endpoint: Endpoint<RequestAPI>, done: (NSURLRequest) -> Void) in
+//            //可以在这里修改request
+//            let request: NSMutableURLRequest = endpoint.urlRequest.mutableCopy() as NSMutableURLRequest
+//            request.httpShouldHandleCookies = false
+//            request.timeoutInterval = 20
+//
+//            done(request)
+//        }
+//         let _=requestProvider<target>(
         let _=requestProvider.request(target) { (result) -> () in
             switch result{
                
             case let .success(response):
-                print(response.response)
                 do {
                     let arr = try response.mapJSON()
                     successClosure(arr)
@@ -188,14 +196,11 @@ public enum RequestAPI {
     case queryStoreToDaySign(storeId:String)
 }
 extension RequestAPI:TargetType{
-    public var task: Task {
-        return .requestPlain
-    }
     public var parameterEncoding: ParameterEncoding {
         return URLEncoding.default
     }
     public var headers: [String : String]? {
-        return ["Content-type": "application/json"]
+        return nil
     }
     public var baseURL:Foundation.URL{
         return Foundation.URL(string:URL)!
@@ -332,155 +337,155 @@ extension RequestAPI:TargetType{
         }
     }
     
-    public var parameters: [String:Any]? {
+    public var task: Task {
         switch self {
         case let .login(memberName,password,deviceToken,deviceName,flag):
-            return ["memberName":memberName,"password":password,"deviceToken":deviceToken,"deviceName":deviceName,"flag":flag] as [String : Any]
+            return .requestParameters(parameters: ["memberName":memberName,"password":password,"deviceToken":deviceToken,"deviceName":deviceName,"flag":flag], encoding:URLEncoding.default)
         case let .register(memberName, password, phone_mob,referralName):
-            return ["memberName":memberName,"password":password,"phone_mob":phone_mob,"referralName":referralName]
+            return .requestParameters(parameters: ["memberName":memberName,"password":password,"phone_mob":phone_mob,"referralName":referralName], encoding: URLEncoding.default)
         case let .returnRandCode(memberName,flag):
-            return ["memberName":memberName,"flag":flag]
+            return .requestParameters(parameters: ["memberName":memberName,"flag":flag], encoding:  URLEncoding.default)
         case let .updatePassWord(memberName,newPassWord):
-            return ["memberName":memberName,"newPassWord":newPassWord]
+            return .requestParameters(parameters: ["memberName":memberName,"newPassWord":newPassWord], encoding:  URLEncoding.default)
         case let .doRegest(memberName, password, phone_mob,referralName):
-            return ["memberName":memberName,"password":password,"phone_mob":phone_mob,"referralName":referralName]
+            return .requestParameters(parameters:["memberName":memberName,"password":password,"phone_mob":phone_mob,"referralName":referralName], encoding:  URLEncoding.default)
         case let .doMemberTheOnly(memberName):
-            return ["memberName":memberName]
+            return .requestParameters(parameters:["memberName":memberName], encoding:  URLEncoding.default)
         case let .queryCategory4AndroidAll(goodsCategoryId):
-            return ["goodsCategoryId":goodsCategoryId]
+            return .requestParameters(parameters:["goodsCategoryId":goodsCategoryId], encoding:  URLEncoding.default)
         case let .queryCategory4Android(goodsCategoryId):
-            return ["goodsCategoryId":goodsCategoryId]
+            return .requestParameters(parameters:["goodsCategoryId":goodsCategoryId], encoding:  URLEncoding.default)
         case let .queryBrandList4Android(goodscategoryId,substationId):
-            return ["goodscategoryId":goodscategoryId,"substationId":substationId]
+            return .requestParameters(parameters:["goodscategoryId":goodscategoryId,"substationId":substationId], encoding:  URLEncoding.default)
         case let .queryStoreAllRobOrderForList(robflag, sellerId, pageSize, currentPage):
-            return ["robflag":robflag,"sellerId":sellerId,"pageSize":pageSize,"currentPage":currentPage]
+            return .requestParameters(parameters:["robflag":robflag,"sellerId":sellerId,"pageSize":pageSize,"currentPage":currentPage], encoding:  URLEncoding.default)
         case let .queryRobFor1OrderForList(storeFlagCode):
-            return ["storeFlagCode":storeFlagCode]
+            return .requestParameters(parameters:["storeFlagCode":storeFlagCode], encoding:  URLEncoding.default)
         case let .queryOrderInfo4AndroidByorderId(orderinfoId):
-            return ["orderinfoId":orderinfoId]
+            return .requestParameters(parameters:["orderinfoId":orderinfoId], encoding:  URLEncoding.default)
         case let .robOrderByStore4Android(orderId,storeId):
-            return ["orderId":orderId,"storeId":storeId]
+            return .requestParameters(parameters:["orderId":orderId,"storeId":storeId], encoding:  URLEncoding.default)
         case let .storeConfirmDelivergoods(orderinfoId, postscript):
-            return ["orderinfoId":orderinfoId,"postscript":postscript]
+            return .requestParameters(parameters:["orderinfoId":orderinfoId,"postscript":postscript], encoding:  URLEncoding.default)
         case let .insertShoppingCar(memberId,goodId,supplierId,subSupplierId,goodsCount,flag, goodsStock,storeId,promotionNumber):
             if promotionNumber != nil{
-                return ["memberId":memberId,"goodId":goodId,"supplierId":supplierId,"subSupplierId":subSupplierId,"goodsCount":goodsCount,"flag":flag,"goodsStock":goodsStock,"storeId":storeId,"promotionNumber":promotionNumber!]
+                return .requestParameters(parameters:["memberId":memberId,"goodId":goodId,"supplierId":supplierId,"subSupplierId":subSupplierId,"goodsCount":goodsCount,"flag":flag,"goodsStock":goodsStock,"storeId":storeId,"promotionNumber":promotionNumber!], encoding:  URLEncoding.default)
             }else{
-                return ["memberId":memberId,"goodId":goodId,"supplierId":supplierId,"subSupplierId":subSupplierId,"goodsCount":goodsCount,"flag":flag,"goodsStock":goodsStock,"storeId":storeId]
+                return .requestParameters(parameters:["memberId":memberId,"goodId":goodId,"supplierId":supplierId,"subSupplierId":subSupplierId,"goodsCount":goodsCount,"flag":flag,"goodsStock":goodsStock,"storeId":storeId], encoding:  URLEncoding.default)
             }
         case let .queryGoodsForAndroidIndexForStoreNew(countyId, storeId, isDisplayFlag, currentPage, pageSize, order):
-            return ["countyId":countyId,"storeId":storeId,"isDisplayFlag":isDisplayFlag,"currentPage":currentPage,"pageSize":pageSize,"order":order]
+            return .requestParameters(parameters:["countyId":countyId,"storeId":storeId,"isDisplayFlag":isDisplayFlag,"currentPage":currentPage,"pageSize":pageSize,"order":order], encoding:  URLEncoding.default)
         case let .queryGoodsInfoByCategoryForAndroidForStore(goodsCategoryId, countyId, IPhonePenghao, isDisplayFlag, pageSize, currentPage, storeId, order,tag):
-            return ["goodsCategoryId":goodsCategoryId,"countyId":countyId,"IPhonePenghao":IPhonePenghao,"isDisplayFlag":isDisplayFlag,"pageSize":pageSize,"currentPage":currentPage,"storeId":storeId,"order":order,"tag":tag]
+            return .requestParameters(parameters:["goodsCategoryId":goodsCategoryId,"countyId":countyId,"IPhonePenghao":IPhonePenghao,"isDisplayFlag":isDisplayFlag,"pageSize":pageSize,"currentPage":currentPage,"storeId":storeId,"order":order,"tag":tag], encoding:  URLEncoding.default)
         case let .letterQueryGoodsInfoByCategoryForAndroidForStore(goodsCategoryId, countyId, IPhonePenghao, isDisplayFlag, pageSize, currentPage, storeId, order,seachLetterValue):
-            return ["goodsCategoryId":goodsCategoryId,"countyId":countyId,"IPhonePenghao":IPhonePenghao,"isDisplayFlag":isDisplayFlag,"pageSize":pageSize,"currentPage":currentPage,"storeId":storeId,"order":order,"seachLetterValue":seachLetterValue]
+            return .requestParameters(parameters:["goodsCategoryId":goodsCategoryId,"countyId":countyId,"IPhonePenghao":IPhonePenghao,"isDisplayFlag":isDisplayFlag,"pageSize":pageSize,"currentPage":currentPage,"storeId":storeId,"order":order,"seachLetterValue":seachLetterValue], encoding:  URLEncoding.default)
         case let .searchGoodsInterfaceForStore(searchCondition, countyId, IPhonePenghao, isDisplayFlag, pageSize, currentPage, storeId, order,tag,goodsCategoryId):
             if goodsCategoryId == nil{
-                return ["searchCondition":searchCondition,"countyId":countyId,"IPhonePenghao":IPhonePenghao,"isDisplayFlag":isDisplayFlag,"pageSize":pageSize,"currentPage":currentPage,"storeId":storeId,"order":order,"tag":tag]
+                return .requestParameters(parameters:["searchCondition":searchCondition,"countyId":countyId,"IPhonePenghao":IPhonePenghao,"isDisplayFlag":isDisplayFlag,"pageSize":pageSize,"currentPage":currentPage,"storeId":storeId,"order":order,"tag":tag], encoding:  URLEncoding.default)
             }else{
-                return ["searchCondition":searchCondition,"countyId":countyId,"IPhonePenghao":IPhonePenghao,"isDisplayFlag":isDisplayFlag,"pageSize":pageSize,"currentPage":currentPage,"storeId":storeId,"order":order,"tag":tag,"goodsCategoryId":goodsCategoryId!]
+                return .requestParameters(parameters:["searchCondition":searchCondition,"countyId":countyId,"IPhonePenghao":IPhonePenghao,"isDisplayFlag":isDisplayFlag,"pageSize":pageSize,"currentPage":currentPage,"storeId":storeId,"order":order,"tag":tag,"goodsCategoryId":goodsCategoryId!], encoding:  URLEncoding.default)
             }
         case let .queryStorePromotionGoodsList(storeId, order, pageSize, currentPage):
-            return ["storeId":storeId,"order":order,"pageSize":pageSize,"currentPage":currentPage]
+            return .requestParameters(parameters:["storeId":storeId,"order":order,"pageSize":pageSize,"currentPage":currentPage], encoding:  URLEncoding.default)
         case let .queryGoodsDetailsForAndroid(goodsbasicinfoId, supplierId, flag, storeId, aaaa, subSupplier,memberId,promotionFlag):
             if flag != nil{//查询特价商品详情
-                return ["goodsbasicinfoId":goodsbasicinfoId,"supplierId":supplierId,"flag":flag!,"storeId":storeId,"aaaa":aaaa,"subSupplier":subSupplier,"memberId":memberId]
+                return .requestParameters(parameters:["goodsbasicinfoId":goodsbasicinfoId,"supplierId":supplierId,"flag":flag!,"storeId":storeId,"aaaa":aaaa,"subSupplier":subSupplier,"memberId":memberId], encoding:  URLEncoding.default)
             }else if promotionFlag != nil{
-                return ["goodsbasicinfoId":goodsbasicinfoId,"supplierId":supplierId,"storeId":storeId,"aaaa":aaaa,"subSupplier":subSupplier,"memberId":memberId,"promotionFlag":promotionFlag!]
+                return .requestParameters(parameters:["goodsbasicinfoId":goodsbasicinfoId,"supplierId":supplierId,"storeId":storeId,"aaaa":aaaa,"subSupplier":subSupplier,"memberId":memberId,"promotionFlag":promotionFlag!], encoding:  URLEncoding.default)
             }else if promotionFlag == nil && flag == nil{
-                return ["goodsbasicinfoId":goodsbasicinfoId,"supplierId":supplierId,"storeId":storeId,"aaaa":aaaa,"subSupplier":subSupplier,"memberId":memberId]
+                return .requestParameters(parameters:["goodsbasicinfoId":goodsbasicinfoId,"supplierId":supplierId,"storeId":storeId,"aaaa":aaaa,"subSupplier":subSupplier,"memberId":memberId], encoding:  URLEncoding.default)
             }else{
-                return nil
+                return .requestPlain
             }
             
         case let .queryPreferentialAndGoods4Store(countyId, categoryId, storeId, pageSize, currentPage, order):
-            return ["countyId":countyId,"categoryId":categoryId,"storeId":storeId,"pageSize":pageSize,"currentPage":currentPage,"order":order]
+            return .requestParameters(parameters:["countyId":countyId,"categoryId":categoryId,"storeId":storeId,"pageSize":pageSize,"currentPage":currentPage,"order":order], encoding:  URLEncoding.default)
         case .mobileAdvertisingPromotion():
-            return nil
+            return .requestPlain
         case let .queryAdMessgInfo(substationId):
-            return ["substationId":substationId]
+            return .requestParameters(parameters:["substationId":substationId], encoding:  URLEncoding.default)
         case let .queryGoodsForAndroidIndexForStore(countyId, isDisplayFlag, storeId):
-            return ["countyId":countyId,"isDisplayFlag":isDisplayFlag,"storeId":storeId]
+            return .requestParameters(parameters:["countyId":countyId,"isDisplayFlag":isDisplayFlag,"storeId":storeId], encoding:  URLEncoding.default)
         case let .queryOneCategory(isDisplayFlag):
-            return ["isDisplayFlag":isDisplayFlag]
+            return .requestParameters(parameters:["isDisplayFlag":isDisplayFlag], encoding:  URLEncoding.default)
         case let .mobileAdvertising(countyId):
-            return ["countyId":countyId]
+            return .requestParameters(parameters:["countyId":countyId], encoding:  URLEncoding.default)
         case let .storeQueryMyNews(storeId, pageSize, currentPage, flag):
-            return ["storeId":storeId,"pageSize":pageSize,"currentPage":currentPage,"flag":flag]
+            return .requestParameters(parameters:["storeId":storeId,"pageSize":pageSize,"currentPage":currentPage,"flag":flag], encoding:  URLEncoding.default)
         case let .queryRecommended(storeId):
-            return ["storeId":storeId]
+            return .requestParameters(parameters:["storeId":storeId], encoding:  URLEncoding.default)
         case let .queryMessageToStore(substationId, pageSize, currentPage):
-            return ["substationId":substationId,"pageSize":pageSize,"currentPage":currentPage]
+            return .requestParameters(parameters:["substationId":substationId,"pageSize":pageSize,"currentPage":currentPage], encoding:  URLEncoding.default)
         case let .queryStoreMember(storeId, memberId):
-            return ["storeId":storeId,"memberId":memberId]
+            return .requestParameters(parameters:["storeId":storeId,"memberId":memberId], encoding:  URLEncoding.default)
         case let .outLoginForStore(memberId):
-            return ["memberId":memberId]
+            return .requestParameters(parameters:["memberId":memberId], encoding:  URLEncoding.default)
         case let .suoYuan(countyId, goodInfoCode):
-            return ["countyId":countyId,"goodInfoCode":goodInfoCode]
+            return .requestParameters(parameters:["countyId":countyId,"goodInfoCode":goodInfoCode], encoding:  URLEncoding.default)
         case let .queryOrderInfo4AndroidStoreByOrderStatus(orderStatus, storeId, pageSize, currentPage):
-            return ["orderStatus":orderStatus,"storeId":storeId,"pageSize":pageSize,"currentPage":currentPage]
+            return .requestParameters(parameters:["orderStatus":orderStatus,"storeId":storeId,"pageSize":pageSize,"currentPage":currentPage], encoding:  URLEncoding.default)
         case let .storeCancelOrder(orderId):
-            return ["orderId":orderId]
+            return .requestParameters(parameters:["orderId":orderId], encoding:  URLEncoding.default)
         case let .updataOrderStatus4Store(orderinfoId):
-            return ["orderinfoId":orderinfoId]
+            return .requestParameters(parameters:["orderinfoId":orderinfoId], encoding:  URLEncoding.default)
         case let .bindingRecommended4Store(recommended, beRecommendedId):
-            return ["recommended":recommended,"beRecommendedId":beRecommendedId]
+            return .requestParameters(parameters:["recommended":recommended,"beRecommendedId":beRecommendedId], encoding:  URLEncoding.default)
         case let .integralMallExchange(integralMallId, memberId, exchangeCount):
-            return ["integralMallId":integralMallId,"memberId":memberId,"exchangeCount":exchangeCount]
+            return .requestParameters(parameters:["integralMallId":integralMallId,"memberId":memberId,"exchangeCount":exchangeCount], encoding:  URLEncoding.default)
         case let .queryMemberIntegral(memberId):
-            return ["memberId":memberId as AnyObject]
+            return .requestParameters(parameters:["memberId":memberId], encoding:  URLEncoding.default)
         case let .queryIntegralMallForSubStation(subStationId, currentPage, pageSize):
-            return ["subStationId":subStationId,"currentPage":currentPage,"pageSize":pageSize]
+            return .requestParameters(parameters:["subStationId":subStationId,"currentPage":currentPage,"pageSize":pageSize], encoding:  URLEncoding.default)
         case let .storeQueryMemberIntegralV1(memberId, currentPage, pageSize):
-            return ["memberId":memberId,"currentPage":currentPage,"pageSize":pageSize]
+            return .requestParameters(parameters:["memberId":memberId,"currentPage":currentPage,"pageSize":pageSize], encoding:  URLEncoding.default)
         case let .queryIntegralMallExchangeRecord(memberId, pageSize, currentPage):
-            return ["memberId":memberId,"pageSize":pageSize,"currentPage":currentPage]
+            return .requestParameters(parameters:["memberId":memberId,"pageSize":pageSize,"currentPage":currentPage], encoding:  URLEncoding.default)
         case let .nmoreGlobalPosiUploadStoreLogin(userAccount, userPassword):
-            return ["userAccount":userAccount,"userPassword":userPassword]
+            return .requestParameters(parameters:["userAccount":userAccount,"userPassword":userPassword], encoding:  URLEncoding.default)
         case let .nmoreGlobalPosiUploadStore(map_coordinate, storeName, tel, address, ownerName, savePath, referralName, password):
-            return ["map_coordinate":map_coordinate,"storeName":storeName,"tel":tel,"address":address,"ownerName":ownerName,"savePath":savePath,"referralName":referralName,"password":password]
+            return .requestParameters(parameters:["map_coordinate":map_coordinate,"storeName":storeName,"tel":tel,"address":address,"ownerName":ownerName,"savePath":savePath,"referralName":referralName,"password":password], encoding:  URLEncoding.default)
         case let .queryStoreShippAddressforAndroid(storeId):
-            return ["storeId":storeId]
+            return .requestParameters(parameters:["storeId":storeId], encoding:  URLEncoding.default)
         case let .deleteStoreShippAddressforAndroid(shippAddressId):
-            return ["shippAddressId":shippAddressId]
+            return .requestParameters(parameters:["shippAddressId":shippAddressId], encoding:  URLEncoding.default)
         case let .updateStoreShippAddressforAndroid(flag, storeId, county, city, province, shippName, detailAddress, phoneNumber, IPhonePenghao, shippAddressId):
-            return ["flag":flag,"storeId":storeId,"county":county,"city":city,"province":province,"shippName":shippName,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"IPhonePenghao":IPhonePenghao,"shippAddressId":shippAddressId]
+            return .requestParameters(parameters:["flag":flag,"storeId":storeId,"county":county,"city":city,"province":province,"shippName":shippName,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"IPhonePenghao":IPhonePenghao,"shippAddressId":shippAddressId], encoding:  URLEncoding.default)
         case let .addStoreShippAddressforAndroid(flag, storeId, county, city, province, shippName, detailAddress, phoneNumber, IPhonePenghao):
-            return ["flag":flag,"storeId":storeId,"county":county,"city":city,"province":province,"shippName":shippName,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"IPhonePenghao":IPhonePenghao]
+            return .requestParameters(parameters:["flag":flag,"storeId":storeId,"county":county,"city":city,"province":province,"shippName":shippName,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"IPhonePenghao":IPhonePenghao], encoding:  URLEncoding.default)
         case let .storeOrderForAndroid(goodsList, detailAddress, phoneNumber, shippName, storeId, pay_message, tag,cashCouponId):
             if cashCouponId == nil{
-            return ["goodsList":goodsList,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"shippName":shippName,"storeId":storeId,"pay_message":pay_message,"tag":tag]
+                return .requestParameters(parameters:["goodsList":goodsList,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"shippName":shippName,"storeId":storeId,"pay_message":pay_message,"tag":tag], encoding:  URLEncoding.default)
             }else{
-                return ["goodsList":goodsList,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"shippName":shippName,"storeId":storeId,"pay_message":pay_message,"tag":tag,"cashCouponId":cashCouponId!]
+                return .requestParameters(parameters:["goodsList":goodsList,"detailAddress":detailAddress,"phoneNumber":phoneNumber,"shippName":shippName,"storeId":storeId,"pay_message":pay_message,"tag":tag,"cashCouponId":cashCouponId!], encoding:  URLEncoding.default)
             }
         case let .complaintsAndSuggestions(complaint, storeId):
-            return ["complaint":complaint,"storeId":storeId]
+            return .requestParameters(parameters:["complaint":complaint,"storeId":storeId], encoding:  URLEncoding.default)
         case let .queryTwoCategoryForMob(goodsCategoryId,substationId):
-            return ["goodsCategoryId":goodsCategoryId,"substationId":substationId]
+            return .requestParameters(parameters:["goodsCategoryId":goodsCategoryId,"substationId":substationId], encoding:  URLEncoding.default)
         case let .goodsAddCollection(goodId, supplierId, subSupplierId, memberId):
-            return ["goodId":goodId,"supplierId":supplierId,"subSupplierId":subSupplierId,"memberId":memberId]
+            return .requestParameters(parameters:["goodId":goodId,"supplierId":supplierId,"subSupplierId":subSupplierId,"memberId":memberId], encoding:  URLEncoding.default)
         case let .queryStoreCollectionList(memberId,pageSize,currentPage):
-            return ["memberId":memberId,"pageSize":pageSize,"currentPage":currentPage]
+            return .requestParameters(parameters:["memberId":memberId,"pageSize":pageSize,"currentPage":currentPage], encoding:  URLEncoding.default)
         case let .goodsCancelCollection(memberId, goodId):
-            return ["memberId":memberId,"goodId":goodId]
+            return .requestParameters(parameters:["memberId":memberId,"goodId":goodId], encoding:  URLEncoding.default)
         case .mobileAdvertisingPromotionAndPreferential():
-            return nil
+            return .requestPlain
         case let .queryShoppingCarMoreGoodsForSubSupplier(storeId, subSupplierId, pageSize, currentPage, order,seachLetterValue,tag):
             if order == "count" || order == "price"{
-                return ["storeId":storeId,"subSupplierId":subSupplierId,"pageSize":pageSize,"currentPage":currentPage,"order":order,"tag":tag]
+                return .requestParameters(parameters:["storeId":storeId,"subSupplierId":subSupplierId,"pageSize":pageSize,"currentPage":currentPage,"order":order,"tag":tag], encoding:  URLEncoding.default)
             }else if order == "letter"{
-                return ["storeId":storeId,"subSupplierId":subSupplierId,"pageSize":pageSize,"currentPage":currentPage,"order":order]
+                return .requestParameters(parameters:["storeId":storeId,"subSupplierId":subSupplierId,"pageSize":pageSize,"currentPage":currentPage,"order":order], encoding:  URLEncoding.default)
             }else if order == "seachLetter"{
-                return ["storeId":storeId,"subSupplierId":subSupplierId,"pageSize":pageSize,"currentPage":currentPage,"order":order,"seachLetterValue":seachLetterValue]
+                return .requestParameters(parameters:["storeId":storeId,"subSupplierId":subSupplierId,"pageSize":pageSize,"currentPage":currentPage,"order":order,"seachLetterValue":seachLetterValue], encoding:  URLEncoding.default)
             }else{
-                return nil
+                return .requestPlain
             }
         case let .queryStoreSignRecord(storeId,pageSize,currentPage):
-            return ["storeId":storeId,"pageSize":pageSize,"currentPage":currentPage]
+            return .requestParameters(parameters:["storeId":storeId,"pageSize":pageSize,"currentPage":currentPage], encoding:  URLEncoding.default)
         case let .storeSign(storeId):
-            return ["storeId":storeId]
+            return .requestParameters(parameters:["storeId":storeId], encoding:  URLEncoding.default)
         case let .queryStoreToDaySign(storeId):
-            return ["storeId":storeId]
+            return .requestParameters(parameters:["storeId":storeId], encoding:  URLEncoding.default)
             
         }
     }

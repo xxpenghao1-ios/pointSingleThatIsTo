@@ -33,7 +33,7 @@ class DeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITabl
         self.title="已发货"
         self.view.backgroundColor=UIColor.white
         //监听通知 刷新数据
-        NotificationCenter.default.addObserver(self, selector:"updateOrderList:", name:NSNotification.Name(rawValue: "postUpdateOrderList"), object: nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(updateOrderList), name:NSNotification.Name(rawValue: "postUpdateOrderList"), object: nil)
         creatDeliverGoodsedTable()
     }
     /**
@@ -41,34 +41,34 @@ class DeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITabl
      
      - parameter obj:NSNotification
      */
-    func updateOrderList(_ obj:Notification){
-        deliverGoodsedTable?.headerBeginRefreshing()
+    @objc func updateOrderList(_ obj:Notification){
+        deliverGoodsedTable?.mj_header.beginRefreshing()
     }
     /**
     创建已发货Table
     */
     func creatDeliverGoodsedTable(){
-        deliverGoodsedTable=UITableView(frame: CGRect(x: 0, y: 0, width: boundsWidth, height: boundsHeight-104), style: UITableViewStyle.plain)
+        deliverGoodsedTable=UITableView(frame: CGRect(x: 0, y: 0, width: boundsWidth, height:boundsHeight-(navHeight+40)-bottomSafetyDistanceHeight), style: UITableViewStyle.plain)
         deliverGoodsedTable?.delegate=self
         deliverGoodsedTable?.dataSource=self
         deliverGoodsedTable?.backgroundColor=UIColor.white
         deliverGoodsedTable?.separatorStyle=UITableViewCellSeparatorStyle.none
         self.view.addSubview(deliverGoodsedTable!)
         
-        deliverGoodsedTable!.addHeaderWithCallback({//下拉重新加载数据
+        deliverGoodsedTable!.mj_header=MJRefreshNormalHeader(refreshingBlock: {//下拉重新加载数据
             //从第一页开始
             self.currentPage=1
             //重新发送请求
             self.queryOrderInfo4AndroidStoreByOrderStatus(self.currentPage,isRefresh: true)
         })
-        deliverGoodsedTable!.addFooterWithCallback({//上拉加载更多
+        deliverGoodsedTable!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//上拉加载更多
             //每次页面索引加1
             self.currentPage+=1
             self.queryOrderInfo4AndroidStoreByOrderStatus(self.currentPage,isRefresh: false)
         })
         //加载等待视图
         SVProgressHUD.show(withStatus: "数据加载中")
-        deliverGoodsedTable!.headerBeginRefreshing()
+        deliverGoodsedTable!.mj_header.beginRefreshing()
         
     }
     
@@ -96,7 +96,7 @@ class DeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITabl
             cell!.updateCell(stockOrderEntityArray[indexPath.row])
             let viewMiddle=UIView(frame:CGRect(x: 0,y: 40,width: boundsWidth,height: 80))
             viewMiddle.tag=indexPath.row
-            viewMiddle.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector(("pushOrderDetail:"))))
+            viewMiddle.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(pushOrderDetail)))
             cell!.contentView.addSubview(viewMiddle)
         }
         cell!.selectionStyle=UITableViewCellSelectionStyle.none
@@ -107,7 +107,7 @@ class DeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITabl
      
      - parameter sender:UITapGestureRecognizer
      */
-    func pushOrderDetail(_ sender:UITapGestureRecognizer){
+    @objc func pushOrderDetail(_ sender:UITapGestureRecognizer){
         let vc=StockOrderDetailsViewController()
         vc.orderList=stockOrderEntityArray[sender.view!.tag]
         self.navigationController!.pushViewController(vc, animated:true)
@@ -160,9 +160,9 @@ class DeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITabl
                     self.stockOrderEntityArray.append(robbedEntity!)
                 }
                 if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-                    self.deliverGoodsedTable?.setFooterHidden(true)
+                    self.deliverGoodsedTable?.mj_footer.isHidden=true
                 }else{//否则显示
-                    self.deliverGoodsedTable?.setFooterHidden(false)
+                    self.deliverGoodsedTable?.mj_footer.isHidden=false
                 }
                 if(self.stockOrderEntityArray.count < 1){//如果数据为空，显示默认视图
                     self.nilView?.removeFromSuperview()
@@ -173,18 +173,18 @@ class DeliverGoodsViewController:BaseViewController,UITableViewDataSource,UITabl
                     self.nilView?.removeFromSuperview()
                 }
                 //关闭下拉刷新状态
-                self.deliverGoodsedTable?.headerEndRefreshing()
+                self.deliverGoodsedTable?.mj_header.endRefreshing()
                 //关闭上拉加载状态
-                self.deliverGoodsedTable?.footerEndRefreshing()
+                self.deliverGoodsedTable?.mj_footer.endRefreshing()
                 //关闭加载等待视图
                 SVProgressHUD.dismiss()
                 //重新加载Table
                 self.deliverGoodsedTable?.reloadData()
                 }, failClosure: { (errorMsg) -> Void in
                     //关闭刷新状态
-                    self.deliverGoodsedTable?.headerEndRefreshing()
+                    self.deliverGoodsedTable?.mj_header.endRefreshing()
                     //关闭加载状态
-                    self.deliverGoodsedTable?.footerEndRefreshing()
+                    self.deliverGoodsedTable?.mj_footer.endRefreshing()
                     SVProgressHUD.showError(withStatus: errorMsg)
             })
     }

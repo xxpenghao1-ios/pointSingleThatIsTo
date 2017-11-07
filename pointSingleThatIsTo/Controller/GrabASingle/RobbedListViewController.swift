@@ -39,7 +39,7 @@
 //        self.nilView!.center=self.robbedListTable!.center
 //        self.view.addSubview(self.nilView!)
 ////        //添加观察者，监听已抢订单刷新的通知
-////        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateOrderPage:", name: "grabASingleNotification", object: nil)
+////        NSNotificationCenter.defaultCenter().addObserver(self, #selector: "updateOrderPage:", name: "grabASingleNotification", object: nil)
 //    }
 //    override func viewWillAppear(_ animated: Bool) {
 //        super.viewWillAppear(true)
@@ -63,7 +63,7 @@
 //        robbedListTable?.separatorStyle=UITableViewCellSeparatorStyle.none
 //        self.view.addSubview(robbedListTable!)
 //        
-////        robbedListTable!.addHeaderWithCallback({//下拉重新加载数据
+////        robbedListTable!.mj_header=MJRefreshNormalHeader(refreshingBlock: {//下拉重新加载数据
 ////            //从第一页开始
 ////            self.currentPage=1
 ////            //清除数据源
@@ -71,7 +71,7 @@
 ////            //重新发送已抢单请求
 ////            self.queryStoreAllRobOrderForList(self.currentPage)
 ////        })
-////        robbedListTable!.addFooterWithCallback({//上拉加载更多
+////        robbedListTable!.mj_footer=MJRefreshAutoNormalFooter(refreshingBlock: {//上拉加载更多
 ////            //每次页面索引加1
 ////            self.currentPage+=1
 ////            self.queryStoreAllRobOrderForList(self.currentPage)
@@ -174,9 +174,9 @@
 //                    self.robbedListEntityArray.append(robbedEntity!)
 //                }
 //                if count < 10{//判断count是否小于10  如果小于表示没有可以加载了 隐藏加载状态
-//                    self.robbedListTable?.setFooterHidden(true)
+//                    self.robbedListTable?.mj_footer.isHidden=true
 //                }else{//否则显示
-//                    self.robbedListTable?.setFooterHidden(false)
+//                    self.robbedListTable?.mj_footer.isHidden=false
 //                }
 //                if(self.robbedListEntityArray.count < 1){//如果数据为空，显示默认视图
 //                    self.nilView?.removeFromSuperview()
@@ -187,9 +187,9 @@
 //                    self.nilView?.removeFromSuperview()
 //                }
 //                //关闭下拉刷新状态
-//                self.robbedListTable?.headerEndRefreshing()
+//                self.robbedListTable?.mj_header.endRefreshing()
 //                //关闭上拉加载状态
-//                self.robbedListTable?.footerEndRefreshing()
+//                self.robbedListTable?.mj_footer.endRefreshing()
 //                SVProgressHUD.dismiss()
 //                //重新加载Table
 //                self.robbedListTable?.reloadData()
@@ -198,9 +198,9 @@
 //
 //                }, failClosure: { (errorMsg) -> Void in
 //                    //关闭刷新状态
-//                    self.robbedListTable?.headerEndRefreshing()
+//                    self.robbedListTable?.mj_header.endRefreshing()
 //                    //关闭加载状态
-//                    self.robbedListTable?.footerEndRefreshing()
+//                    self.robbedListTable?.mj_footer.endRefreshing()
 //                    SVProgressHUD.showErrorWithStatus(errorMsg)
 //            })
 //        }else{

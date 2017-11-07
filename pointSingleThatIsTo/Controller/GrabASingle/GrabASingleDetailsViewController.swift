@@ -33,7 +33,7 @@
 //        self.nilView!.center=self.GrabASingleTable!.center
 //        self.view.addSubview(self.nilView!)
 ////        //添加观察者，监听我要抢单刷新的通知
-////        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateOrderPage:", name: "grabASingleNotification", object: nil)
+////        NSNotificationCenter.defaultCenter().addObserver(self, #selector: "updateOrderPage:", name: "grabASingleNotification", object: nil)
 //
 //    }
 //

@@ -23,7 +23,7 @@ class GoodDetailPromotionsDetailView:BaseViewController{
         lblStr.numberOfLines=0
         lblStr.lineBreakMode=NSLineBreakMode.byWordWrapping
         let size=lblStr.text!.textSizeWithFont(lblStr.font, constrainedToSize:CGSize(width: boundsWidth-30,height: 300))
-        lblStr.frame=CGRect(x: 15,y: 84,width: boundsWidth-30,height: size.height)
+        lblStr.frame=CGRect(x: 15,y:navHeight+20,width: boundsWidth-30,height: size.height)
         self.view.addSubview(lblStr)
         
         

@@ -46,7 +46,7 @@ extension SettingsViewController:UITableViewDataSource,UITableViewDelegate{
             break
         case 2:
             cell!.textLabel!.text="当前版本"
-            cell!.detailTextLabel!.text="4.1"
+            cell!.detailTextLabel!.text="4.6.1"
             break
         default:break
         }

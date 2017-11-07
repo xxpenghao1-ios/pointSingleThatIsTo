@@ -169,7 +169,7 @@ class GoodSpecialPriceTableCell: UITableViewCell {
         goodImgView.layer.masksToBounds=true
         goodImgView.layer.cornerRadius=3
         goodImgView.isUserInteractionEnabled=true
-        goodImgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("pushGoodSpecialPriceDetail")))
+        goodImgView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(pushGoodSpecialPriceDetail)))
         
         lblPromotionText.textColor=UIColor.applicationMainColor()
         
@@ -177,7 +177,7 @@ class GoodSpecialPriceTableCell: UITableViewCell {
         lblGoodStock.textColor=UIColor.textColor()
         
         addCarView.isUserInteractionEnabled=true
-        addCarView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("addShoppingCarts")))
+        addCarView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(addShoppingCarts)))
         
         
         //去掉选中背景
@@ -186,13 +186,13 @@ class GoodSpecialPriceTableCell: UITableViewCell {
     /**
      加入购物车
      */
-    func addShoppingCarts(){
+    @objc func addShoppingCarts(){
         delegate?.addCar(goodEntity!)
     }
     /**
      跳转到特价商品详情
      */
-    func pushGoodSpecialPriceDetail(){
+    @objc func pushGoodSpecialPriceDetail(){
         delegate?.pushGoodSpecialPriceDetail(goodEntity!)
     }
     /**

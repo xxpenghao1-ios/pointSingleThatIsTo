@@ -99,8 +99,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         //动态显示标题
         self.title=goodEntity!.goodInfoName
         self.view.backgroundColor=UIColor.white
-        scrollView=UIScrollView(frame:self.view.bounds)
-        scrollView!.contentSize=self.view.bounds.size
+        scrollView=UIScrollView(frame:CGRect(x:0, y:navHeight, width:boundsWidth, height:boundsHeight-navHeight-bottomSafetyDistanceHeight))
         self.view.addSubview(scrollView!)
         
             //构建页面
@@ -141,7 +140,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         lblCollectName!.font=UIFont.systemFont(ofSize: 10)
         lblCollectName!.textAlignment = .center
         collectView!.isUserInteractionEnabled=true
-        collectView!.addGestureRecognizer(UITapGestureRecognizer(target:self, action:Selector("goodsAddCollection")))
+        collectView!.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(goodsAddCollection)))
         collectView!.addSubview(lblCollectName!)
         self.scrollView!.addSubview(collectView!)
         
@@ -193,7 +192,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         self.goodView!.addSubview(lblUcode!)
         
         //下面加入购物车视图
-        insertShoppingCarView=UIView(frame:CGRect(x: 0,y: boundsHeight-50,width: boundsWidth,height: 50));
+        insertShoppingCarView=UIView(frame:CGRect(x: 0,y: boundsHeight-50-bottomSafetyDistanceHeight,width: boundsWidth,height: 50));
         
         //左边商品加减视图
         let leftView=UIView(frame:CGRect(x: 0,y: 0,width: boundsWidth/2,height: 50))
@@ -204,7 +203,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         let rightView=UIView(frame:CGRect(x: boundsWidth/2,y: 0,width: boundsWidth/2,height: 50))
         rightView.backgroundColor=UIColor.applicationMainColor();
         rightView.isUserInteractionEnabled=true
-        rightView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:Selector("addShoppingCar:")))
+        rightView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:#selector(addShoppingCar)))
         
         //购物车按钮view
         let charView=UIView(frame:CGRect(x: (rightView.frame.width-110)/2,y: (rightView.frame.height-20)/2,width: 110,height: 20))
@@ -238,7 +237,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         btnReductionCount!.titleLabel!.font=UIFont.systemFont(ofSize: 22)
         btnReductionCount!.setTitleColor(UIColor(red:204/255, green:204/255, blue:204/255, alpha: 1), for: UIControlState())
         btnReductionCount!.setTitleColor(UIColor.white, for: UIControlState.highlighted)
-        btnReductionCount!.addTarget(self, action:Selector("reductionCount:"), for: UIControlEvents.touchUpInside);
+        btnReductionCount!.addTarget(self, action:#selector(reductionCount), for: UIControlEvents.touchUpInside);
         btnReductionCount!.backgroundColor=UIColor.white
         countView!.addSubview(btnReductionCount!);
         /// 边线
@@ -256,7 +255,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         
         /// 点击商品数量区域 弹出数量选择
         let countLebBtn=UIButton(frame:CGRect(x: btnReductionCount!.frame.width+1,y: 0,width: countWidth+10,height: countView!.frame.height))
-        countLebBtn.addTarget(self, action:Selector("purchaseCount:"), for: UIControlEvents.touchUpInside)
+        countLebBtn.addTarget(self, action:#selector(purchaseCount), for: UIControlEvents.touchUpInside)
         countView!.addSubview(countLebBtn)
         
         //边线
@@ -272,14 +271,14 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         btnAddCount!.setTitleColor(UIColor(red:204/255, green:204/255, blue:204/255, alpha: 1), for: UIControlState())
         btnAddCount!.setTitleColor(UIColor.white, for: UIControlState.highlighted)
         btnAddCount!.layer.masksToBounds=true
-        btnAddCount!.addTarget(self, action:Selector("addCount:"), for: UIControlEvents.touchUpInside);
+        btnAddCount!.addTarget(self, action:#selector(addCount), for: UIControlEvents.touchUpInside);
         countView!.addSubview(btnAddCount!);
         
         //查看购物车按钮
-        btnSelectShoppingCar=UIButton(frame:CGRect(x: boundsWidth-75,y: boundsHeight-50-70,width: 60,height: 60));
+        btnSelectShoppingCar=UIButton(frame:CGRect(x: boundsWidth-75,y: boundsHeight-50-70-bottomSafetyDistanceHeight,width: 60,height: 60));
         let shoppingCarImg=UIImage(named:"char1");
         
-        btnSelectShoppingCar!.addTarget(self, action:Selector("pushShoppingView:"), for:UIControlEvents.touchUpInside);
+        btnSelectShoppingCar!.addTarget(self, action:#selector(pushShoppingView), for:UIControlEvents.touchUpInside);
         btnSelectShoppingCar!.setBackgroundImage(shoppingCarImg, for:UIControlState());
         btnSelectShoppingCar!.isHidden=true
         self.view.addSubview(btnSelectShoppingCar!)
@@ -298,19 +297,11 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         }else{
             table=UITableView(frame:CGRect(x: 0,y: goodView!.frame.maxY,width: boundsWidth,height: 400), style: UITableViewStyle.plain)
         }
+        scrollView!.contentSize=CGSize(width:boundsWidth,height: self.table!.frame.maxY+50)
         table!.dataSource=self
         table!.delegate=self
         table!.isScrollEnabled=false
         self.scrollView!.addSubview(table!)
-        
-        if table!.frame.maxY > boundsHeight-64-50{//如果结束边线的最大Y值大于屏幕高度-64-加入购车层的高度  设置可滑动容器的范围为结束边线最大Y值
-            
-            //设置滑动容器滚动范围
-            self.scrollView!.contentSize=CGSize(width: boundsWidth,height: table!.frame.maxY+50)
-        }else{//否  直接设置滚动范围为屏幕范围
-            //设置滑动容器滚动范围
-            self.scrollView!.contentSize=CGSize(width: boundsWidth,height: boundsHeight-64-50)
-        }
         //设置cell下边线全屏
         if(table!.responds(to: #selector(setter: UIView.layoutMargins))){
             table?.layoutMargins=UIEdgeInsets.zero
@@ -356,7 +347,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
         btnPushSupplier.backgroundColor=UIColor.applicationMainColor()
         btnPushSupplier.layer.cornerRadius=10
         btnPushSupplier.setTitleColor(UIColor.white, for: UIControlState())
-        btnPushSupplier.addTarget(self, action:Selector("showSubSuppingVC"), for: UIControlEvents.touchUpInside)
+        btnPushSupplier.addTarget(self, action:#selector(showSubSuppingVC), for: UIControlEvents.touchUpInside)
         btnPushSupplier.titleLabel!.font=UIFont.systemFont(ofSize: 13)
         
         switch indexPath.row{
@@ -479,7 +470,7 @@ class GoodDetailViewController:AddShoppingCartAnimation,UITableViewDataSource,UI
      导航控制器搜索按钮
      */
     func buildNavSearch(){
-        let searchBtn=UIBarButtonItem(barButtonSystemItem:UIBarButtonSystemItem.search, target:self, action:Selector("pushSearchView"));
+        let searchBtn=UIBarButtonItem(barButtonSystemItem:UIBarButtonSystemItem.search, target:self, action:#selector(pushSearchView));
         self.navigationItem.rightBarButtonItem=searchBtn;
     }
     deinit{
@@ -492,7 +483,7 @@ extension GoodDetailViewController{
     /**
      跳转搜索页面
      */
-    func pushSearchView(){
+    @objc func pushSearchView(){
         let vc=SearchViewController();
         vc.hidesBottomBarWhenPushed=true;
         self.navigationController?.pushViewController(vc, animated:true);
@@ -502,7 +493,7 @@ extension GoodDetailViewController{
      
      - parameter sender: UIButton
      */
-    func addCount(_ sender:UIButton){
+    @objc func addCount(_ sender:UIButton){
         if self.goodDeatilEntity!.goodsStock == -1{
             count+=self.goodDeatilEntity!.goodsBaseCount!
             lblCountLeb!.text="\(count)"
@@ -520,7 +511,7 @@ extension GoodDetailViewController{
      
      - parameter sender: UIButton
      */
-    func reductionCount(_ sender:UIButton){
+    @objc func reductionCount(_ sender:UIButton){
         if count > self.goodDeatilEntity!.miniCount!{
             count-=self.goodDeatilEntity!.goodsBaseCount!
             lblCountLeb!.textColor=UIColor.red
@@ -532,7 +523,7 @@ extension GoodDetailViewController{
      
      - parameter sender:UIButton
      */
-    func purchaseCount(_ sender:UIButton){
+    @objc func purchaseCount(_ sender:UIButton){
         let alertController = UIAlertController(title:nil, message:"输入您要购买的数量", preferredStyle: UIAlertControllerStyle.alert);
         alertController.addTextField {
             (textField: UITextField!) -> Void in
@@ -544,7 +535,7 @@ extension GoodDetailViewController{
                 textField.placeholder = "请输入\(self.goodDeatilEntity!.miniCount!)~\(self.goodDeatilEntity!.goodsStock!)之间\(self.goodDeatilEntity!.goodsBaseCount!)的倍数"
                 textField.tag=self.goodDeatilEntity!.goodsStock!
             }
-            NotificationCenter.default.addObserver(self, selector: Selector("alertTextFieldDidChange:"), name: NSNotification.Name.UITextFieldTextDidChange, object: textField)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.alertTextFieldDidChange), name: NSNotification.Name.UITextFieldTextDidChange, object: textField)
         }
         //确定
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.default,handler:{ Void in
@@ -561,7 +552,7 @@ extension GoodDetailViewController{
         self.present(alertController, animated: true, completion: nil)
     }
     //检测输入框的字符是否大于库存数量 是解锁确定按钮
-    func alertTextFieldDidChange(_ notification: Notification){
+    @objc func alertTextFieldDidChange(_ notification: Notification){
         let alertController = self.presentedViewController as! UIAlertController?
         if (alertController != nil) {
             let text = (alertController!.textFields?.first)! as UITextField
@@ -578,7 +569,7 @@ extension GoodDetailViewController{
      
      - parameter sender:UIButton
      */
-    func addShoppingCar(_ sender:UIButton){
+    @objc func addShoppingCar(_ sender:UIButton){
         //拿到会员id
         let memberId=UserDefaults.standard.object(forKey: "memberId") as! String
         let storeId=userDefaults.object(forKey: "storeId") as! String
@@ -699,7 +690,7 @@ extension GoodDetailViewController{
     /**
      加入收藏
      */
-    func goodsAddCollection(){
+    @objc func goodsAddCollection(){
         if self.goodDeatilEntity!.goodsCollectionStatu == 1{
             SVProgressHUD.showInfo(withStatus: "该商品已经被收藏")
         }else{
@@ -730,12 +721,12 @@ extension GoodDetailViewController{
      
      - parameter sender:UIButton
      */
-    func pushShoppingView(_ sender:UIButton){
+    @objc func pushShoppingView(_ sender:UIButton){
         let vc=ShoppingCarViewContorller()
         vc.hidesBottomBarWhenPushed=true
         self.navigationController!.pushViewController(vc, animated:true)
     }
-    func showSubSuppingVC(){
+    @objc func showSubSuppingVC(){
         let vc=GoodCategory3ViewController()
         vc.flag=6
         vc.subSupplierId=self.goodDeatilEntity!.subSupplier
