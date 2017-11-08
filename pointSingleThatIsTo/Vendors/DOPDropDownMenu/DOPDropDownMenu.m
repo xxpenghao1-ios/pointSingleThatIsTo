@@ -241,9 +241,8 @@
     CGPoint touchPoint = [paramSender locationInView:self];
     //calculate index
     NSInteger tapIndex = touchPoint.x / (self.frame.size.width / _numOfMenu);
- 
     for (int i = 0; i < _numOfMenu; i++) {
-        if (i != tapIndex) {
+        if (i != tapIndex){
             [self animateIndicator:_indicators[i] Forward:NO complete:^{
                 [self animateTitle:_titles[i] show:NO complete:^{
                     
@@ -252,14 +251,13 @@
             [(CALayer *)self.bgLayers[i] setBackgroundColor:[UIColor whiteColor].CGColor];
         }
     }
-    
-    if (tapIndex == _currentSelectedMenudIndex && _show) {
+    if(tapIndex == _currentSelectedMenudIndex && _show) {
         [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView tableView:_tableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
             _currentSelectedMenudIndex = tapIndex;
             _show = NO;
         }];
         [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:[UIColor whiteColor].CGColor];
-    } else {
+    }else{
         _currentSelectedMenudIndex = tapIndex;
         [_tableView reloadData];
         [self animateIdicator:_indicators[tapIndex] background:_backGroundView tableView:_tableView title:_titles[tapIndex] forward:YES complecte:^{
@@ -268,7 +266,6 @@
         [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:[UIColor colorWithWhite:0.9 alpha:1.0].CGColor];
     }
 }
-
 - (void)backgroundTapped:(UITapGestureRecognizer *)paramSender
 {
     [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView tableView:_tableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
@@ -276,7 +273,6 @@
     }];
     [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:[UIColor whiteColor].CGColor];
 }
-
 #pragma mark - animation method
 - (void)animateIndicator:(CAShapeLayer *)indicator Forward:(BOOL)forward complete:(void(^)())complete {
     [CATransaction begin];

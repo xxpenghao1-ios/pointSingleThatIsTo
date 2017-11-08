@@ -47,7 +47,7 @@ open class PHMoyaHttp {
                     
                 }
             case let .failure(error):
-                failClosure(error.errorDescription)
+                failClosure(error.localizedDescription)
             }
         }
     }
@@ -69,7 +69,7 @@ open class PHMoyaHttp {
                     
                 }
             case let .failure(error):
-                failClosure(error.errorDescription)
+                failClosure(error.localizedDescription)
             }
         }
     }

@@ -49,7 +49,7 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
     var lblSearchRecords:UILabel?;
     
     ///取出搜索记录arr
-    var outSearchArr:NSArray?;
+    var outSearchArr=[String]()
     
     ///清除搜索按钮
     var btnRemoveSearchRecords:UIButton?;
@@ -66,9 +66,9 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
         self.searchBarControl?.text = nil
         
         //获取缓存中的数据 重新赋值
-        outSearchArr=search.object(forKey: "search") as? NSArray;
+        outSearchArr=search.object(forKey: "search") as? [String] ?? [String]();
         
-        if outSearchArr?.count > 0{//表示有数据
+        if outSearchArr.count > 0{//表示有数据
             //显示清除按钮
             btnRemoveSearchRecords?.isHidden=false
             btnRemoveSearchRecordsborderView?.isHidden=false
@@ -94,10 +94,6 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
      构建页面
      */
     func buildView(){
-        
-        //取出缓存中的搜索记录
-        outSearchArr=search.object(forKey: "search") as? NSArray;
-        
         //搜索框
         searchBarControl = UISearchBar(frame: CGRect(x: 0,y: navHeight,width: boundsWidth-50,height:45))
         searchBarControl!.delegate = self;
@@ -147,7 +143,7 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
         searchRecordTableView!.tableFooterView = UIView(frame:CGRect.zero)
         self.view.addSubview(searchRecordTableView!);
         
-        if outSearchArr?.count > 0{//判断搜索记录是否有数据 如果有显示删除按钮 边线
+        if outSearchArr.count > 0{//判断搜索记录是否有数据 如果有显示删除按钮 边线
             btnRemoveSearchRecords!.isHidden=false;
             btnRemoveSearchRecordsborderView!.isHidden=false;
         }else{//如果没有 隐藏
@@ -171,7 +167,7 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
         search.synchronize();
         
         //直接赋空
-        outSearchArr=search.object(forKey: "search") as? NSArray;
+        outSearchArr=[String]()
         
         //隐藏清除按钮
         btnRemoveSearchRecords!.isHidden=true;
@@ -191,67 +187,26 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
     
     //保存搜索记录
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        //创建2个数组互转  是因为缓存里面不能保存NSMutableArray(可变)类型的数组
-        //保存搜索记录arr
-        var searchArr:NSArray?;
-        //再创建一个可变数组
-        var searchMuArr:NSMutableArray?;
-        if  searchBar.text != nil && searchBar.text!.characters.count > 0{//判断搜索条件是否为空
-            //先从缓存取出arr
-            searchArr=search.object(forKey: "search") as? NSArray;
-            if searchArr == nil{//如果为空 直接实例化个空的数组
-                searchArr=NSArray();
-            }
-            //将不可变的转换成可变数组
-            searchMuArr=NSMutableArray(array:searchArr!);
-            
-            //把搜索条件添加到可变数组里面
-            searchMuArr!.add(searchBarControl!.text!);
-            
-            //再次转换成不可变数组
-            searchArr=NSArray(array:searchMuArr!);
-            
-            //保存进缓存
-            search.set(searchArr!, forKey:"search");
-            
-            //写入磁盘
-            search.synchronize();
-            
-            //跳转到3级分类
-            let vc=GoodCategory3ViewController()
-            vc.searchName=searchBarControl!.text
-            vc.flag=1
-            self.navigationController?.pushViewController(vc, animated:true);
-            self.view.endEditing(true)
-        }else{
-            SVProgressHUD.showInfo(withStatus: "搜索条件不能为空")
-        }
+        searchGoodList(text: searchBar.text)
     }
     //点击搜索按钮
     @objc func searchGood(_ sender:UIButton){
+        searchGoodList(text: searchBarControl!.text)
+    }
+    //搜索商品
+    func searchGoodList(text:String?){
         //创建2个数组互转  是因为缓存里面不能保存NSMutableArray(可变)类型的数组
-        
-        //保存搜索记录arr
-        var searchArr:NSArray?;
-        
-        //再创建一个可变数组
-        var searchMuArr:NSMutableArray?;
-        
-        if  searchBarControl!.text != nil && searchBarControl!.text?.characters.count > 0{//判断搜索条件是否为空
+        if  text != nil && text!.characters.count > 0{//判断搜索条件是否为空
             //先从缓存取出arr
-            searchArr=search.object(forKey: "search") as? NSArray;
+            var searchArr=search.object(forKey: "search") as? [String]
             if searchArr == nil{//如果为空 直接实例化个空的数组
-                searchArr=NSArray();
+                searchArr=[String]();
             }
-            //将不可变的转换成可变数组
-            searchMuArr=NSMutableArray(array:searchArr!);
             
             //把搜索条件添加到可变数组里面
-            searchMuArr!.add(searchBarControl!.text!);
-            
-            //再次转换成不可变数组
-            searchArr=NSArray(array:searchMuArr!);
-            
+            searchArr!.append(text!)
+            //数组去重
+            searchArr=searchArr!.filterDuplicates({$0})
             //保存进缓存
             search.set(searchArr!, forKey:"search");
             
@@ -260,8 +215,8 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
             
             //跳转到3级分类
             let vc=GoodCategory3ViewController()
-            vc.flag=1
             vc.searchName=searchBarControl!.text
+            vc.flag=1
             self.navigationController?.pushViewController(vc, animated:true);
             self.view.endEditing(true)
         }else{
@@ -277,16 +232,16 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
         //去掉选中背景
         cell!.selectionStyle=UITableViewCellSelectionStyle.none;
         cell!.textLabel!.font=UIFont.systemFont(ofSize: 13)
-        if outSearchArr?.count > 0{//判断下数组是否有值  防止程序崩溃
-            cell!.textLabel!.text=outSearchArr![indexPath.row] as? String;
+        if outSearchArr.count > 0{//判断下数组是否有值  防止程序崩溃
+            cell!.textLabel!.text=outSearchArr[indexPath.row]
         }
         
         return cell!;
     }
     //tabview每行的点击事件
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if outSearchArr?.count > 0{
-            let searchName=outSearchArr![indexPath.row] as! String
+        if outSearchArr.count > 0{
+            let searchName=outSearchArr[indexPath.row]
             //跳转到3级分类
             let vc=GoodCategory3ViewController()
             vc.flag=1
@@ -297,10 +252,10 @@ class SearchViewController:BaseViewController,UISearchBarDelegate,UITableViewDel
     
     //返回tabview的行数
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        if outSearchArr == nil{
+        if outSearchArr.count == 0 {
             return 0;
         }else{
-            return outSearchArr!.count;
+            return outSearchArr.count;
         }
     }
     //返回tabview的高度

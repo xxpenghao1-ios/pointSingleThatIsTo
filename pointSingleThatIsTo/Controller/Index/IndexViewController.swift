@@ -187,8 +187,8 @@ extension IndexViewController{
         txt.leftViewMode=UITextFieldViewMode.always
         let leftBarTxt=UIBarButtonItem(customView:txt)
         //公告
-        let noticeImg=UIImageView(frame:CGRect(x: 0,y: 0,width: 20,height: 20))
-        noticeImg.image=UIImage(named:"notice")?.reSizeImage(reSize:CGSize(width:20, height: 20))
+        let noticeImg=UIImageView(frame:CGRect(x: 0,y: 0,width:25,height: 25))
+        noticeImg.image=UIImage(named:"notice")?.reSizeImage(reSize:CGSize(width:25, height: 25))
         noticeImg.isUserInteractionEnabled=true
         noticeImg.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(showActivityAlert)))
         
