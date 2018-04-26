@@ -375,7 +375,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
      */
     @objc func cancelOrderAction(_ sender:UIButton){
         UIAlertController.showAlertYesNo(self, title:"点单即到", message:"您要取消订单吗?", cancelButtonTitle:"取消", okButtonTitle:"确定") { (UIAlertAction) -> Void in
-            SVProgressHUD.show(withStatus: "正在加载",maskType:.clear)
+            self.showSVProgressHUD(status:"正在加载...", type: HUD.textClear)
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.storeCancelOrder(orderId: self.orderList!.orderinfoId!), successClosure: { (result) -> Void in
                 let json=JSON(result)
                 let success=json["success"].stringValue
@@ -383,7 +383,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
                     //收货成功返回上一页面 通知页面刷新数据
                     SVProgressHUD.showSuccess(withStatus: "取消订单成功")
                     NotificationCenter.default.post(name:NSNotification.Name(rawValue: "postUpdateOrderList"), object:self, userInfo:nil)
-                    self.navigationController!.popViewController(animated: true)
+                    self.navigationController?.popViewController(animated: true)
                 }else{
                     SVProgressHUD.show(withStatus: "取消订单失败")
                 }
@@ -399,7 +399,7 @@ class StockOrderDetailsViewController:BaseViewController,UITableViewDataSource,U
      */
     @objc func receivingAction(_ sender:UIButton){
         UIAlertController.showAlertYesNo(self, title:"点单即到", message:"确认收货?", cancelButtonTitle:"取消", okButtonTitle:"确定") { (UIAlertAction) -> Void in
-            SVProgressHUD.show(withStatus: "正在加载",maskType:.clear)
+            self.showSVProgressHUD(status:"正在加载", type: HUD.textClear)
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.updataOrderStatus4Store(orderinfoId: self.orderList!.orderinfoId!), successClosure: { (result) -> Void in
                 let json=JSON(result)
                 let success=json["success"].stringValue

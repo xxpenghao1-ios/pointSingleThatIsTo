@@ -141,7 +141,7 @@ class OrdersViewController:BaseViewController,UITableViewDataSource,UITableViewD
                 let detailAddress=addressEntity!.province!+addressEntity!.city!+addressEntity!.county!+addressEntity!.detailAddress!;
                 /// 把字典中的entity转换成json格式的字符串
                 let goodsList=toJSONString(arr)
-                SVProgressHUD.show(withStatus: "数据加载中", maskType: .clear)
+                 self.showSVProgressHUD(status:"数据加载中", type: HUD.textClear)
                 var cashCouponId:Int?
                 if self.vouchersEntity != nil{
                    cashCouponId=self.vouchersEntity!.cashCouponId

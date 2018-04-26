@@ -12,7 +12,7 @@ import ObjectMapper
 import SVProgressHUD
 import SwiftyJSON
 ///登录跳转后的页面（1为注册，2为修改密码）
-class RegisterViewController:UIViewController{
+class RegisterViewController:BaseViewController{
     ///接收登录页面传过来的值（1为注册，2为修改密码）
     var flag:Int?
     ///提示标签
@@ -91,13 +91,13 @@ class RegisterViewController:UIViewController{
     //点击下一步触发
     @objc func clickBtn(_ sender:UIButton){
         //要求手机号为11位数
-        if feildPhone?.text?.characters.count==11{
+        if feildPhone?.text?.count==11{
             //发送请求（手机验证）
             httpPhone()
-        }else if feildPhone?.text?.characters.count==0&&feildPhone?.text==nil{
-            SVProgressHUD.showInfo(withStatus: "手机号不能为空", maskType: .clear)
+        }else if feildPhone?.text?.count==0&&feildPhone?.text==nil{
+            self.showSVProgressHUD(status:"手机号不能为空", type: HUD.info)
         }else{
-            SVProgressHUD.showInfo(withStatus: "请输入正确的手机号", maskType: .clear)
+            self.showSVProgressHUD(status:"请输入正确的手机号", type: HUD.info)
         }
     }
     
@@ -121,7 +121,7 @@ class RegisterViewController:UIViewController{
                 
             }else if JSONres["success"].stringValue == "success"{
                 if self.flag==1{//账号已经被注册
-                    SVProgressHUD.showInfo(withStatus: "该账号已经被注册", maskType: .clear)
+                    self.showSVProgressHUD(status:"该账号已经被注册", type: HUD.info)
                 }else if self.flag==2{// 已经被注册就可以修改密码
                     let vc=RegisterValidationViewController();
                     vc.phone=phone

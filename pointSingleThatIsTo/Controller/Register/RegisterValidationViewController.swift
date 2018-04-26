@@ -12,7 +12,7 @@ import ObjectMapper
 import SVProgressHUD
 import SwiftyJSON
 
-class RegisterValidationViewController:UIViewController{
+class RegisterValidationViewController:BaseViewController{
     /// 手机号码
     var phone:String?
     /// 接收登录页面传过来的值（1为注册，2为修改密码）
@@ -81,7 +81,7 @@ class RegisterValidationViewController:UIViewController{
         getCode?.setTitle("获取验证码", for: UIControlState())
         getCode?.setTitleColor(UIColor(red: 0.91, green: 0.40, blue: 0.55, alpha: 1), for: UIControlState())
         getCode?.titleLabel?.font=UIFont.systemFont(ofSize: 16)
-        getCode?.addTarget(self, action:#selector(getCodeBtn), for: UIControlEvents.touchUpOutside)
+        getCode?.addTarget(self, action:#selector(getCodeBtn), for: UIControlEvents.touchUpInside)
         self.view.addSubview(getCode!)
         /// 下一步按钮
         btnNext=UIButton()
@@ -97,7 +97,7 @@ class RegisterValidationViewController:UIViewController{
     }
     //点击 下一步按钮  触发
     @objc func clickBtn(_ sender:UIButton){
-        let count=feildCode?.text?.characters.count
+        let count=feildCode?.text?.count
         if feildCode?.text==nil||count==0{
             SVProgressHUD.showInfo(withStatus:"请输入验证码")
         }else{
@@ -108,7 +108,8 @@ class RegisterValidationViewController:UIViewController{
                     vc.flag=self.flag
                     self.navigationController?.pushViewController(vc, animated:true);
                 }else{
-                    SVProgressHUD.showError(withStatus: "验证码错误", maskType: .clear)
+                    
+                    self.showSVProgressHUD(status:"验证码错误", type:HUD.error)
                 }
             }
         }

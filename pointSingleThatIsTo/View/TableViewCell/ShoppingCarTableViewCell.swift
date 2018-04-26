@@ -64,7 +64,7 @@ protocol ShoppingCarTableViewCellDelegate : NSObjectProtocol {
 
 class ShoppingCarTableViewCell:UITableViewCell {
     ///创建一个协议
-    var delelgate:ShoppingCarTableViewCellDelegate?;
+    weak var delelgate:ShoppingCarTableViewCellDelegate?;
     
     ///接收传过来的数据
     var good:GoodDetailEntity?
@@ -463,6 +463,9 @@ class ShoppingCarTableViewCell:UITableViewCell {
                     btnAddCount.isEnabled=true
                     lblCountLeb.textColor=UIColor.red
                 }
+            }else{
+                btnAddCount.isEnabled=true
+                lblCountLeb.textColor=UIColor.red
             }
         }
         if entity.isSelected == 1{

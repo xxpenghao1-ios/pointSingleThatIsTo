@@ -107,17 +107,18 @@ class UpdateAndAddShippingAddressViewController:BaseViewController,UITableViewDe
             let shippName=txtName!.text
             let detailAddress=txtDetailAddress!.text
             let phoneNumber=txtPhone!.text
-            if shippName == nil || shippName!.characters.count == 0{
+            if shippName == nil || shippName!.count == 0{
                 SVProgressHUD.showInfo(withStatus: "收货人名称不能为空")
-            }else if detailAddress == nil || detailAddress!.characters.count == 0{
+            }else if detailAddress == nil || detailAddress!.count == 0{
                 SVProgressHUD.showInfo(withStatus: "详细地址不能为空")
-            }else if phoneNumber == nil || phoneNumber!.characters.count == 0{
+            }else if phoneNumber == nil || phoneNumber!.count == 0{
                 SVProgressHUD.showInfo(withStatus: "手机号码不能为空")
             }else{
-                if phoneNumber!.characters.count != 11{
+                if phoneNumber!.count != 11{
                     SVProgressHUD.showInfo(withStatus: "请输入正确的手机号码")
                 }else{
-                    SVProgressHUD.show(withStatus: "数据加载中", maskType: .clear)
+
+                    self.showSVProgressHUD(status:"正在加载...", type: HUD.textClear)
                     if addressFlag == 1{//修改
                         if mySwitch!.isOn{//如果开关按钮打开
                             entity!.defaultFlag=1

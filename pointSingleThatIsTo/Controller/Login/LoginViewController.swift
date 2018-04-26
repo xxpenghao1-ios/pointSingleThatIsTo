@@ -217,7 +217,7 @@ class LoginViewController:BaseViewController{
                 if name == "ddjd" && password == "ddjd888888"{//跳转到业务员登录
                     SVProgressHUD.show(withStatus:"业务员扫街苹果版已经关闭")
                 }else{
-                    SVProgressHUD.show(withStatus: "正在登陆",maskType: SVProgressHUDMaskType.gradient)
+                    self.showSVProgressHUD(status:"正在登陆", type: HUD.textGradient)
                     NSLog("开始验证发送网络请求验证用户信息")
                     PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.login(memberName:name!, password:password!, deviceToken:str!, deviceName:UIDevice().name,flag:1), successClosure: { (result) -> Void in
                         let json=JSON(result)

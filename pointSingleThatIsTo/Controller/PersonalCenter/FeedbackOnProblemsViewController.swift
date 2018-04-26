@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import SVProgressHUD
 import SwiftyJSON
-class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
+class FeedbackOnProblemsViewController:BaseViewController,UITextViewDelegate {
     /// 文本视图容器
     var textViews:UITextView!
     /// 输入的文字
@@ -68,10 +68,10 @@ class FeedbackOnProblemsViewController:UIViewController,UITextViewDelegate {
      */
     @objc func actionRemark(_ sender:UIButton){
         let storeId=userDefaults.object(forKey: "storeId") as! String
-        if textLbl.characters.count==0{
+        if textLbl.count==0{
             SVProgressHUD.showInfo(withStatus: "内容为空")
         }else{
-            SVProgressHUD.show(withStatus: "正在提交",maskType: SVProgressHUDMaskType.gradient)
+            self.showSVProgressHUD(status:"正在提交", type: HUD.textGradient)
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.complaintsAndSuggestions(complaint:textLbl.pregReplace(), storeId:storeId), successClosure: { (result) -> Void in
                 let json=JSON(result)
                 let success=json["success"].stringValue

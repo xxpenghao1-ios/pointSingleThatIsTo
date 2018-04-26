@@ -13,7 +13,7 @@ import Alamofire
 import ObjectMapper
 import SwiftyJSON
 /// 购物车
-class ShoppingCarViewContorller:UIViewController,ShoppingCarTableViewCellDelegate{
+class ShoppingCarViewContorller:BaseViewController,ShoppingCarTableViewCellDelegate{
     
     /// 保存会员id
     var memberId:String?
@@ -408,7 +408,8 @@ extension ShoppingCarViewContorller{
      请求购物车数据
      */
     func http(){
-        SVProgressHUD.show(withStatus: "正在加载...", maskType: SVProgressHUDMaskType.clear)
+        self.showSVProgressHUD(status:"正在加载...", type:HUD.textClear)
+
         request( URL+"queryShoppingCarNew.xhtml",method:.get, parameters:["memberId":IS_NIL_MEMBERID()!,"storeId":storeId]).responseJSON{ response in
             if response.result.error != nil{
                 SVProgressHUD.showError(withStatus:response.result.error!.localizedDescription)
@@ -779,7 +780,7 @@ extension ShoppingCarViewContorller{
         }
         if sender.titleLabel!.text == "删除"{
             if orderArr.count > 0{
-                SVProgressHUD.show(withStatus: "正在删除...", maskType: SVProgressHUDMaskType.clear)
+                self.showSVProgressHUD(status:"正在删除...", type: HUD.textClear)
                 request(URL+"deleteShoppingCar.xhtml",method:.post,parameters:["memberId":IS_NIL_MEMBERID()!,"goodsList":toJSONString(orderArr)]).responseJSON{ response in
                     if response.result.error != nil{
                         SVProgressHUD.showError(withStatus: response.result.error!.localizedDescription)

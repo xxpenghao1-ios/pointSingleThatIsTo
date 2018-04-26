@@ -694,7 +694,7 @@ extension GoodDetailViewController{
         if self.goodDeatilEntity!.goodsCollectionStatu == 1{
             SVProgressHUD.showInfo(withStatus: "该商品已经被收藏")
         }else{
-            SVProgressHUD.show(withStatus: "数据加载中", maskType: SVProgressHUDMaskType.clear)
+            self.showSVProgressHUD(status:"数据加载中", type: HUD.textClear)
             PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.goodsAddCollection(goodId:self.goodDeatilEntity!.goodsbasicinfoId!, supplierId:self.goodDeatilEntity!.supplierId!, subSupplierId:self.goodDeatilEntity!.subSupplier!, memberId:IS_NIL_MEMBERID()!), successClosure: { (result) -> Void in
                 let json=JSON(result)
                 let success=json["success"].stringValue

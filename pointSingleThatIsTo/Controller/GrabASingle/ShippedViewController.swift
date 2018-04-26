@@ -148,7 +148,7 @@ class ShippedViewController:BaseViewController,UITableViewDataSource,UITableView
         let storeId=userDefaults.object(forKey: "storeId") as! String;
         
             //加载等待视图
-        SVProgressHUD.show(withStatus: "数据加载中", maskType: .clear)
+        self.showSVProgressHUD(status:"数据加载中", type: HUD.textClear)
             //统计订单数，每次发请求先置空
             var count=0
             //开始发送已抢订单查询请求(robflag状态为3)

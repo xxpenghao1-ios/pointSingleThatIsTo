@@ -106,7 +106,7 @@ extension PresentExpViewController:UITableViewDelegate,UITableViewDataSource,Pre
 // MARK: - 网络请求
 extension PresentExpViewController{
     func httpExchangeInfo(_ entity: IntegralGoodExchangeEntity,index:IndexPath) {
-        SVProgressHUD.show(withStatus: "正在加载...", maskType: SVProgressHUDMaskType.clear)
+        self.showSVProgressHUD(status:"正在加载...", type: HUD.textClear)
         PHMoyaHttp.sharedInstance.requestDataWithTargetJSON(RequestAPI.integralMallExchange(integralMallId: entity.integralMallId!, memberId: IS_NIL_MEMBERID()!, exchangeCount: 1), successClosure: { (result) -> Void in
             let json=JSON(result)
             let success=json["success"].stringValue
